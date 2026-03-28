@@ -3,9 +3,9 @@ add_library(engine_core STATIC
     Window.cpp
     InputManager.cpp
     Engine.cpp
-    Engine.cpp
     AudioEngine.cpp
     ProceduralAudio.cpp
+    ../ai/NavMesh.cpp
 )
 
 target_include_directories(engine_core

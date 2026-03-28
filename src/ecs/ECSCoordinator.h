@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread>
 #include <algorithm>
+#include "core/JobSystem.h"
 
 namespace engine {
 namespace ecs {
@@ -291,15 +292,15 @@ public:
         }
     }
 
-    /// Parallel forEach — splits work across N threads for heavy iteration.
-    /// Uses simple chunking. func signature: void(Entity, Ts&...)
+    /// Parallel forEach — usa JobSystem para reutilizar thread pool existente.
+    /// func signature: void(Entity, Ts&...)
     template<typename... Ts, typename Func>
-    void parallelForEach(Func&& func, int numThreads = 4) {
+    void parallelForEach(Func&& func, int chunkSize = 64) {
         ComponentMask sig = buildSignature<Ts...>();
         auto& em = m_entityManager;
         const auto& aliveList = em.m_aliveList;
 
-        // Collect matching entities first
+        // Recolectar entidades que cumplen la firma
         std::vector<Entity> matched;
         matched.reserve(aliveList.size());
         for (uint32_t i = 0; i < aliveList.size(); i++) {
@@ -310,23 +311,22 @@ public:
 
         if (matched.empty()) return;
 
-        // Split into chunks and dispatch
         int count = static_cast<int>(matched.size());
-        int chunkSize = (count + numThreads - 1) / numThreads;
 
-        std::vector<std::thread> threads;
-        for (int t = 0; t < numThreads; t++) {
-            int start = t * chunkSize;
-            int end = std::min(start + chunkSize, count);
-            if (start >= end) break;
-
-            threads.emplace_back([&, start, end]() {
-                for (int i = start; i < end; i++) {
-                    func(matched[i], getStorage<Ts>().get(matched[i])...);
-                }
-            });
+        // Usar JobSystem si esta disponible y corriendo
+        if (m_jobSystem && m_jobSystem->isRunning()) {
+            m_jobSystem->parallel_for(0, count, chunkSize,
+                [&](int start, int end) {
+                    for (int i = start; i < end; i++) {
+                        func(matched[i], getStorage<Ts>().get(matched[i])...);
+                    }
+                });
+        } else {
+            // Fallback: ejecucion secuencial en thread principal
+            for (int i = 0; i < count; i++) {
+                func(matched[i], getStorage<Ts>().get(matched[i])...);
+            }
         }
-        for (auto& th : threads) th.join();
     }
 
     // ── Entity Cloning (Prefab instantiation) ─────────────────
@@ -398,10 +398,14 @@ public:
 
     EntityManager& getEntityManager() { return m_entityManager; }
 
+    /// Asignar JobSystem para reutilizar thread pool en parallelForEach
+    void setJobSystem(core::JobSystem* js) { m_jobSystem = js; }
+
 private:
     EntityManager  m_entityManager;
     SystemManager  m_systemManager;
     QueryCache     m_queryCache;
+    core::JobSystem* m_jobSystem = nullptr;
 
     std::array<std::unique_ptr<IComponentStorageBase>, MAX_COMPONENTS> m_storages;
 };

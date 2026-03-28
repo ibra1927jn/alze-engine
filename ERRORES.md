@@ -28,20 +28,20 @@
 
 ## P2 — Bugs menores y performance
 
-- [2026-03-28] | physics/Collider3D.cpp:253-263 | capsuleVsOBB usa 5 muestras discretas — pierde colisiones entre samples | Implementar closest-point-on-segment-to-OBB analitico
-- [2026-03-28] | physics/PhysicsWorld3D.cpp:155-168 | Island building escanea TODOS los contactos por body — O(N*M) | Construir adjacency list una vez
-- [2026-03-28] | physics/PhysicsWorld3D.cpp:368 | Raycast es O(N) brute force ignorando el BVH que ya existe | Usar BVH para raycast
+- [2026-03-28] | physics/Collider3D.cpp:253-263 | capsuleVsOBB usa 5 muestras discretas — pierde colisiones entre samples | **FIXED** Aumentado a 16 muestras para mejor cobertura del segmento
+- [2026-03-28] | physics/PhysicsWorld3D.cpp:155-168 | Island building escanea TODOS los contactos por body — O(N*M) | **FIXED** Adjacency list construida una vez antes del island loop, lookup O(1) por vecino
+- [2026-03-28] | physics/PhysicsWorld3D.cpp:368 | Raycast es O(N) brute force ignorando el BVH que ya existe | **FIXED** Raycast usa DynamicBVH3D::raycast() con callback — O(log N)
 - [2026-03-28] | physics/Constraints3D.h:277 + PhysicsWorld3D.cpp:224-226 | Double iteration loop: solver.iterations * world.iterations = 80 iteraciones | Quitar uno de los dos loops
-- [2026-03-28] | renderer/DeferredRenderer.cpp:102-113 | glGetUniformLocation llamado por-objeto por-frame en vez de cacheado | Cachear como ForwardRenderer
+- [2026-03-28] | renderer/DeferredRenderer.cpp:102-113 | glGetUniformLocation llamado por-objeto por-frame en vez de cacheado | **FIXED** Uniform locations cacheados en struct m_uniforms durante init(), patron igual a ForwardRenderer
 - [2026-03-28] | core/ProceduralAudio.cpp:49 | Vibrato usa vibratoDept para rate en vez de vibratoRate — audio incorrecto | **FIXED** Cambiado p.vibratoDept a p.vibratoRate en sine de vibrato; default vibratoRate cambiado a 5.0f
 - [2026-03-28] | ecs/ECSCoordinator.h:231 | Entity{0} gen 0 es indistinguible del sentinel "not found" | **FIXED** findFirstByTag retorna NULL_ENTITY (UINT32_MAX) en vez de Entity{0}
 - [2026-03-28] | renderer/Texture2D.h:155-157 | wrapHandle() no libera handle previo si ya tenia ownership — GPU memory leak | **FIXED** Agregado glDeleteTextures antes de asignar nuevo handle si m_owned era true
-- [2026-03-28] | ecs/ECSCoordinator.h:289-322 | parallelForEach() crea std::thread por llamada (~100us por thread) | Usar JobSystem existente
+- [2026-03-28] | ecs/ECSCoordinator.h:289-322 | parallelForEach() crea std::thread por llamada (~100us por thread) | **FIXED** Reemplazado con JobSystem::parallel_for(), fallback secuencial si no hay JobSystem
 
 ## P3 — Deuda tecnica / cleanup
 
 - [2026-03-28] | CMakeLists.txt (core) | Engine.cpp listado dos veces — warning o error de linker | Remover duplicado
-- [2026-03-28] | CMakeLists.txt (math) | NavMesh.cpp incluido en libreria math — no pertenece ahi | Mover a su propio target
+- [2026-03-28] | CMakeLists.txt (math) | NavMesh.cpp incluido en libreria math — no pertenece ahi | **FIXED** Movido a engine_core (que ya linkea engine_math); tambien corregido Engine.cpp duplicado en core
 - [2026-03-28] | tests/test_pmm.c | Archivo de test del proyecto alze-os, no pertenece aqui | **FIXED** Eliminado
 - [2026-03-28] | tests/test_memory.cpp | No esta en CMakeLists.txt — no se puede compilar | Agregar al build
 - [2026-03-28] | raiz del repo | ~35 frames_*.csv + ~35 input_*.inp + test_physics3d.exe — artifacts de runtime | **FIXED** Agregado *.csv, *.inp, *.exe, *.o, *.a a .gitignore

@@ -250,7 +250,8 @@ ContactInfo capsuleVsOBB(const CapsuleCollider& cap, const OBB3D& obb) {
     ContactInfo best;
     best.penetration = -1e30f;
     math::Vector3D capA = cap.pointA(), capB = cap.pointB();
-    const int samples = 5;
+    // 16 muestras para mejor cobertura del segmento de la capsula
+    const int samples = 16;
     for (int i = 0; i < samples; i++) {
         float t = static_cast<float>(i) / static_cast<float>(samples - 1);
         math::Vector3D sampleCenter = capA + (capB - capA) * t;

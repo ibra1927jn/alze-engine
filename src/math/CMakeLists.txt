@@ -6,7 +6,6 @@ add_library(engine_math STATIC
     Vector3D.cpp
     Matrix4x4.cpp
     Quaternion.cpp
-    ../ai/NavMesh.cpp
 )
 
 target_include_directories(engine_math

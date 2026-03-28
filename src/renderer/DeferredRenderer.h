@@ -95,6 +95,18 @@ private:
     GLuint m_quadVAO = 0, m_quadVBO = 0;
 
     void createScreenQuad();  // impl in DeferredRenderer.cpp
+    void cacheUniformLocations();  // impl in DeferredRenderer.cpp
+
+    // Cached uniform locations — evita glGetUniformLocation por frame
+    struct {
+        // Geometry pass
+        GLint geoView = -1, geoProjection = -1, geoModel = -1;
+        GLint geoAlbedo = -1, geoMetallic = -1, geoRoughness = -1;
+        // Lighting pass
+        GLint litGPosition = -1, litGNormal = -1, litGAlbedo = -1;
+        GLint litViewPos = -1, litLightDir = -1, litLightColor = -1;
+        GLint litAmbientIntensity = -1;
+    } m_uniforms;
 
     // â”€â”€ Shaders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

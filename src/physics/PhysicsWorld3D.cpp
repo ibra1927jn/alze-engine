@@ -117,7 +117,14 @@ void PhysicsWorld3D::step(float dt) {
 
         int currentIslandId = 0;
         int maxBodies = static_cast<int>(m_bodies.size());
-        
+
+        // Construir lista de adyacencia una vez — O(C) en vez de O(N*C) por body
+        std::vector<std::vector<int>> adj(maxBodies);
+        for (auto& contact : m_contacts) {
+            adj[contact.bodyA].push_back(contact.bodyB);
+            adj[contact.bodyB].push_back(contact.bodyA);
+        }
+
         // We need to keep track of islands for parallel solving
         struct IslandData {
             core::FrameArray<int> bodies;
@@ -151,19 +158,12 @@ void PhysicsWorld3D::step(float dt) {
                     islandCanSleep = false;
                 }
 
-                // Find connected bodies through contacts
-                for (int c = 0; c < static_cast<int>(m_contacts.size()); ++c) {
-                    auto& contact = m_contacts[c];
-                    int neighborIdx = -1;
-                    if (contact.bodyA == bodyIdx) neighborIdx = contact.bodyB;
-                    else if (contact.bodyB == bodyIdx) neighborIdx = contact.bodyA;
-
-                    if (neighborIdx != -1) {
-                        auto& neighbor = m_bodies[neighborIdx];
-                        if (neighbor.isDynamic() && neighbor.islandId == -1) {
-                            neighbor.islandId = currentIslandId;
-                            stack_array.push_back(neighborIdx);
-                        }
+                // Buscar vecinos via lista de adyacencia — O(1) por vecino
+                for (int neighborIdx : adj[bodyIdx]) {
+                    auto& neighbor = m_bodies[neighborIdx];
+                    if (neighbor.isDynamic() && neighbor.islandId == -1) {
+                        neighbor.islandId = currentIslandId;
+                        stack_array.push_back(neighborIdx);
                     }
                 }
             }
@@ -369,20 +369,27 @@ RayHit3D PhysicsWorld3D::raycast(const Ray3D& ray, int& hitBodyIndex) const {
     RayHit3D closest;
     closest.distance = 1e30f;
     hitBodyIndex = -1;
-    for (int i = 0; i < static_cast<int>(m_bodies.size()); i++) {
-        if (m_bodies[i].m_removed) continue;
+
+    // Usar BVH broadphase para descartar bodies rapidamente — O(log N)
+    m_broadphase.raycast(ray, [&](int bodyIdx) -> bool {
+        if (bodyIdx < 0 || bodyIdx >= static_cast<int>(m_bodies.size())) return true;
+        if (m_bodies[bodyIdx].m_removed) return true;
+
         RayHit3D hit;
-        if (m_bodies[i].shape == RigidBody3D::Shape::SPHERE)
-            hit = rayVsSphere(ray, m_bodies[i].getWorldSphere());
-        else if (m_bodies[i].shape == RigidBody3D::Shape::CAPSULE)
-            hit = rayVsCapsule(ray, m_bodies[i].getWorldCapsule());
+        if (m_bodies[bodyIdx].shape == RigidBody3D::Shape::SPHERE)
+            hit = rayVsSphere(ray, m_bodies[bodyIdx].getWorldSphere());
+        else if (m_bodies[bodyIdx].shape == RigidBody3D::Shape::CAPSULE)
+            hit = rayVsCapsule(ray, m_bodies[bodyIdx].getWorldCapsule());
         else
-            hit = rayVsAABB(ray, m_bodies[i].getWorldAABB());
+            hit = rayVsAABB(ray, m_bodies[bodyIdx].getWorldAABB());
+
         if (hit.hit && hit.distance < closest.distance) {
             closest = hit;
-            hitBodyIndex = i;
+            hitBodyIndex = bodyIdx;
         }
-    }
+        return true; // continuar buscando para encontrar el mas cercano
+    });
+
     return closest;
 }
 

@@ -70,8 +70,30 @@ bool DeferredRenderer::init(int width, int height) {
     if (!m_lightingShader.compile(LIGHTING_VS, LIGHTING_FS)) return false;
 
     createScreenQuad();
+    cacheUniformLocations();
     m_initialized = true;
     return true;
+}
+
+void DeferredRenderer::cacheUniformLocations() {
+    // Geometry shader uniforms
+    GLuint gh = m_geometryShader.getHandle();
+    m_uniforms.geoView       = glGetUniformLocation(gh, "uView");
+    m_uniforms.geoProjection = glGetUniformLocation(gh, "uProjection");
+    m_uniforms.geoModel      = glGetUniformLocation(gh, "uModel");
+    m_uniforms.geoAlbedo     = glGetUniformLocation(gh, "uAlbedo");
+    m_uniforms.geoMetallic   = glGetUniformLocation(gh, "uMetallic");
+    m_uniforms.geoRoughness  = glGetUniformLocation(gh, "uRoughness");
+
+    // Lighting shader uniforms
+    GLuint lh = m_lightingShader.getHandle();
+    m_uniforms.litGPosition        = glGetUniformLocation(lh, "gPosition");
+    m_uniforms.litGNormal          = glGetUniformLocation(lh, "gNormal");
+    m_uniforms.litGAlbedo          = glGetUniformLocation(lh, "gAlbedo");
+    m_uniforms.litViewPos          = glGetUniformLocation(lh, "uViewPos");
+    m_uniforms.litLightDir         = glGetUniformLocation(lh, "uLightDir");
+    m_uniforms.litLightColor       = glGetUniformLocation(lh, "uLightColor");
+    m_uniforms.litAmbientIntensity = glGetUniformLocation(lh, "uAmbientIntensity");
 }
 
 void DeferredRenderer::shutdown() {
@@ -99,18 +121,17 @@ void DeferredRenderer::beginGeometryPass(const math::Matrix4x4& view, const math
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     m_geometryShader.use();
-    glUniformMatrix4fv(glGetUniformLocation(m_geometryShader.getHandle(), "uView"),       1, GL_FALSE, view.data());
-    glUniformMatrix4fv(glGetUniformLocation(m_geometryShader.getHandle(), "uProjection"), 1, GL_FALSE, projection.data());
+    glUniformMatrix4fv(m_uniforms.geoView,       1, GL_FALSE, view.data());
+    glUniformMatrix4fv(m_uniforms.geoProjection, 1, GL_FALSE, projection.data());
 }
 
 void DeferredRenderer::submitGeometry(const Mesh3D& mesh, const math::Matrix4x4& model,
                                       const math::Vector3D& albedo, float metallic, float roughness)
 {
-    GLuint h = m_geometryShader.getHandle();
-    glUniformMatrix4fv(glGetUniformLocation(h, "uModel"),     1, GL_FALSE, model.data());
-    glUniform3f(glGetUniformLocation(h, "uAlbedo"),   albedo.x, albedo.y, albedo.z);
-    glUniform1f(glGetUniformLocation(h, "uMetallic"),  metallic);
-    glUniform1f(glGetUniformLocation(h, "uRoughness"), roughness);
+    glUniformMatrix4fv(m_uniforms.geoModel, 1, GL_FALSE, model.data());
+    glUniform3f(m_uniforms.geoAlbedo,   albedo.x, albedo.y, albedo.z);
+    glUniform1f(m_uniforms.geoMetallic,  metallic);
+    glUniform1f(m_uniforms.geoRoughness, roughness);
     mesh.draw();
 }
 
@@ -127,19 +148,18 @@ void DeferredRenderer::lightingPass(const math::Vector3D& viewPos,
     glViewport(0, 0, m_width, m_height);
     glDisable(GL_DEPTH_TEST);
     m_lightingShader.use();
-    GLuint h = m_lightingShader.getHandle();
 
     glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, m_gPosition);
-    glUniform1i(glGetUniformLocation(h, "gPosition"), 0);
+    glUniform1i(m_uniforms.litGPosition, 0);
     glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, m_gNormal);
-    glUniform1i(glGetUniformLocation(h, "gNormal"), 1);
+    glUniform1i(m_uniforms.litGNormal, 1);
     glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, m_gAlbedo);
-    glUniform1i(glGetUniformLocation(h, "gAlbedo"), 2);
+    glUniform1i(m_uniforms.litGAlbedo, 2);
 
-    glUniform3f(glGetUniformLocation(h, "uViewPos"),   viewPos.x,   viewPos.y,   viewPos.z);
-    glUniform3f(glGetUniformLocation(h, "uLightDir"),  lightDir.x,  lightDir.y,  lightDir.z);
-    glUniform3f(glGetUniformLocation(h, "uLightColor"),lightColor.x,lightColor.y,lightColor.z);
-    glUniform1f(glGetUniformLocation(h, "uAmbientIntensity"), ambientIntensity);
+    glUniform3f(m_uniforms.litViewPos,          viewPos.x,   viewPos.y,   viewPos.z);
+    glUniform3f(m_uniforms.litLightDir,         lightDir.x,  lightDir.y,  lightDir.z);
+    glUniform3f(m_uniforms.litLightColor,       lightColor.x,lightColor.y,lightColor.z);
+    glUniform1f(m_uniforms.litAmbientIntensity, ambientIntensity);
 
     glBindVertexArray(m_quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
