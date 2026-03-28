@@ -1,0 +1,62 @@
+# HarvestPro NZ — Sesión 6 Marzo 2026
+
+## ✅ Completado hoy
+
+| # | Item | Tests nuevos |
+|:--|:-----|:-------------|
+| #24 | Gateway Resilience (retry 502/504, timeout, degradación) | 16 |
+| #25 | Consolidar 35 SQL → `000_baseline.sql` + archive | — |
+| #29 | Dark mode (useTheme + ThemeToggle + 230 líneas CSS) | 5 |
+| #31 | DatePicker + Dropdown (searchable, keyboard, ARIA) | 19 |
+
+**Suite total: 1488/1488 tests ✅** (de 1448 → 1488, +40 nuevos)
+
+### Archivos creados
+- [gateway.service.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/services/gateway.service.ts) — Retry + timeout + event emitter
+- [useGatewayStatus.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/hooks/useGatewayStatus.ts) — Hook para toasts de degradación
+- [useTheme.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/hooks/useTheme.ts) — Dark mode con localStorage
+- [ThemeToggle.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/components/ui/ThemeToggle.tsx) — Botón sun/moon animado
+- [DatePicker.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/components/ui/DatePicker.tsx) — Input nativo estilizado
+- [Dropdown.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20(1)/src/components/ui/Dropdown.tsx) — Select buscable con keyboard nav
+
+---
+
+## ⬜ Pendiente para mañana
+
+### Sprint 3 — Testing (~1 día)
+| # | Tarea | Esfuerzo |
+|:--|:------|:---------|
+| #28 | Component tests → 60% (ChatWindow, OrchardMapView, ReAuthModal) | ~2-3h |
+
+### Sprint 4 — Features Fase 2 (priorizar)
+| # | Feature | Complejidad |
+|:--|:--------|:------------|
+| #43 | Picker Performance Scoring (⭐ buckets/hr × quality) | Media |
+| #45 | Audit Trail UI (filtros, exportar CSV) | Baja |
+| #46 | Bulk Operations (selección múltiple, acciones masivas) | Media |
+| #44 | Cost per unit analysis ($/bin, tendencias) | Media |
+| #36 | Inventario (CRUD items, checkout/checkin) | Media |
+| #37 | Weather Integration (OpenMeteo widget) | Baja |
+| #41 | Dashboard Analytics avanzado (heatmap, tendencias) | Media |
+
+### Sprint 5 — Features Avanzadas
+| # | Feature | Complejidad |
+|:--|:--------|:------------|
+| #34 | Push Notifications (Service Worker + Web Push) | Alta |
+| #42 | Harvest Forecasting (regresión lineal) | Alta |
+| #38 | API REST pública (OpenAPI + API keys) | Alta |
+| #39 | Immigration NZ compliance (visas, horas max) | Media |
+| #40 | GPS tracking (geolocation + geofencing) | Alta |
+| #35 | Multitenancy (data isolation, billing) | Muy Alta |
+| #47 | Document Management (Supabase Storage) | Media |
+
+### Diferido
+| # | Item | Razón |
+|:--|:-----|:------|
+| #27 | E2E Playwright | Setup de infra — post-features |
+| #30 | Storybook | Nice-to-have |
+| #32 | Simplificar UI Manager | Refactor incremental |
+| #33 | Capacitor nativo | Fase final |
+
+> [!TIP]
+> Recomendación para mañana: empezar con **#28** (component tests) ya que es rápido y sube cobertura, luego **#43** (Picker Scoring) que es la feature más visible para el negocio.

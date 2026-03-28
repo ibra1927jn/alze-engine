@@ -1,0 +1,488 @@
+============================================
+  ALZE — 3D Physics Tests
+  Collider3D + RigidBody3D + SpatialHash3D + PhysicsWorld3D
+============================================
+
+=== Sphere vs Sphere ===
+  [OK] Overlapping spheres detect contact
+  [OK] Penetration = 0.5
+  [OK] Normal points from A to B (X)
+  [OK] Non-overlapping spheres: no contact
+  [OK] Touching spheres (dist == rSum): no contact
+  [OK] Concentric spheres detect contact
+  [OK] Concentric: fallback normal valid
+
+=== AABB3D ===
+  [OK] Overlapping AABBs
+  [OK] Non-overlapping AABBs
+  [OK] Contains origin
+  [OK] Doesn't contain outside point
+  [OK] Closest point X clamped
+  [OK] Closest point Y unchanged
+  [OK] AABB contact detected
+  [OK] AABB penetration > 0
+
+=== OBB vs OBB (SAT) ===
+  [OK] Aligned OBBs: contact detected
+  [OK] Aligned OBBs: penetration = 0.5
+  [OK] Separated OBBs: no contact
+  [OK] 45° rotated OBB: contact detected
+  [OK] Rotated separated OBB: no false positive
+  [OK] Identical OBBs: contact
+  [OK] Identical OBBs: penetration = 2
+
+=== OBB vs Sphere ===
+  [OK] Sphere touching face: contact
+  [OK] Sphere face penetration ≈ 0.5
+  [OK] Sphere far: no contact
+  [OK] Sphere near rotated corner: contact
+
+=== Ray Tests ===
+  [OK] Ray hits sphere
+  [OK] Hit distance = 4
+  [OK] Ray misses sphere
+  [OK] Ray hits AABB
+  [OK] AABB hit distance = 4
+
+=== Inertia Tensor ===
+  [OK] Sphere Ix correct
+  [OK] Sphere Iy correct (=Ix)
+  [OK] Sphere Iz correct (=Ix)
+  [OK] Box Ix correct
+  [OK] Box Iy correct
+  [OK] Box Iz correct
+  [OK] World inertia X (identity orientation)
+  [OK] World inertia Y (identity orientation)
+  [OK] World inertia Z (identity orientation)
+  [OK] Rotated inertia produces non-zero result
+  [OK] Static body inertia = zero
+
+=== DynamicBVH3D ===
+  [OK] Overlapping bodies: potential pair found
+  [OK] Pair {0,1} in results
+  [OK] Far apart bodies: no pairs
+
+=== PhysicsWorld3D ===
+  [OK] Floor is static
+  [OK] Ball is dynamic
+  [OK] Ball falls under gravity
+    (Ball settled to y=0.494965)
+  [OK] Ball rests near floor (not fallen through)
+  [OK] Ball doesn't float (settled)
+  [OK] World has 2 bodies
+
+=== Capsule Collisions ===
+  [OK] Closest point on segment correct
+  [OK] Closest point clamped to segment end
+  [OK] Capsule-Sphere overlap: contact
+  [OK] Capsule-Sphere: penetration > 0
+  [OK] Capsule-Sphere far: no contact
+  [OK] Capsule-Capsule parallel overlap: contact
+  [OK] Capsule-Capsule far: no contact
+  [OK] Crossed capsules: contact
+  [OK] Crossed capsules: pen ≈ 2*radius
+  [OK] Capsule-OBB overlap: contact
+  [OK] Capsule-OBB far: no contact
+
+=== Capsule Inertia ===
+  [OK] Capsule Ix correct
+  [OK] Capsule Iy correct
+  [OK] Capsule Iz correct (=Ix)
+
+=== Capsule World ===
+  [OK] Shape is CAPSULE
+    (Capsule settled to y=-1.62025)
+  [OK] Capsule rests near floor
+  [OK] Capsule settled (didn't float)
+
+=== Constraints ===
+  [OK] Distance constraint created
+  [OK] Distance constraint: resists separation
+  [OK] Ball-socket joint created
+  [OK] Ball-socket: momentum transfers to A
+  [OK] Hinge joint created
+  [OK] Hinge joint: simulation step completes
+
+=== PhysicsMaterial ===
+  [OK] Steel density = 7800 kg/m³
+  [OK] Steel: μs > μk
+  [OK] Steel: low rolling friction
+  [OK] Steel melts above 1600K
+  [OK] Ice: very low static friction
+  [OK] Ice: ultra-low kinetic friction
+  [OK] Ice melts at 0 degrees C
+  [OK] Rubber: high bounciness
+  [OK] Rubber: μs >= 1.0
+  [OK] Stribeck at v=0 returns static friction
+  [OK] Stribeck at v>>threshold returns kinetic friction
+  [OK] Stribeck at midpoint is between static and kinetic
+  [OK] combineFriction = geometric mean
+  [OK] combineRestitution = max
+
+=== Aerodynamics ===
+  [OK] Drag opposes positive X velocity
+  [OK] Drag only in velocity direction
+  [OK] Zero velocity = zero drag
+  [OK] Drag scales with v²
+  [OK] Terminal velocity is reasonable
+  [OK] Drag at terminal velocity ≈ weight
+  [OK] Magnus produces lateral force
+  [OK] Magnus perpendicular to velocity
+  [OK] Sphere cross section = πr²
+  [OK] Sphere volume = 4/3 πr³
+
+=== Buoyancy (Archimedes) ===
+  [OK] Fully submerged sphere = 1.0
+  [OK] Fully above water = 0.0
+  [OK] Half submerged ≈ 0.5
+  [OK] Buoyancy pushes upward
+  [OK] Buoyancy is purely vertical
+  [OK] Buoyancy = ρVg for full submersion
+    (Wood ball settled to y=24.4125)
+  [OK] Wood floats (doesn't sink)
+
+=== Rolling Friction ===
+  [OK] τ_roll = μr * N * r = 0.01*10*0.5
+  [OK] More normal force = more rolling resistance
+  [OK] Ice rolls easier than rubber
+
+=== Thermodynamics ===
+  [OK] Heat flows from hot to cold (Q > 0)
+  [OK] No temp difference = no heat flow
+  [OK] Radiation power > 0 for T > 0
+  [OK] Radiation scales as T⁴ (2x temp = 16x power)
+  [OK] Friction heat = |F*v|*dt = 10*5*0.016
+  [OK] ΔT = Q/(mc) = 1000/(1*500) = 2K
+  [OK] Ice starts solid
+    (Ice temp after heating: 328.488K)
+  [OK] Ice heated above melting point
+  [OK] Ice melted to liquid
+  [OK] Phase transition event detected
+    (Wood temp after fire: 704.459K)
+  [OK] Wood ignites in fire
+
+=== Velocity-Verlet ===
+  [OK] Verlet position X = v*dt = 1.0
+  [OK] Verlet position Y = 0.5*a*dt² = -0.05
+  [OK] Verlet velocity X unchanged (no accel X)
+  [OK] Verlet velocity Y = 0.5*(a+a)*dt = -1.0
+
+=== Spring-Damper ===
+  [OK] Spring restoring force opposes displacement
+  [OK] F = -kx = -100 when x=1, k=100
+  [OK] F = -kx - cv = -100 - 50 = -150
+  [OK] Critical damping = 2*sqrt(mk) = 20
+  [OK] sin(2π*0.25) = sin(π/2) = 1.0
+  [OK] Damped wave decays over time
+  [OK] smoothstep(0) = 0
+  [OK] smoothstep(1) = 1
+  [OK] smoothstep(0.5) ≈ 0.5
+
+=== Material Integration ===
+    (Ice slid to x=3.93072, Rubber to x=3.43915)
+  [OK] Ice slides further than rubber
+
+=== Body Removal ===
+  [OK] Body A is valid before removal
+  [OK] Body B is valid before removal
+  [OK] 4 bodies (floor + 3 spheres)
+  [OK] Body B invalid after removal
+  [OK] Body A still valid after B removed
+  [OK] Body C still valid after B removed
+  [OK] Simulation runs after body removal
+  [OK] Body A fell after removal of B
+  [OK] Body C fell after removal of B
+  [OK] New body reuses removed slot
+  [OK] Recycled slot is valid
+  [OK] Raycast doesn't hit removed body
+  [OK] getRestitution() delegates to material.restitution
+  [OK] getFriction() delegates to material.staticFriction
+
+=== ConvexHull Collider ===
+  [OK] Cube has 8 vertices
+  [OK] Centroid x near 0
+  [OK] Centroid y near 0
+  [OK] Support(up) = top vertex
+  [OK] Support(down) = bottom vertex
+  [OK] AABB max y = 1
+  [OK] AABB min y = -1
+  [OK] Cube hull vs box: contact
+  [OK] Body shape is CONVEX_HULL
+    (ConvexHull settled to y=-0.0051419)
+  [OK] Cube hull fell and rests on floor
+  [OK] Removed convex hull is invalid
+    (Hull1 at y=-0.00504564, Hull2 at y=1.98992)
+  [OK] Bottom hull rests on floor
+  [OK] Top hull near or above bottom hull
+
+=== SPH Fluid Dynamics ===
+  [OK] Poly6(0) > 0
+  [OK] Poly6 max at r=0
+  [OK] Poly6 zero outside h
+  [OK] Spiky gradient points toward origin
+  [OK] Viscosity Laplacian > 0 inside h
+  [OK] Viscosity Laplacian 0 outside h
+  [OK] Water density ~998 kg/m³
+  [OK] Water viscosity ~0.001 Pa·s
+  [OK] Honey viscosity >> water
+  [OK] Mercury density > 13000
+  [OK] Particles created
+    (Created 1936 fluid particles)
+    (Avg density after 10 steps: 1016.24 kg/m³)
+  [OK] Average density > 0 after simulation
+  [OK] Particles fell under gravity
+  [OK] Kinetic energy >= 0
+  [OK] Potential energy >= 0
+    (KE=4.25808 J, PE=17.7181 J)
+    (Bottom P=1010.6, Top P=0, ΔY=0.155039)
+  [OK] Bottom pressure >= top (hydrostatic)
+    (Dam break: X spread -0.5 → 1)
+  [OK] Dam break: water spread to the right
+    (Max particle speed: 3.43414 m/s)
+  [OK] No velocity explosion (max < 50 m/s)
+
+=== Electromagnetism ===
+  [OK] Coulomb force ~8.99e9 N at 1m
+  [OK] Coulomb force along r-axis
+  [OK] Opposite charges attract
+  [OK] Inverse-square law: F(1m)/F(2m) ≈ 4
+  [OK] Electric field from +1C at 1m
+  [OK] Lorentz: v×B perpendicular force
+  [OK] Lorentz: no force along v
+  [OK] Cyclotron radius correct
+    (Electron cyclotron radius in 1T: 0.00568563 mm)
+  [OK] Proton cyclotron frequency > 9e7 rad/s
+    (Charge separation: 2 → 0.186177 m)
+  [OK] Opposite charges moved closer
+  [OK] Opposite charges have negative potential energy
+  [OK] Faraday EMF = -dΦ/dt
+  [OK] Speed of light > 2.99e8
+  [OK] Elementary charge > 1.6e-19
+
+=== Chemistry & Reactions ===
+  [OK] R = 8.314 J/(mol·K)
+  [OK] Avogadro > 6e23
+  [OK] Faraday = 96485 C/mol
+  [OK] H2O molar mass = 18.015
+  [OK] H2O boiling point = 373.15 K
+  [OK] H2O formation is exothermic
+  [OK] Fe molar mass = 55.845
+  [OK] pH of 1M H+ = 0
+  [OK] pH of 1e-7 M H+ = 7
+  [OK] pH of 1e-14 M H+ = 14
+  [OK] hFromPH(3) = 0.001 M
+  [OK] Equal acid+base → pH 7
+  [OK] Excess acid → pH < 7
+  [OK] Excess base → pH > 7
+  [OK] Rate increases with temperature (Arrhenius)
+    (H2 combustion rate: k(300K)=0.00874168, k(600K)=29566.3)
+    (H2 combustion ΔH from formation = -571.66 kJ/mol)
+  [OK] H2 combustion is exothermic
+  [OK] Ideal gas: 1 mol at STP ≈ 101 kPa
+  [OK] Nernst at Q=1: E = E°
+  [OK] H2 combustion ΔG < 0 (spontaneous)
+    (Combustion: T=800→4595.99 K, H2=0 mol, H2O=2 mol)
+  [OK] Combustion raises temperature
+  [OK] H2 consumed in reaction
+  [OK] H2O produced
+  [OK] HCl solution pH < 2
+    (0.1M HCl pH = 1)
+
+=== Soft Bodies (XPBD) ===
+  [OK] Rope has 11 particles
+  [OK] Root particle is static
+  [OK] Rope has 10 distance constraints
+  [OK] Pinned particle didn't move
+  [OK] Free end fell under gravity
+  [OK] Rope segment length preserved (XPBD)
+  [OK] Cloth has 25 particles
+  [OK] Cloth generated structural, shear, and bending constraints
+    (Cloth lowest Y = 0.00186844 m)
+  [OK] Cloth respects floor collision (y>=0)
+  [OK] Cloth reached near the floor
+    (Cloth settled, Kinetic Energy = 0.00094676 J)
+  [OK] Cloth settles down (energy decays via constraint solve + floor friction)
+
+=== N-Body Gravitation (Barnes-Hut) ===
+  [OK] Bodies attract each other via universal gravitation
+    (Orbit: Initial R=100, Final R=99.9536)
+  [OK] Stable circular orbit maintained (R ≈ constant)
+  [OK] Barnes-Hut octree produces valid gravity approximation
+
+=== Waves & Acoustics ===
+  [OK] Doppler: Observer approaching source (higher freq)
+  [OK] Doppler: Observer receding from source (lower freq)
+  [OK] Doppler: Source approaching observer (higher freq)
+    (Acoustic Power 1W: dB@1m = 109.008, dB@10m = 89.0079)
+  [OK] Inverse square law: 10x distance = -20 dB drop
+  [OK] Constructive interference amplitude is maximized
+  [OK] Destructive interference amplitude cancels out
+
+=== Fracture & Stress ===
+  [OK] Von Mises == uniaxial stress for pure normal
+  [OK] Hydrostatic stress: Von Mises = 0
+  [OK] Hydrostatic stress computed correctly
+  [OK] Glass fractures under 100 MPa stress (yield=50 MPa)
+  [OK] Glass body.hasFractured == true
+  [OK] Steel does NOT fracture at 100 MPa (yield=250 MPa)
+  [OK] Elastic strain = σ/E = 100MPa/200GPa = 0.0005
+
+=== Optics & Radiation ===
+  [OK] Snell's law: n1*sin(T1) = n2*sin(T2)
+  [OK] Fresnel normal incidence: R = ((n1-n2)/(n1+n2))^2
+  [OK] TIR: glass->air at 45deg (>critical angle ~41.1deg)
+    (Wien solar peak: 501.518 nm, expect ~502nm)
+  [OK] Wien's law: Solar peak wavelength ~502nm
+    (Stefan-Boltzmann 5778K, 1m²: 63.2007 MW)
+  [OK] Stefan-Boltzmann: ~63 MW/m² at 5778K
+  [OK] Body at 300K radiates net positive power in 293K environment
+  [OK] Net radiation power is physically small for ~7K difference
+
+=== Quantum Physics ===
+    (de Broglie electron @ 1eV: 1.22643 nm, expect ~1.226nm)
+  [OK] de Broglie: electron @ 1eV = 1.226 nm
+  [OK] Heisenberg: minimum Δp satisfies ΔxΔp ≥ ħ/2
+  [OK] Heisenberg: 99% of minimum Δp violates principle
+  [OK] Particle in box: E_2 = 4 * E_1
+  [OK] Particle in box: E_3 = 9 * E_1
+    (Tunneling: T(1nm)=3.54873e-05, T(2nm)=1.25935e-09)
+  [OK] Tunneling: wider barrier = smaller transmission probability
+  [OK] Tunneling: T is between 0 and 1
+  [OK] Tunneling: T(2nm) decays exponentially from T(1nm)
+  [OK] Hydrogen ground state E_1 = -13.606 eV
+  [OK] Hydrogen n=2: E_2 = -3.401 eV
+    (Lyman-alpha: 121.502 nm, expect ~121.57nm)
+  [OK] Lyman-alpha line: λ ≈ 121.57 nm
+    (H-alpha: 656.112 nm, expect ~656.3nm)
+  [OK] Balmer H-alpha: λ ≈ 656 nm (red)
+    (Compton 180°: Δλ = 4.85262 pm, expect 4.856pm)
+  [OK] Compton: Δλ(180°) = 4.856 pm
+  [OK] Compton: Δλ(90°) = 2.426 pm
+
+=== CCD System ===
+  [OK] CCD sphere-sphere: detects head-on collision
+  [OK] CCD sphere-sphere: TOI is early in frame (fast approach)
+  [OK] CCD sphere-sphere: no collision when diverging
+  [OK] Conservative advancement detects collision
+  [OK] Fast body needs CCD
+  [OK] Slow body does not need CCD
+
+=== Advanced Friction ===
+  [OK] Friction impulse is in tangent plane (no y component)
+  [OK] Friction impulse is non-zero for sliding body
+  [OK] Anisotropic friction produces impulse
+  [OK] Pacejka: dry road produces more friction than ice
+  [OK] Pacejka: positive tyre force on dry road
+  [OK] Rolling resistance is small fraction of normal force
+
+=== Compressible Flow ===
+    (Speed of sound: 343.237 m/s, expect ~343)
+  [OK] Speed of sound in air ≈ 343 m/s
+  [OK] 686 m/s = Mach 2 in standard air
+  [OK] Mach 0.5 = subsonic
+  [OK] Mach 1.0 = transonic
+  [OK] Mach 2.0 = supersonic
+  [OK] Mach 6.0 = hypersonic
+  [OK] Normal shock at M=2: P2/P1 ≈ 4.5
+  [OK] After normal shock at M=2: downstream is subsonic
+  [OK] Blast radius increases with time
+  [OK] Blast radius is positive
+
+=== Hyperelasticity ===
+  [OK] Neo-Hookean: zero energy at no deformation
+  [OK] Neo-Hookean: stretching increases strain energy
+  [OK] Neo-Hookean: higher stretch = higher stress
+  [OK] Neo-Hookean: tensile stress is positive
+  [OK] Mooney-Rivlin: stress increases with stretch
+  [OK] Mooney-Rivlin: positive tensile stress
+  [OK] Mooney-Rivlin: positive shear modulus
+
+=== Molecular Dynamics ===
+  [OK] LJ: V(r_eq) = -epsilon (at minimum)
+  [OK] LJ: F(r_eq) ≈ 0 (equilibrium)
+  [OK] LJ: repulsive at r < r_eq
+  [OK] LJ: attractive at r > r_eq
+  [OK] Morse: V(r0) ≈ 0 (minimum at equilibrium)
+  [OK] MD: compressed atoms repel and separate
+
+=== Nuclear Physics ===
+  [OK] C-14: half atoms remain after one half-life
+  [OK] C-14: 25% remains after two half-lives
+  [OK] Activity is positive for unstable isotope
+  [OK] Stable isotope: no decay ever
+    (D-T fusion: 17.5903 MeV, expect ~17.6)
+  [OK] D-T fusion: Q ≈ 17.6 MeV
+  [OK] Proton rest energy ≈ 938.3 MeV
+
+=== Special Relativity ===
+  [OK] Lorentz: γ(v=0) = 1
+  [OK] Lorentz: γ(0.6c) = 1.25
+  [OK] Lorentz: γ(0.8c) = 5/3
+  [OK] Time dilation at 0.8c: 1s → 1.667s
+  [OK] Length contraction at 0.6c: 1m → 0.8m
+  [OK] Rest energy of electron ≈ 511 keV
+  [OK] Velocity addition: 0.6c + 0.6c ≈ 0.882c
+  [OK] Relativistic addition never exceeds c
+  [OK] Relativistic KE ≈ ½mv² at low speed (Newtonian limit)
+
+=== Magnetohydrodynamics ===
+  [OK] Alfvén velocity is positive
+  [OK] Magnetic pressure at 1T ≈ 398 kPa
+  [OK] High thermal pressure → β > 1 (pressure dominated)
+  [OK] Strong B field → β < 1 (magnetically dominated)
+  [OK] Rm >> 1 for conducting fluid → field frozen in
+  [OK] Magnetosonic speed > max(c_s, v_A)
+
+=== PhysicsConfig ===
+  [OK] Default gravity = -9.81 m/s²
+  [OK] Default solver iterations = 10
+  [OK] CCD enabled by default
+  [OK] Sleep enabled by default
+  [OK] HighPerf: fewer sub-steps
+  [OK] HighPerf: fewer solver iterations
+  [OK] HighAccuracy: more sub-steps
+  [OK] HighAccuracy: more solver iterations
+  [OK] Scientific: thermo-fluid coupling enabled
+  [OK] Scientific: chem-fluid coupling enabled
+  [OK] Scientific: EM-fluid coupling enabled
+  [OK] Scientific: max sub-steps for precision
+
+=== UnifiedSimulation ===
+  [OK] UnifiedSim: 1 active subsystem (fluid)
+  [OK] UnifiedSim: has coupling enabled
+  [OK] Andrade coupling: hot particle has lower viscosity
+    (Viscosity hot: 12.7359, cold: 79.7655)
+  [OK] Boiling particle: buoyancy effect applied
+  [OK] Frozen particle: velocity damped near zero
+
+=== ECS QueryCache ===
+  [OK] forEach<Position>: finds 2 entities
+  [OK] cachedForEach<Position>: finds 2 entities (same as forEach)
+  [OK] cachedForEach<Pos, Vel>: only 1 entity has both
+  [OK] QueryCache: 2+ cached queries
+  [OK] After add: cachedForEach finds 2 entities with Pos+Vel
+  [OK] After destroy: cachedForEach correctly finds 1 entity
+
+=== Advanced Thermodynamics (Phase 41) ===
+  [OK] Latent heat: Temperature halted at melting point during phase transition
+  [FAIL] Latent heat accumulator is filling up
+  [FAIL] Still solid because latent heat not fully absorbed
+  [FAIL] Phase transition complete: Ice became water
+  [OK] Temperature rising again after latent heat absorbed
+  [OK] Thermal Expansion: Steel surface area grew due to Delta T
+
+=== Solid Mechanics & Fatigue (Phase 43) ===
+  [Testing Plastic Yielding]
+    [Debug] Lambda: -3.28742
+    [Debug] Plastic Strain: 0.0352025
+    [Debug] Rest Distance: 1.03569 (Original: 1.0)
+  [OK] Plastic strain accumulated when Stress > Yield
+  [OK] Permanent deformation: rest distance permanently increased
+  [OK] Material yielded but did not fracture
+  [Testing Fatigue Failure (S-N Curve)]
+    (Broke due to fatigue at step 0)
+  [OK] Material fracture due to cyclical fatigue (Miner's Rule)
+
+============================================
+  Resultados: 349 pasados, 3 fallidos
+============================================

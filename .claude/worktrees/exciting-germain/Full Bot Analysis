@@ -1,0 +1,220 @@
+# 📊 Evaluación Completa del Bot — 71 horas de operación
+
+> **Servidor**: Hetzner CX23 (95.217.158.7)  
+> **Período**: Mar 1 01:12 → Mar 4 00:40 UTC (~71 horas)  
+> **Estrategia**: Original Estricta (4 leyes)  
+> **Capital inicial**: $10,003.71 USDT  
+
+---
+
+## 📈 ¿Qué hizo el mercado (BTC/USDT)?
+
+```
+Mar 1 01:12  $66,250 ─── ARRANQUE
+Mar 1 05:00  $67,352 ─── Subida +$1,100 (RSI nunca bajó)
+Mar 1 06:35  $66,893 ─── Caída → RSI baja a 33
+Mar 1 06:50  $66,825 ─── ★ TRADE #1 (compra, 4/4 ✅)
+Mar 1 07:10  $65,741 ─── ▼ SL hit. Precio cae $1,084 en 20 min
+Mar 1 07:15  $67,022 ─── ★ TRADE #2 (compra, 4/4 ✅)  
+Mar 1 08:10  $67,136 ─── ▲ EXIT por cruce EMA. +$113 ganancia
+Mar 1 12:00  $66,400 ─── Precio cae bajo EMA200. Marea ❌
+Mar 1 16:55  $65,400 ─── Mínimo del día. RSI = 25.4
+Mar 1 21:05  $65,800 ─── RSI = 31.8 (pullback ✅ pero Marea ❌)
+Mar 2 01:15  $67,000 ─── Recuperación. Marea ✅ pero RSI alto
+Mar 2 07:35  $65,800 ─── Trade Momentum (error balance)
+Mar 3 00:10  $68,966 ─── ★ TRADE #3 (4/4 ✅)
+Mar 3 02:05  $68,557 ─── ▼ SL hit. -$21.45
+Mar 3 09:30  $66,600 ─── Caída fuerte -$2,300
+Mar 3 16:35  $68,000 ─── Recuperación. Marea ✅
+Mar 4 00:30  $68,400 ─── AHORA
+```
+
+**Rango total**: $65,400 — $69,827 (**−6.6%** amplitud)  
+**Movimiento neto**: $66,250 → $68,400 = **+3.2%** alcista
+
+---
+
+## 💰 Todos los trades (solo estrategia Original)
+
+### ★ Trade #1 — Mar 1 06:50
+
+| Métrica | Valor |
+|---------|-------|
+| **Señal** | SANTO GRIAL — **4/4 leyes** ✅ |
+| **Leyes** | Marea ✅ ($66,825 > EMA200 $66,295) · Fuerza ✅ (ADX=84.0) · Ballenas ✅ · Pullback ✅ (RSI 33→35.7) |
+| **Entrada** | 0.083 BTC @ **$66,825** |
+| **SL/TP** | SL: $65,741 (-$1,083, 1.6%) · TP: $69,343 (+$2,518, 3.8%) |
+| **Resultado** | ❌ **SL hit en 20 minutos** |
+| **PnL** | **-$90.24** |
+| **¿Por qué perdió?** | ADX=84 (volatilidad extrema) → el precio bajó $1,084 en 4 velas. El SL estaba a solo 1.5×ATR ($800) — demasiado cerca para ADX 84. |
+| **¿Era buena señal?** | Sí, las 4 leyes estaban activas. Pero en ADX>80 los movimientos son impredecibles. |
+
+### ★ Trade #2 — Mar 1 07:15 (5 min después)
+
+| Métrica | Valor |
+|---------|-------|
+| **Leyes** | Marea ✅ · Fuerza ✅ (ADX=80.1) · Ballenas ✅ · Pullback ✅ (RSI 34.5→36.3) |
+| **Entrada** | 0.053 BTC @ **$67,022** |
+| **SL/TP** | SL: $64,973 (-$2,049) · TP: $70,602 (+$3,580) |
+| **Resultado** | 🟡 EXIT por cruce EMA9<EMA21 a las 08:10 @ $67,136 |
+| **PnL** | **+$5.97** |
+| **¿Por qué poco?** | Salió bien pero el EXIT por EMA cortó la ganancia pronto. Si hubiera esperado al TP → $67,022→$69,343 = +$123 |
+
+### ★ Trade #3 — Mar 3 00:10
+
+| Métrica | Valor |
+|---------|-------|
+| **Leyes** | Marea ✅ ($68,936 > EMA200) · Fuerza ✅ (ADX=66.7) · Ballenas ✅ · Pullback ✅ (RSI rebote) |
+| **Entrada** | 0.052 BTC @ **$68,966** |
+| **SL/TP** | SL: $68,557 (-$409) · TP: $69,694 (+$728) |
+| **Resultado** | ❌ **SL hit a las 02:05** |
+| **PnL** | **-$21.45** |
+| **¿Por qué perdió?** | ATR era solo $272, SL a $409 era razonable. Pero BTC hizo un pullback de $500 en 2 horas. |
+
+---
+
+## 📊 Balance de trades (PnL total)
+
+```
+Trade #1:  -$90.24  (SL, 20 min)
+Trade #2:   +$5.97  (EXIT, 1h 20min)
+Trade #3:  -$21.45  (SL, 2h)
+───────────────────
+TOTAL:    -$105.72
+```
+
+**Win Rate**: 1/3 = **33%** (1 ganancia, 2 pérdidas)  
+**Pérdida**: -$105 de $10,000 = **-1.06%** del capital
+
+---
+
+## 🔍 Las 4 leyes — ¿Cómo funcionaron en 71 horas?
+
+### Evaluaciones completas (muestreo cada 10)
+
+| # | Hora | Precio | Marea | Fuerza | Ballenas | Pullback | RSI | ADX |
+|---|------|--------|:-----:|:------:|:--------:|:--------:|----:|----:|
+| 10 | Mar 1 02:00 | $67,352 | ✅ | ✅ 95 | ✅ | ❌ | 65 | 95 |
+| 20 | 02:50 | $67,100 | ✅ | ✅ 90 | ✅ | ❌ | 68 | 90 |
+| 30 | 03:40 | $67,000 | ✅ | ✅ 87 | ❌ | ❌ | 51 | 87 |
+| **★** | **06:50** | **$66,825** | **✅** | **✅ 84** | **✅** | **✅ 35.7** | **36** | **84** |
+| **★** | **07:15** | **$67,022** | **✅** | **✅ 80** | **✅** | **✅ 36.3** | **36** | **80** |
+| 10 | 12:45 | $66,400 | ❌ | ✅ 48 | ✅ | ❌ | 40 | 48 |
+| 20 | 13:35 | $66,200 | ❌ | ✅ 48 | ✅ | ❌ | 45 | 48 |
+| 30 | 14:25 | $66,500 | ✅ | ✅ 37 | ❌ | ❌ | 62 | 37 |
+| 50 | 16:05 | $65,600 | ❌ | ✅ 76 | ✅ | ❌ | 45 | 76 |
+| **60** | **16:55** | **$65,400** | **❌** | **✅ 82** | **✅** | **❌** | **25** | **82** |
+| 100 | 20:15 | $65,700 | ❌ | ✅ 51 | ❌ | ❌ | 27 | 51 |
+| **110** | **21:05** | **$65,800** | **❌** | **✅ 70** | **❌** | **✅ 31.8** | **32** | **70** |
+| 160 | Mar 2 01:15 | $67,000 | ✅ | ✅ 44 | ✅ | ❌ | 71 | 44 |
+| 190 | 03:45 | $67,100 | ✅ | ✅ 34 | ✅ | ❌ | 67 | 34 |
+| 210 | 05:25 | $67,000 | ✅ | ✅ 33 | ✅ | ❌ | 51 | 33 |
+| 50 | Mar 3 14:55 | $66,500 | ❌ | ✅ 67 | ✅ | ❌ | **32** | 67 |
+| 70 | 16:35 | $68,000 | ✅ | ✅ 32 | ✅ | ❌ | 74 | 32 |
+| **130** | **21:35** | **$67,900** | **❌** | **✅ 73** | **✅** | **❌** | **35** | **73** |
+| 140 | 22:25 | $68,400 | ✅ | ✅ 81 | ❌ | ❌ | 52 | 81 |
+
+---
+
+## 🚨 Oportunidades PERDIDAS
+
+Momentos donde BTC bajó fuerte y el bot NO compró:
+
+### 1. Mar 1 16:55 — RSI 25.4 (la mejor oportunidad)
+
+```
+Precio:   $65,400 (mínimo del período)
+Marea:    ❌ (precio bajo EMA200)
+Fuerza:   ✅ ADX=82
+Ballenas: ✅
+RSI:      25.4 (EXTREMO bajo)
+
+Resultado: BTC subió de $65,400 → $67,000 = +$1,600 (+2.4%)
+Si hubiera comprado: +$1,600 × 0.083 BTC = +$133 de ganancia
+¿POR QUÉ NO COMPRÓ?: La Marea bloqueó (precio bajo EMA200)
+```
+
+### 2. Mar 1 20:15-21:05 — RSI 27-31
+
+```
+Precio:   $65,700-$65,800
+Marea:    ❌
+Pullback: ✅ (RSI 31.8 con rebote)
+3/4 leyes activas — solo faltó Marea
+
+Resultado: Subió a $67,000 en 4h → +$1,200
+```
+
+### 3. Mar 3 14:55 — RSI 31.6
+
+```
+Precio:   $66,500
+Marea:    ❌ (apenas $100 bajo EMA200)
+Fuerza ✅ | Ballenas ✅ | Pullback ✅ 
+
+Resultado: Subió a $68,400 → +$1,900 (+2.8%)
+```
+
+> [!IMPORTANT]
+> **Patrón**: Las mejores oportunidades ocurrieron cuando RSI estaba entre 25-32, pero la **Marea siempre estaba ❌** porque el precio bajaba por debajo de la EMA200 justo cuando RSI se ponía atractivo. Es un conflicto estructural de la estrategia Original.
+
+---
+
+## 📏 Estadísticas de las 4 leyes (71 horas)
+
+| Ley | % tiempo activa | Problema |
+|-----|:-:|---|
+| **Marea** (Precio > EMA200) | ~55% | Bloqueó las mejores oportunidades de RSI bajo |
+| **Fuerza** (ADX > 20) | ~95% | Casi siempre activa — no filtra nada |
+| **Ballenas** (Vol > SMA20) | ~45% | Variable, sin patrón claro |
+| **Pullback** (RSI < 35 + Rebote) | ~5% | Muy restrictivo. Solo se activa 2-3 veces al día |
+
+**Problema principal**: Cuando Pullback está ✅, Marea suele estar ❌ (y viceversa).  
+**Excepciones**: Solo 2 veces en 71h se alinearon las 4 → los 2 trades del Mar 1 06:50.
+
+---
+
+## 📉 Análisis de pérdidas
+
+| Causa | Trade #1 | Trade #3 | Solución |
+|-------|:--------:|:--------:|----------|
+| SL demasiado cerca para la volatilidad | ✅ SL a 1.5×ATR con ADX 84 | — | SL Adaptativo: 2.5×ATR si ADX > 50 |
+| ADX extremo (>80) | ✅ ADX=84 | — | Cap ADX a 70 o ampliar SL |
+| Entrada inmediata sin confirmación | ✅ Compró en primera señal | ✅ | Esperar 2 velas de momentum |
+| La Marea bloquea las mejores oportunidades | — | — | Tolerancia de 1-2% bajo EMA200 |
+
+---
+
+## ✅ Lo que funciona bien
+
+1. **Las señales son correctas** — cada vez que 4/4 activas, el mercado tenía fuerza real
+2. **La Fuerza (ADX)** filtra bien el ruido — mercado siempre tenía tendencia al comprar
+3. **El Pullback (RSI)** identifica momentos de sobreventa con precisión
+4. **Risk Engine** aprueba señales correctamente y calcula sizing bien
+5. **El fix del bug** funciona — 14h sin ventas espurias
+
+## ❌ Lo que NO funciona
+
+1. **La Marea es demasiado estricta** — bloquea el 90% de las oportunidades RSI<35
+2. **El SL es demasiado ajustado** — 2 de 3 trades perdieron por SL
+3. **No hay confirmación de momentum** — compra en la primera vela
+4. **ADX no tiene tope** — operar con ADX 84 es como surfear un tsunami
+
+---
+
+## 💡 Veredicto final
+
+> **La estrategia Original Estricta funciona como "francotirador" — pero dispara 3 veces en 71 horas y 2 de 3 tiros pierden por el retroceso.**
+
+| Métrica | Valor | ¿Aceptable? |
+|---------|-------|:-----------:|
+| Trades en 71h | 3 | ⚠️ Bajo |
+| Win Rate | 33% | ❌ Malo |
+| PnL | -$105 (-1.06%) | ❌ |
+| Oportunidades perdidas | 3 grandes | ❌ |
+| Oportunidad total perdida | ~+$400 potencial | ❌ |
+| Si Buy & Hold | +$2,150 (+3.2%) | Referencia |
+
+---
+
+> **Documento**: 4 de marzo 2026, 00:40 UTC

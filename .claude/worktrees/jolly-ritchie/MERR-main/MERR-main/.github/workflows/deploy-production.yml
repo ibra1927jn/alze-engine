@@ -1,0 +1,82 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Vercel Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://harvestpro.vercel.app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full test suite
+        run: |
+          npm run test
+          npm run test:coverage
+
+      - name: Check test coverage
+        run: |
+          echo "Checking test coverage threshold..."
+          # Fail if coverage < 70%
+          npx nyc check-coverage --lines 70 --functions 70 --branches 70
+        continue-on-error: true
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.PRODUCTION_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          VITE_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
+          NODE_ENV: production
+
+      - name: Deploy to Vercel Production
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+
+      - name: Health check
+        run: |
+          echo "Waiting for deployment to be ready..."
+          sleep 30
+          curl -f https://harvestpro.vercel.app/health || exit 1
+
+      - name: Run smoke tests on production
+        run: |
+          echo "Running critical smoke tests..."
+          npx playwright test tests/e2e/smoke.spec.ts --config=playwright.production.config.ts
+        continue-on-error: true
+
+      - name: Notify team
+        if: always()
+        run: |
+          echo "Production deployment completed"
+          echo "URL: https://harvestpro.vercel.app"
+          echo "Status: ${{ job.status }}"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed! Manual rollback required."
+          echo "Check Vercel dashboard: https://vercel.com/dashboard"

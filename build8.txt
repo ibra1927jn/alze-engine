@@ -1,0 +1,14 @@
+In file included from src/physics/PhysicsWorld3D.h:8,
+                 from src/physics/PhysicsWorld3D.cpp:3:
+src/physics/Thermodynamics.h: In member function 'void engine::physics::ThermalBody::updatePhase()':
+src/physics/Thermodynamics.h:48:22: error: 'oldPhase' was not declared in this scope; did you mean 'Phase'?
+   48 |         if (phase != oldPhase && oldPhase == SOLID)
+      |                      ^~~~~~~~
+      |                      Phase
+In file included from src/physics/CrossSystemCoupling.h:6,
+                 from tests/test_physics3d.cpp:33:
+src/physics/Thermodynamics.h: In member function 'void engine::physics::ThermalBody::updatePhase()':
+src/physics/Thermodynamics.h:48:22: error: 'oldPhase' was not declared in this scope; did you mean 'Phase'?
+   48 |         if (phase != oldPhase && oldPhase == SOLID)
+      |                      ^~~~~~~~
+      |                      Phase

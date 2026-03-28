@@ -1,0 +1,131 @@
+﻿[1/4] Building CXX object src/physics/CMakeFiles/engine_physics.dir/PhysicsWorld3D.cpp.obj
+FAILED: [code=1] src/physics/CMakeFiles/engine_physics.dir/PhysicsWorld3D.cpp.obj 
+C:\msys64\ucrt64\bin\c++.exe  -IC:/Users/ibrab/Desktop/alze/src/physics -IC:/Users/ibrab/Desktop/alze/src -IC:/Users/ibrab/Desktop/alze/src/math -std=c++17 -Wall -Wextra -Wpedantic -Wno-unused-parameter -fno-exceptions -fno-rtti -Wno-template-body -MD -MT src/physics/CMakeFiles/engine_physics.dir/PhysicsWorld3D.cpp.obj -MF src\physics\CMakeFiles\engine_physics.dir\PhysicsWorld3D.cpp.obj.d -o src/physics/CMakeFiles/engine_physics.dir/PhysicsWorld3D.cpp.obj -c C:/Users/ibrab/Desktop/alze/src/physics/PhysicsWorld3D.cpp
+In file included from C:/Users/ibrab/Desktop/alze/src/physics/PhysicsWorld3D.h:8,
+                 from C:/Users/ibrab/Desktop/alze/src/physics/PhysicsWorld3D.cpp:3:
+C:/Users/ibrab/Desktop/alze/src/physics/Thermodynamics.h: In member function 'void engine::physics::ThermalSystem::step(float, std::vector<engine::physics::RigidBody3D>&)':
+C:/Users/ibrab/Desktop/alze/src/physics/Thermodynamics.h:160:58: error: 'PI' is not a member of 'engine::physics::PhysicsMath'; did you mean 'engine::math::MathUtils::PI'?
+  160 |                     tb.surfaceArea = 4.0f * PhysicsMath::PI * (rb.sphereRadius * scale) * (rb.sphereRadius * scale);
+      |                                                          ^~
+In file included from C:/Users/ibrab/Desktop/alze/src/math/Vector3D.h:4,
+                 from C:/Users/ibrab/Desktop/alze/src/physics/RigidBody3D.h:3,
+                 from C:/Users/ibrab/Desktop/alze/src/physics/PhysicsWorld3D.h:3:
+C:/Users/ibrab/Desktop/alze/src/math/MathUtils.h:13:21: note: 'engine::math::MathUtils::PI' declared here
+   13 |     constexpr float PI      = 3.14159265358979323846f;
+      |                     ^~
+[2/4] Building CXX object CMakeFiles/test_physics3d.dir/tests/test_physics3d.cpp.obj
+FAILED: [code=1] CMakeFiles/test_physics3d.dir/tests/test_physics3d.cpp.obj 
+C:\msys64\ucrt64\bin\c++.exe  -IC:/Users/ibrab/Desktop/alze/src -IC:/Users/ibrab/Desktop/alze/src/physics -IC:/Users/ibrab/Desktop/alze/src/math -std=c++17 -Wall -Wextra -Wpedantic -Wno-unused-parameter -fno-exceptions -fno-rtti -Wno-template-body -MD -MT CMakeFiles/test_physics3d.dir/tests/test_physics3d.cpp.obj -MF CMakeFiles\test_physics3d.dir\tests\test_physics3d.cpp.obj.d -o CMakeFiles/test_physics3d.dir/tests/test_physics3d.cpp.obj -c C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp
+In file included from C:/Users/ibrab/Desktop/alze/src/physics/CrossSystemCoupling.h:6,
+                 from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:33:
+C:/Users/ibrab/Desktop/alze/src/physics/Thermodynamics.h: In member function 'void engine::physics::ThermalSystem::step(float, std::vector<engine::physics::RigidBody3D>&)':
+C:/Users/ibrab/Desktop/alze/src/physics/Thermodynamics.h:160:58: error: 'PI' is not a member of 'engine::physics::PhysicsMath'
+  160 |                     tb.surfaceArea = 4.0f * PhysicsMath::PI * (rb.sphereRadius * scale) * (rb.sphereRadius * scale);
+      |                                                          ^~
+C:/Users/ibrab/Desktop/alze/src/physics/Thermodynamics.h:160:58: note: suggested alternatives:
+In file included from C:/Users/ibrab/Desktop/alze/src/math/Vector3D.h:4,
+                 from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:16:
+C:/Users/ibrab/Desktop/alze/src/math/MathUtils.h:13:21: note:   'engine::math::MathUtils::PI'
+   13 |     constexpr float PI      = 3.14159265358979323846f;
+      |                     ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:21:
+C:/Users/ibrab/Desktop/alze/src/physics/FluidSystem.h:22:21: note:   'engine::physics::SPHKernels::PI'
+   22 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:22:
+C:/Users/ibrab/Desktop/alze/src/physics/Electromagnetism.h:25:21: note:   'engine::physics::EMConstants::PI'
+   25 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:25:
+C:/Users/ibrab/Desktop/alze/src/physics/WaveSystem.h:19:21: note:   'engine::physics::WaveConstants::PI'
+   19 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:28:
+C:/Users/ibrab/Desktop/alze/src/physics/OpticsSystem.h:14:21: note:   'engine::physics::OpticsConstants::PI'
+   14 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:29:
+C:/Users/ibrab/Desktop/alze/src/physics/QuantumSystem.h:24:22: note:   'engine::physics::QuantumConstants::PI'
+   24 |     constexpr double PI             = 3.14159265358979323846;
+      |                      ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp: In function 'void testAdvancedThermodynamics()':
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2149:68: error: 'PI' is not a member of 'engine::physics::PhysicsMath'
+ 2149 |     int tId = thermal.addThermalBody(0, water, 4.0f * PhysicsMath::PI);
+      |                                                                    ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2149:68: note: suggested alternatives:
+C:/Users/ibrab/Desktop/alze/src/math/MathUtils.h:13:21: note:   'engine::math::MathUtils::PI'
+   13 |     constexpr float PI      = 3.14159265358979323846f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/FluidSystem.h:22:21: note:   'engine::physics::SPHKernels::PI'
+   22 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/Electromagnetism.h:25:21: note:   'engine::physics::EMConstants::PI'
+   25 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/WaveSystem.h:19:21: note:   'engine::physics::WaveConstants::PI'
+   19 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/OpticsSystem.h:14:21: note:   'engine::physics::OpticsConstants::PI'
+   14 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/QuantumSystem.h:24:22: note:   'engine::physics::QuantumConstants::PI'
+   24 |     constexpr double PI             = 3.14159265358979323846;
+      |                      ^~
+In file included from C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:38:
+C:/Users/ibrab/Desktop/alze/src/physics/MHDSystem.h:31:21: note:   'engine::physics::MHDConstants::PI'
+   31 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2177:68: error: 'PI' is not a member of 'engine::physics::PhysicsMath'
+ 2177 |     int sId = thermal.addThermalBody(1, steel, 4.0f * PhysicsMath::PI);
+      |                                                                    ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2177:68: note: suggested alternatives:
+C:/Users/ibrab/Desktop/alze/src/math/MathUtils.h:13:21: note:   'engine::math::MathUtils::PI'
+   13 |     constexpr float PI      = 3.14159265358979323846f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/FluidSystem.h:22:21: note:   'engine::physics::SPHKernels::PI'
+   22 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/Electromagnetism.h:25:21: note:   'engine::physics::EMConstants::PI'
+   25 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/WaveSystem.h:19:21: note:   'engine::physics::WaveConstants::PI'
+   19 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/OpticsSystem.h:14:21: note:   'engine::physics::OpticsConstants::PI'
+   14 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/QuantumSystem.h:24:22: note:   'engine::physics::QuantumConstants::PI'
+   24 |     constexpr double PI             = 3.14159265358979323846;
+      |                      ^~
+C:/Users/ibrab/Desktop/alze/src/physics/MHDSystem.h:31:21: note:   'engine::physics::MHDConstants::PI'
+   31 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2186:48: error: 'PI' is not a member of 'engine::physics::PhysicsMath'
+ 2186 |     check(sb.surfaceArea > 4.0f * PhysicsMath::PI, "Thermal Expansion: Steel surface area grew due to Delta T");
+      |                                                ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2186:48: note: suggested alternatives:
+C:/Users/ibrab/Desktop/alze/src/math/MathUtils.h:13:21: note:   'engine::math::MathUtils::PI'
+   13 |     constexpr float PI      = 3.14159265358979323846f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/FluidSystem.h:22:21: note:   'engine::physics::SPHKernels::PI'
+   22 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/Electromagnetism.h:25:21: note:   'engine::physics::EMConstants::PI'
+   25 |     constexpr float PI = 3.14159265358979f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/WaveSystem.h:19:21: note:   'engine::physics::WaveConstants::PI'
+   19 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/OpticsSystem.h:14:21: note:   'engine::physics::OpticsConstants::PI'
+   14 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/src/physics/QuantumSystem.h:24:22: note:   'engine::physics::QuantumConstants::PI'
+   24 |     constexpr double PI             = 3.14159265358979323846;
+      |                      ^~
+C:/Users/ibrab/Desktop/alze/src/physics/MHDSystem.h:31:21: note:   'engine::physics::MHDConstants::PI'
+   31 |     constexpr float PI = 3.14159265359f;
+      |                     ^~
+C:/Users/ibrab/Desktop/alze/tests/test_physics3d.cpp:2185:11: warning: unused variable 'expectedScale' [-Wunused-variable]
+ 2185 |     float expectedScale = 1.0f + (1.2e-5f * 1000.0f);
+      |           ^~~~~~~~~~~~~
+ninja: build stopped: subcommand failed.

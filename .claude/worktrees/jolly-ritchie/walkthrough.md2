@@ -1,0 +1,65 @@
+# Coverage Push — Resumen Completo
+
+## Estado Actual
+**Cobertura: ~51% → ~62%** (+11pp) · **~270 test files** · **~2950+ tests**  
+**Objetivo: 80%** → Faltan ~18pp (~1500 líneas más)
+
+---
+
+## ✅ Lo Hecho
+
+### Batches Anteriores (A–E) — ~218 files, ~2586 tests
+Hooks (`useHHRR`, `useAdmin`, `useLogistics`, `useQC`, `useRunnerData`, etc.), `navConfigs`, services (49 files), stores (12 files), repositories (18 files), UI components (11 files), common components (14 files), utils (10 files)
+
+### Batch 6 — Views (11 files, 79 tests) ✅
+[TrendsTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/qc/TrendsTab.tsx#19-187) · [RequestsTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/logistics/RequestsTab.tsx#33-225) · [BinsTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/logistics/BinsTab.tsx#14-70) · [HistoryTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/logistics/HistoryTab.tsx#12-45) · [CalendarTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/hhrr/CalendarTab.tsx#20-62) · [PayrollTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/hhrr/PayrollTab.tsx#13-61) · [DocumentsTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/hhrr/DocumentsTab.tsx#16-55) · [SeasonalPlanningTab](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/hhrr/SeasonalPlanningTab.tsx#13-220) · [RunnersView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/runner/RunnersView.tsx#8-79) · [GoalProgress](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/GoalProgress.tsx#19-93) · `DashboardStatCard`
+
+### Batch 7 — Manager Sub-Components (9 files, 64 tests) ✅
+[SmartDismissals](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/anomaly/SmartDismissals.tsx#16-60) · [AnomalyCard](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/anomaly/AnomalyCard.tsx#14-80) · [DashboardEmptyState](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/DashboardEmptyState.tsx#13-44) · `CostCharts` (DonutChart/HBar/KPICard) · [ProgressRing](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/orchard-map/ProgressRing.tsx#12-46) · [BlockCard](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/orchard-map/BlockCard.tsx#20-106) · [BroadcastModal](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/BroadcastModal.tsx#10-109) · [InsightsView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/InsightsView.tsx#20-104) · [MapToggleView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/MapToggleView.tsx#35-105)
+
+### Batch 8 — Sub-Components & Forms (10 files, 62 tests) ✅
+[DayDetailPanel](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/weekly-report/DayDetailPanel.tsx#13-86) · [KpiCards](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/weekly-report/KpiCards.tsx#14-33) · [TrendChartCard](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/weekly-report/TrendChartCard.tsx#25-54) · [ExportModal](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/weekly-report/ExportModal.tsx#19-124) · [RowGrid](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/RowGrid.tsx#20-65) · [RowTeamDisplay](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/RowTeamDisplay.tsx#20-99) · [TeamLeadersSidebar](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/TeamLeadersSidebar.tsx#14-56) · `SettingsFormComponents` (4 sub-components) · [RunnersSection](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/teams/RunnersSection.tsx#37-134)
+
+### Batch 9 — Final Components (3 files, 22 tests) ✅
+[PerformanceFocus](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/PerformanceFocus.tsx#18-129) · [LiveFloor](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/LiveFloor.tsx#12-67) · [TeamsToolbar](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/teams/TeamsToolbar.tsx#12-83)
+
+---
+
+## 🔴 Lo Que Queda (~18pp para 80%)
+
+### Prioridad 1 — Manager Views grandes (~600L)
+| Archivo | Líneas | Notas |
+|---------|--------|-------|
+| [RowAssignmentModal.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/modals/RowAssignmentModal.tsx) | 213 | Modal con RowGrid + selección |
+| [MessagingView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/runner/MessagingView.tsx) | ~150 | Chat/broadcast UI |
+| [MoreMenuView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/MoreMenuView.tsx) | ~120 | Settings links + actions |
+| [LogisticsView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/runner/LogisticsView.tsx) | ~120 | Tabs + sub-views |
+
+### Prioridad 2 — Componentes complejos (~725L)
+| Archivo | Líneas | Notas |
+|---------|--------|-------|
+| [TeamLeaderCard.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/TeamLeaderCard.tsx) | 227 | Mocks de store + unlink flow |
+| [WageShieldPanel.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/WageShieldPanel.tsx) | 264 | Payroll calculations + chart |
+| [DayClosureButton.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/DayClosureButton.tsx) | 234 | Supabase + payroll mocks |
+
+### Prioridad 3 — Charts (~200L)
+| Archivo | Líneas | Notas |
+|---------|--------|-------|
+| [TrendLineChart.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/charts/TrendLineChart.tsx) | ~130 | SVG rendering |
+| [VelocityChart.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/VelocityChart.tsx) | 132 | Mock de `analyticsService` |
+
+### Prioridad 4 — Context Providers (~300L)
+| Archivo | Líneas | Notas |
+|---------|--------|-------|
+| `MessagingContext` | ~150 | Async + push notifications |
+| `AuthContext` | ~150 | Supabase auth mocks |
+
+### Prioridad 5 — Edge-case coverage (~500L)
+No requiere archivos nuevos — añadir más [it()](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/TimesheetEditor.tsx#58-66) a tests existentes para cubrir ramas `if/else`, errores de red, rollbacks, y validaciones edge-case en services y stores.
+
+### Prioridad 6 — Vistas completas (~800L)
+[DashboardView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/DashboardView.tsx#35-259) · `OrchardMapView` · [HeatMapView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/HeatMapView.tsx#70-348) · [RowListView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/RowListView.tsx#15-177) · [AnomalyDetectionView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/AnomalyDetectionView.tsx#22-203) · [CostAnalyticsView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/CostAnalyticsView.tsx#20-153) · [WeeklyReportView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/WeeklyReportView.tsx#22-179) · [SettingsView](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/SettingsView.tsx#17-201)
+
+> [!TIP]
+> **Orden recomendado: 1 → 2 → 5 → 3 → 4 → 6**  
+> Los grupos 1-2 dan mayor impacto por línea. El grupo 5 es el más eficiente (solo añadir tests, no crear archivos).

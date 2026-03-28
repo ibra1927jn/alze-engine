@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HarvestPro NZ</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Harvest workforce management platform for New Zealand orchards" />
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="HarvestPro" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <!-- Fonts: Inter is loaded via @import in index.css, only Material Symbols here -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <!-- QR Scanner Library (async — not needed for initial render) -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript" async></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      overscroll-behavior-y: none;
+      min-height: 100dvh;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Scanner Customization */
+    #reader video,
+    #sticker-reader video {
+      object-fit: cover;
+      border-radius: 1rem;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #818cf8 100%);
+      transition: opacity 0.4s ease-out;
+    }
+
+    .splash-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      animation: splashPulse 2s ease-in-out infinite;
+    }
+
+    .splash-emoji {
+      font-size: 36px;
+    }
+
+    .splash-title {
+      margin-top: 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .splash-subtitle {
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .splash-spinner {
+      margin-top: 32px;
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: splashSpin 0.8s linear infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Branded Loading Screen (hidden once React mounts) -->
+  <div id="splash-screen">
+    <div class="splash-icon">
+      <span class="splash-emoji">🍎</span>
+    </div>
+    <h1 class="splash-title">HarvestPro</h1>
+    <p class="splash-subtitle">New Zealand</p>
+    <div class="splash-spinner"></div>
+  </div>
+  <style>
+    @keyframes splashPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes splashSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <!-- Skip to content link for keyboard/screen reader users -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:text-indigo-700 focus:font-semibold">Skip to content</a>
+
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+
+  <!-- Hide splash once React renders -->
+  <script>
+    const observer = new MutationObserver(() => {
+      const root = document.getElementById('root');
+      if (root && root.children.length > 0) {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 400);
+        }
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.getElementById('root'), { childList: true });
+  </script>
+
+  <!-- Service Worker Registration -->
+
+</body>
+
+</html>

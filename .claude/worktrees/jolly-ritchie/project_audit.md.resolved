@@ -1,0 +1,264 @@
+# 🔍 HarvestPro NZ — Auditoría Técnica Completa & Valoración
+
+> **Fecha**: 3 Marzo 2026  
+> **Versión evaluada**: 9.0.0  
+> **Evaluador**: Auditoría automatizada + revisión de código  
+> **Enfoque**: Perspectiva negativa/crítica — lo que un inversor o CTO vería como riesgos
+
+---
+
+## 📊 Métricas del Proyecto
+
+| Métrica | Valor |
+|---|---|
+| **Frontend LOC** (TS/TSX/CSS) | ~43,000 |
+| **Backend LOC** (SQL/Edge Functions) | ~8,300 |
+| **Total LOC** | **~51,300** |
+| Archivos fuente | 272 |
+| Servicios | 50 |
+| Custom Hooks | 21 |
+| Páginas/Roles | 9 |
+| Vistas Manager | 28 |
+| Migraciones SQL | 36 |
+| Edge Functions | 2 |
+| Tests unitarios | 26 archivos |
+| Dependencias (prod) | 14 |
+| Dependencias (dev) | 18 |
+
+---
+
+## 🏗️ Arquitectura — Stack Técnico
+
+| Capa | Tecnología |
+|---|---|
+| Framework | React 19 + Vite 7 |
+| Estado | Zustand 5 + TanStack Query 5 |
+| Backend | Supabase (Auth, DB, Realtime, Edge Functions) |
+| Offline | Dexie (IndexedDB) + SyncService |
+| Validación | Zod 4 |
+| CSS | Tailwind 3 |
+| Mobile | Capacitor (PWA) |
+| Monitoring | Sentry + PostHog |
+| i18n | Custom (5+ idiomas) |
+| Testing | Vitest 4 + Playwright |
+| Deploy | Vercel |
+
+---
+
+## 🔴 Evaluación CRÍTICA
+
+### 1. CÓDIGO — Problemas Graves
+
+#### ⚠️ Archivos monstruo (God Files)
+| Archivo | Tamaño | Problema |
+|---|---|---|
+| [WeeklyReportView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/WeeklyReportView.tsx) | **73 KB / ~1,800 líneas** | Inmantenible. Debería ser 10+ componentes |
+| [OrchardMapView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/OrchardMapView.tsx) | **41 KB / ~1,000 líneas** | Lógica de mapa, UI, datos todo mezclado |
+| [SettingsView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/SettingsView.tsx) | **30 KB** | Muy grande para un solo componente |
+| [CostAnalyticsView.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/views/manager/CostAnalyticsView.tsx) | **27 KB** | Lógica de cálculos + UI acoplada |
+| [Login.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/pages/Login.tsx) | **25 KB** | Un login NO debería tener 25KB — excesivo |
+| [Payroll.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/pages/Payroll.tsx) | **26 KB** | Demasiada responsabilidad en un archivo |
+| [useHarvestStore.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/stores/useHarvestStore.ts) | **23 KB** | Store monolítico — debería ser slices |
+
+> **Veredicto**: ~30% del código está en archivos demasiado grandes. En una code review profesional, estos serían rechazados. Aumenta el coste de mantenimiento exponencialmente.
+
+#### ⚠️ Acoplamiento fuerte Service ↔ Supabase
+Los 50 servicios hablan directamente con Supabase sin una capa de abstracción. Si cambiases de backend (Firebase, Appwrite, self-hosted), habría que reescribir **cada servicio**.
+
+#### ⚠️ Sin API Gateway ni Backend propio
+Todo pasa por el frontend directamente a Supabase. No hay:
+- Rate limiting propio
+- Lógica de negocio centralizada en backend
+- Validación server-side robusta (solo 2 Edge Functions)
+
+**Riesgo**: Cualquier lógica de negocio compleja vive en el frontend, donde es vulnerable a manipulación.
+
+#### ⚠️ Edge Functions insuficientes
+Solo hay **2 Edge Functions** (`calculate-payroll` y `detect-anomalies`) para una app con 50 servicios. El 96% de la lógica de negocio ejecuta en el cliente.
+
+---
+
+### 2. SUPABASE — Dependencia Crítica
+
+#### 🔴 Vendor Lock-in Severo
+- **100% dependencia** de Supabase para auth, DB, realtime, storage y functions
+- Sin capa de abstracción — Supabase está importado directamente en 50+ archivos
+- Las migraciones usan funciones específicas de Supabase (auth.users, etc.)
+- Si Supabase sube precios o tiene downtime → **la app muere completamente**
+
+#### 🔴 Free Tier = Inaceptable para producción
+- **500 MB de DB** se agotó con datos mínimos (solo dead tuples)
+- Sin conexión pooling (el free tier la limita severamente)
+- **504 Gateway Timeout** cuando se excede el límite — sin degradación elegante
+- Sin backups automáticos en free tier
+
+#### 🔴 Schema desordenado
+- **36 migraciones** en un mes — indica falta de planificación de schema
+- Muchas migraciones son "patches" (ej: `fix_rls_recursion`, `fix_bucket_records_rls`, `fix_security_advisor_errors`)
+- El naming no sigue un estándar consistente
+- Hay una migración [schema_v3_consolidated.sql](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/supabase/schema_v3_consolidated.sql) de 53 KB — evidencia de resets previos
+
+#### 🟡 RLS implementado pero problemático
+- Se requirieron **6 migraciones** solo para arreglar RLS
+- Hubo recursión en las policies (resuelto con más migraciones)
+- El Security Advisor aún muestra warnings (244 de performance)
+
+---
+
+### 3. TESTING — Insuficiente
+
+| Aspecto | Estado | Nota |
+|---|---|---|
+| Tests unitarios | **26 archivos** para 272 fuentes | ~10% coverage estimado |
+| Tests E2E (Playwright) | Configurados | Sin evidencia de ejecución regular |
+| Tests de integración | **No existen** | Crítico: no se testea Supabase real |
+| CI/CD con tests | **No verificado** | Sin GitHub Actions visibles |
+
+> **Veredicto**: La cobertura de test es **inaceptable** para producción. Un estándar mínimo de industria es 60-70%. Esto está en ~10%.
+
+---
+
+### 4. UI/UX — Evaluación Visual
+
+#### Positivo ✅
+- Tailwind bien configurado con tema personalizado ([tailwind.config.js](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/tailwind.config.js) de 5.9 KB)
+- Iconos consistentes con Lucide React
+- PWA con prompt de instalación
+- i18n multi-idioma implementado
+
+#### Negativo ❌
+- **No hay Design System documentado** — colores, spacing, typography no centralizados
+- **Sin componentes UI reutilizables** — directorio `common/` mínimo
+- **Sin Storybook** para documentar/testear componentes
+- **Component prop drilling** — no se usan compound components
+- **Sin responsive testing** — solo mediaqueries básicas
+- **Sin dark mode** implementado (config de Tailwind lo habilita pero no se usa)
+- **28 vistas de Manager** → UI potencialmente abrumadora para el usuario
+- Capacitor como "app nativa" pero es solo un wrapper de PWA
+
+---
+
+### 5. FUNCIONALIDADES — Gap Analysis
+
+#### ✅ Implementado
+- Login con roles (8 roles definidos)
+- Dashboard manager con métricas
+- Escaneo QR de buckets
+- Asistencia diaria
+- Cierre de día (Day Closure)
+- Payroll calculado vía Edge Function
+- Detección de anomalías vía Edge Function
+- Mapa de huerto
+- Chat/Messaging
+- Exportación CSV/PDF
+- Inspecciones QC
+- Gestión RRHH
+- Logística y transporte
+- Offline sync (Dexie + sync queue)
+- Audit logging
+- Auth hardening (lockout, MFA)
+- Optimistic locking
+
+#### ❌ NO Implementado / Incompleto
+- **Sin dashboard de analytics real** — no hay BI/data warehouse
+- **Sin notificaciones push** — solo in-app
+- **Sin integración con terceros** (ERP, contabilidad, gobierno NZ)
+- **Sin API pública** para clientes/integradores
+- **Sin multitenancy real** — un solo orchard por instancia
+- **Sin gestión de inventario** (cajas, bins, materiales)
+- **Sin weather integration** — crítico para agritech
+- **Sin compliance reports** (regulación NZ para trabajo agrícola)
+- **Sin módulo de planificación** (harvest forecasting)
+
+---
+
+### 6. SEGURIDAD — Hallazgos
+
+| Issue | Severidad | Estado |
+|---|---|---|
+| API keys en [.env](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/.env) sin vault | 🟡 Media | Parcial |
+| Supabase anon key en código | 🔴 Alta | Activo |
+| RLS recursión pasada | 🟡 Arreglado | Mitigado con migraciones |
+| Edge Functions sin JWT verification | 🔴 Alta | `--no-verify-jwt` |
+| Sin Content Security Policy | 🟡 Media | No configurado |
+| Sin rate limiting propio | 🟡 Media | Depende de Supabase |
+| 244 performance warnings en Security Advisor | 🟡 Media | Sin resolver |
+| Token de acceso compartido en plaintext | 🔴 Alta | Usado en esta sesión |
+
+---
+
+### 7. DEUDA TÉCNICA
+
+| Categoría | Estimación para "production-ready" |
+|---|---|
+| Refactoring de God Files | 2-3 semanas |
+| Tests hasta 60% coverage | 3-4 semanas |
+| API Gateway (Edge Functions) | 2-3 semanas |
+| Capa de abstracción de DB | 1-2 semanas |
+| Design System + Storybook | 2 semanas |
+| CI/CD pipeline | 1 semana |
+| Seguridad (CSP, vault, JWT) | 1 semana |
+| Performance optimization | 1-2 semanas |
+| **TOTAL** | **~15-20 semanas de trabajo** |
+
+---
+
+## 💰 Valoración Monetaria
+
+### Método 1: Coste de Desarrollo (Cost-to-Build)
+
+| Componente | LOC | Tarifa/LOC | Subtotal |
+|---|---|---|---|
+| Frontend (React/TS) | 43,000 | 3-5 €/LOC | 129,000 - 215,000 € |
+| Backend (SQL/Functions) | 8,300 | 5-8 €/LOC | 41,500 - 66,400 € |
+| Infraestructura/DevOps | — | flat | 5,000 - 10,000 € |
+| Documentación | ~70 KB docs | flat | 3,000 - 5,000 € |
+| **Coste de replicación** | | | **178,500 - 296,400 €** |
+
+### Método 2: Horas de Desarrollo
+
+| Perfil | Horas estimadas | Tarifa/hora | Subtotal |
+|---|---|---|---|
+| Senior Full-Stack Dev | 800-1,200 h | 60-90 €/h | 48,000 - 108,000 € |
+| DevOps/Infra | 40-80 h | 70-100 €/h | 2,800 - 8,000 € |
+| UI/UX Design | 100-150 h | 50-70 €/h | 5,000 - 10,500 € |
+| QA/Testing | 80-120 h | 40-60 €/h | 3,200 - 7,200 € |
+| PM/Arquitectura | 60-100 h | 80-120 €/h | 4,800 - 12,000 € |
+| **Total horas método** | | | **63,800 - 145,700 €** |
+
+### Método 3: Valor de Mercado (Market Value)
+
+Para una app SaaS agritech **sin clientes**, **sin ingresos**, **sin tracción**:
+
+| Factor | Descuento |
+|---|---|
+| Sin usuarios pagando | -80% sobre coste |
+| Free tier de Supabase (no escala) | -20% |
+| Deuda técnica significativa | -30% |
+| Sin integraciones de terceros | -15% |
+| Sin equipo (solo 1 dev) | -20% |
+
+### 🏷️ Valoración Final Estimada
+
+| Escenario | Precio |
+|---|---|
+| **Venta de código solo** (acquihire, asset) | **5,000 - 15,000 €** |
+| **Con derechos + docs + soporte 3 meses** | **15,000 - 35,000 €** |
+| **Como MVP para levantar inversión** | **30,000 - 60,000 €** (si presenta tracción) |
+| **Coste de replicarlo desde cero** | **65,000 - 150,000 €** |
+
+> **Opinión**: El código actual tiene valor como **prototipo avanzado / MVP**. No es un producto listo para producción. El coste de llevarlo a "production-ready" (15-20 semanas de un senior) superaría los 30,000 €, lo que reduce significativamente su valor de reventa. Sin embargo, como punto de partida para un equipo agritech, ahorra 3-6 meses de desarrollo.
+
+---
+
+## 📋 Conclusión Ejecutiva
+
+**HarvestPro NZ es un MVP técnicamente ambicioso pero inmaduro.**
+
+**Fortalezas**: stack moderno, funcionalidad amplia (17 módulos), offline-first, multi-idioma, multi-rol, PWA.
+
+**Debilidades críticas**: archivos monstruo, cobertura de test mínima, vendor lock-in total con Supabase free tier, seguridad en Edge Functions sin JWT, sin backend propio, UI sin design system, schema SQL fragmentado.
+
+**Para un inversor**: esto demuestra capacidad técnica y dominio del problema, pero necesita **15-20 semanas adicionales** de work para ser desplegable en producción con clientes reales.
+
+**Para un comprador**: el valor está en la arquitectura y el conocimiento del dominio, no en código listo para producción.

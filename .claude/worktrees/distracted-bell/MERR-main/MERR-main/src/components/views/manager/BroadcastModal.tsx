@@ -1,0 +1,110 @@
+import { logger } from '@/utils/logger';
+import React, { useState } from 'react';
+import { useMessaging } from '../../../context/MessagingContext';
+
+
+interface BroadcastModalProps {
+    onClose: () => void;
+}
+
+const BroadcastModal: React.FC<BroadcastModalProps> = ({ onClose }) => {
+    // Removed unused: const { orchard, currentUser } = useHarvest();
+    const { sendBroadcast } = useMessaging();
+    const [title, setTitle] = useState('');
+    const [message, setMessage] = useState('');
+    const [priority, setPriority] = useState<'normal' | 'high' | 'urgent'>('normal');
+    const [isSending, setIsSending] = useState(false);
+
+    const handleSend = async () => {
+        if (!title || !message) return;
+        setIsSending(true);
+        try {
+            await sendBroadcast(
+                title,
+                message,
+                priority
+            );
+            onClose();
+        } catch (e) {
+
+            logger.error("Failed to broadcast", e);
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl relative border border-border-light">
+                <button onClick={onClose} className="absolute right-4 top-4 text-text-muted hover:text-text-main">
+                    <span className="material-symbols-outlined">close</span>
+                </button>
+
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined">campaign</span>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black text-text-main leading-none">Broadcast Alert</h2>
+                        <span className="text-xs text-text-muted">Send push notification to all staff</span>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Title</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full bg-slate-50 border border-border-light rounded-xl px-4 py-3 font-bold outline-none text-text-main"
+                            placeholder="e.g. Weather Alert"
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Message</label>
+                        <textarea
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="w-full bg-slate-50 border border-border-light rounded-xl px-4 py-3 font-medium outline-none text-text-main min-h-[100px]"
+                            placeholder="Type your message here..."
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Priority</label>
+                        <div className="flex bg-slate-100 p-1 rounded-xl">
+                            {(['normal', 'high', 'urgent'] as const).map(p => (
+                                <button
+                                    key={p}
+                                    onClick={() => setPriority(p)}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-bold capitalize transition-all ${priority === p
+                                        ? p === 'urgent' ? 'bg-red-600 text-white shadow' : 'bg-primary text-white shadow'
+                                        : 'text-text-muted hover:text-text-sub'}`}
+                                >
+                                    {p}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onClick={handleSend}
+                    disabled={isSending || !title || !message}
+                    className="w-full mt-6 py-4 gradient-primary glow-primary text-white rounded-xl font-bold hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                >
+                    {isSending ? 'Sending...' : (
+                        <>
+                            <span className="material-symbols-outlined">send</span>
+                            Send Broadcast
+                        </>
+                    )}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default BroadcastModal;

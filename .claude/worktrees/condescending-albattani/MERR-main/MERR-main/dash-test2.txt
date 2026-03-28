@@ -1,0 +1,309 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/ibrab/Downloads/app/harvestpro-nz (1)[39m
+
+ [31mÔØ»[39m src/components/views/manager/DashboardView.test.tsx [2m([22m[2m19 tests[22m[2m | [22m[31m19 failed[39m[2m)[22m[32m 117[2mms[22m[39m
+[31m       [31m├ù[31m shows "No Harvest Data Yet" when crew and records are empty[39m[32m 78[2mms[22m[39m
+[31m       [31m├ù[31m shows "Add Pickers" button in empty state[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m navigates to teams tab when "Add Pickers" clicked[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m navigates to map tab when "View Map" clicked[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m renders "Orchard Overview" heading[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m renders orchard name from store[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m renders KPI stat cards[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m renders stat card units[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m renders GoalProgress component[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m renders VelocityChart component[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m renders PerformanceFocus component[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m renders WageShieldPanel component[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m renders TeamLeadersSidebar component[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m renders Export button[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m renders Live Map button[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m navigates to map tab on Live Map click[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m stat card Production click navigates to logistics[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m shows production count from stats[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m shows active crew count[39m[32m 1[2mms[22m[39m
+node.exe : 
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~
+    + CategoryInfo          : NotS 
+   pecified: (:String) [], Remote  
+  Exception
+    + FullyQualifiedErrorId : Nati 
+   veCommandError
+ 
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[4
+1m Failed Tests 19 [49m[22m[31mÔ
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > 
+[22mEmpty State[2m > [22mshows 
+"No Harvest Data Yet" when crew 
+and records are empty
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > 
+[22mEmpty State[2m > [22mshows 
+"Add Pickers" button in empty state
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > 
+[22mEmpty State[2m > 
+[22mnavigates to teams tab when 
+"Add Pickers" clicked
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > 
+[22mEmpty State[2m > 
+[22mnavigates to map tab when 
+"View Map" clicked
+[31m[1mError[22m: [vitest] No 
+"SimulationBanner" export is 
+defined on the 
+"../../SimulationBanner" mock. Did 
+you forget to return it from 
+"vi.mock"?
+If you need to partially mock a 
+module, you can use 
+"importOriginal" helper inside:
+[39m
+vi.mock(import("../../SimulationBan
+ner"), async (importOriginal) => {
+  const actual = await 
+importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[36m [2mÔØ»[22m DashboardView sr
+c/components/views/manager/Dashboar
+dView.tsx:[2m205:18[22m[39m
+    [90m203| [39m        
+[35mreturn[39m (
+    [90m204| [39m            
+<div className="p-4 md:p-6 
+max-w-7xl mx-auto pb-24 animateÔÇª
+    [90m205| [39m                
+[33m<[39m[33mSimulationBanner[3
+9m [33m/[39m[33m>[39m
+    [90m   | [39m                
+ [31m^[39m
+    [90m206| [39m                
+[33m<[39m[33mTrustBadges[39m 
+[33m/[39m[33m>[39m
+    [90m207| [39m                
+<div className="flex flex-col 
+items-center justify-cenÔÇª
+[90m [2mÔØ»[22m 
+Object.react_stack_bottom_frame nod
+e_modules/react-dom/cjs/react-dom-c
+lient.development.js:[2m25904:20[
+22m[39m
+[90m [2mÔØ»[22m renderWithHooks 
+node_modules/react-dom/cjs/react-do
+m-client.development.js:[2m7662:22
+[22m[39m
+[90m [2mÔØ»[22m 
+updateFunctionComponent node_module
+s/react-dom/cjs/react-dom-client.de
+velopment.js:[2m10166:19[22m[39m
+[90m [2mÔØ»[22m beginWork node_m
+odules/react-dom/cjs/react-dom-clie
+nt.development.js:[2m11778:18[22m
+[39m
+[90m [2mÔØ»[22m 
+runWithFiberInDEV node_modules/reac
+t-dom/cjs/react-dom-client.developm
+ent.js:[2m874:13[22m[39m
+[90m [2mÔØ»[22m 
+performUnitOfWork node_modules/reac
+t-dom/cjs/react-dom-client.developm
+ent.js:[2m17641:22[22m[39m
+[90m [2mÔØ»[22m workLoopSync nod
+e_modules/react-dom/cjs/react-dom-c
+lient.development.js:[2m17469:41[
+22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ
+»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»[1/19]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders "Orchard 
+Overview" heading
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders orchard 
+name from store
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders KPI stat 
+cards
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders stat card 
+units
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders 
+GoalProgress component
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders 
+VelocityChart component
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders 
+PerformanceFocus component
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders 
+WageShieldPanel component
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders 
+TeamLeadersSidebar component
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders Export 
+button
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mrenders Live Map 
+button
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mnavigates to map 
+tab on Live Map click
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mstat card 
+Production click navigates to 
+logistics
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mshows production 
+count from stats
+[41m[1m FAIL [22m[49m src/compo
+nents/views/manager/DashboardView.t
+est.tsx[2m > 
+[22mDashboardView[2m > [22mWith 
+data[2m > [22mshows active crew 
+count
+[31m[1mError[22m: [vitest] No 
+"SimulationBanner" export is 
+defined on the 
+"../../SimulationBanner" mock. Did 
+you forget to return it from 
+"vi.mock"?
+If you need to partially mock a 
+module, you can use 
+"importOriginal" helper inside:
+[39m
+vi.mock(import("../../SimulationBan
+ner"), async (importOriginal) => {
+  const actual = await 
+importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[36m [2mÔØ»[22m DashboardView sr
+c/components/views/manager/Dashboar
+dView.tsx:[2m238:14[22m[39m
+    [90m236| [39m    
+[35mreturn[39m (
+    [90m237| [39m        <div 
+className="p-4 md:p-6 space-y-6 
+max-w-7xl mx-auto pb-24 aÔÇª
+    [90m238| [39m            [33
+m<[39m[33mSimulationBanner[39m 
+[33m/[39m[33m>[39m
+    [90m   | [39m             
+[31m^[39m
+    [90m239| [39m            
+[33m<[39m[33mTrustBadges[39m 
+[33m/[39m[33m>[39m
+    [90m240| [39m
+[90m [2mÔØ»[22m 
+Object.react_stack_bottom_frame nod
+e_modules/react-dom/cjs/react-dom-c
+lient.development.js:[2m25904:20[
+22m[39m
+[90m [2mÔØ»[22m renderWithHooks 
+node_modules/react-dom/cjs/react-do
+m-client.development.js:[2m7662:22
+[22m[39m
+[90m [2mÔØ»[22m 
+updateFunctionComponent node_module
+s/react-dom/cjs/react-dom-client.de
+velopment.js:[2m10166:19[22m[39m
+[90m [2mÔØ»[22m beginWork node_m
+odules/react-dom/cjs/react-dom-clie
+nt.development.js:[2m11778:18[22m
+[39m
+[90m [2mÔØ»[22m 
+runWithFiberInDEV node_modules/reac
+t-dom/cjs/react-dom-client.developm
+ent.js:[2m874:13[22m[39m
+[90m [2mÔØ»[22m 
+performUnitOfWork node_modules/reac
+t-dom/cjs/react-dom-client.developm
+ent.js:[2m17641:22[22m[39m
+[90m [2mÔØ»[22m workLoopSync nod
+e_modules/react-dom/cjs/react-dom-c
+lient.development.js:[2m17469:41[
+22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ
+»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»[2/19]ÔÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m19 failed[39m[22m[90m (19)[39m
+[2m   Start at [22m 08:31:10
+[2m   Duration [22m 3.13s[2m (transform 728ms, setup 1.10s, import 353ms, tests 117ms, environment 1.30s)[22m
+

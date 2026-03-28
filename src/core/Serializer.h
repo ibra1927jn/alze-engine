@@ -1,0 +1,291 @@
+#pragma once
+
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <cassert>
+#include <cstdlib>
+#include "Vector2D.h"
+
+namespace engine {
+namespace core {
+
+/// Serializer — Lectura/escritura JSON ligero sin dependencias externas.
+///
+/// Compatible con -fno-exceptions. Escribe y lee un subconjunto de JSON
+/// suficiente para serializar escenas del ECS.
+///
+/// No es un parser JSON completo — es un writer/reader minimalista
+/// diseñado para serialización de componentes.
+///
+
+// ── JSON Writer ────────────────────────────────────────────────
+
+class JsonWriter {
+public:
+    void beginObject() {
+        comma();
+        m_out << "{";
+        m_depth++;
+        m_needComma = false;
+    }
+
+    void endObject() {
+        m_depth--;
+        newline();
+        m_out << "}";
+        m_needComma = true;
+    }
+
+    void beginArray(const std::string& key = "") {
+        comma();
+        if (!key.empty()) m_out << "\"" << key << "\": ";
+        m_out << "[";
+        m_depth++;
+        m_needComma = false;
+    }
+
+    void endArray() {
+        m_depth--;
+        newline();
+        m_out << "]";
+        m_needComma = true;
+    }
+
+    void key(const std::string& k) {
+        comma();
+        m_out << "\"" << k << "\": ";
+        m_needComma = false;
+    }
+
+    void value(float v) {
+        comma();
+        m_out << v;
+        m_needComma = true;
+    }
+
+    void value(int v) {
+        comma();
+        m_out << v;
+        m_needComma = true;
+    }
+
+    void value(bool v) {
+        comma();
+        m_out << (v ? "true" : "false");
+        m_needComma = true;
+    }
+
+    void value(const std::string& v) {
+        comma();
+        m_out << "\"" << v << "\"";
+        m_needComma = true;
+    }
+
+    void keyValue(const std::string& k, float v) { key(k); value(v); }
+    void keyValue(const std::string& k, int v) { key(k); value(v); }
+    void keyValue(const std::string& k, bool v) { key(k); value(v); }
+    void keyValue(const std::string& k, const std::string& v) { key(k); value(v); }
+
+    void keyValue(const std::string& k, const math::Vector2D& v) {
+        key(k);
+        beginObject();
+        keyValue("x", v.x);
+        keyValue("y", v.y);
+        endObject();
+    }
+
+    std::string toString() const { return m_out.str(); }
+
+    bool saveToFile(const std::string& path) {
+        std::ofstream file(path);
+        if (!file.is_open()) return false;
+        file << m_out.str();
+        return file.good();
+    }
+
+private:
+    void comma() {
+        if (m_needComma) m_out << ", ";
+    }
+
+    void newline() {
+        m_out << "\n";
+        for (int i = 0; i < m_depth; i++) m_out << "  ";
+    }
+
+    std::ostringstream m_out;
+    int  m_depth     = 0;
+    bool m_needComma = false;
+};
+
+// ── JSON Token Reader ──────────────────────────────────────────
+
+/// Token-based JSON reader for loading scenes.
+/// Reads character by character, no exceptions needed.
+class JsonReader {
+public:
+    bool loadFromFile(const std::string& path) {
+        std::ifstream file(path);
+        if (!file.is_open()) return false;
+        std::ostringstream ss;
+        ss << file.rdbuf();
+        m_data = ss.str();
+        m_pos = 0;
+        return true;
+    }
+
+    bool loadFromString(const std::string& json) {
+        m_data = json;
+        m_pos = 0;
+        return true;
+    }
+
+    // ── Navigation ─────────────────────────────────────────────
+
+    bool expectChar(char c) {
+        skipWhitespace();
+        if (m_pos < m_data.size() && m_data[m_pos] == c) {
+            m_pos++;
+            return true;
+        }
+        return false;
+    }
+
+    bool peekChar(char c) {
+        skipWhitespace();
+        return m_pos < m_data.size() && m_data[m_pos] == c;
+    }
+
+    bool hasMore() {
+        skipWhitespace();
+        return m_pos < m_data.size();
+    }
+
+    // ── Value reading ──────────────────────────────────────────
+
+    std::string readString() {
+        skipWhitespace();
+        if (m_pos >= m_data.size() || m_data[m_pos] != '"') return "";
+        m_pos++;  // skip opening quote
+        std::string result;
+        while (m_pos < m_data.size() && m_data[m_pos] != '"') {
+            if (m_data[m_pos] == '\\' && m_pos + 1 < m_data.size()) {
+                m_pos++;
+                result += m_data[m_pos];
+            } else {
+                result += m_data[m_pos];
+            }
+            m_pos++;
+        }
+        if (m_pos < m_data.size()) m_pos++;  // skip closing quote
+        return result;
+    }
+
+    float readFloat() {
+        skipWhitespace();
+        size_t start = m_pos;
+        while (m_pos < m_data.size() &&
+               (m_data[m_pos] == '-' || m_data[m_pos] == '.' ||
+                (m_data[m_pos] >= '0' && m_data[m_pos] <= '9') ||
+                m_data[m_pos] == 'e' || m_data[m_pos] == 'E' || m_data[m_pos] == '+')) {
+            m_pos++;
+        }
+        if (m_pos == start) return 0.0f;
+        // strtof en vez de stof — seguro con -fno-exceptions
+        const char* begin = m_data.c_str() + start;
+        char* endp = nullptr;
+        float val = std::strtof(begin, &endp);
+        return (endp == begin) ? 0.0f : val;
+    }
+
+    int readInt() {
+        return static_cast<int>(readFloat());
+    }
+
+    bool readBool() {
+        skipWhitespace();
+        if (m_data.substr(m_pos, 4) == "true") {
+            m_pos += 4;
+            return true;
+        }
+        if (m_data.substr(m_pos, 5) == "false") {
+            m_pos += 5;
+            return false;
+        }
+        return false;
+    }
+
+    math::Vector2D readVector2D() {
+        math::Vector2D v;
+        if (!expectChar('{')) return v;
+        while (!peekChar('}')) {
+            std::string k = readKey();
+            if (k == "x") v.x = readFloat();
+            else if (k == "y") v.y = readFloat();
+            skipComma();
+        }
+        expectChar('}');
+        return v;
+    }
+
+    std::string readKey() {
+        std::string k = readString();
+        expectChar(':');
+        return k;
+    }
+
+    void skipComma() {
+        skipWhitespace();
+        if (m_pos < m_data.size() && m_data[m_pos] == ',') m_pos++;
+    }
+
+    void skipValue() {
+        skipWhitespace();
+        if (m_pos >= m_data.size()) return;
+        char c = m_data[m_pos];
+        if (c == '"') { readString(); }
+        else if (c == '{') { skipObject(); }
+        else if (c == '[') { skipArray(); }
+        else if (c == 't' || c == 'f') { readBool(); }
+        else { readFloat(); }
+    }
+
+private:
+    void skipWhitespace() {
+        while (m_pos < m_data.size() &&
+               (m_data[m_pos] == ' ' || m_data[m_pos] == '\n' ||
+                m_data[m_pos] == '\r' || m_data[m_pos] == '\t')) {
+            m_pos++;
+        }
+    }
+
+    void skipObject() {
+        expectChar('{');
+        int depth = 1;
+        while (m_pos < m_data.size() && depth > 0) {
+            if (m_data[m_pos] == '{') depth++;
+            if (m_data[m_pos] == '}') depth--;
+            if (m_data[m_pos] == '"') { readString(); continue; }
+            m_pos++;
+        }
+    }
+
+    void skipArray() {
+        expectChar('[');
+        int depth = 1;
+        while (m_pos < m_data.size() && depth > 0) {
+            if (m_data[m_pos] == '[') depth++;
+            if (m_data[m_pos] == ']') depth--;
+            if (m_data[m_pos] == '"') { readString(); continue; }
+            m_pos++;
+        }
+    }
+
+    std::string m_data;
+    size_t m_pos = 0;
+};
+
+} // namespace core
+} // namespace engine

@@ -1,0 +1,228 @@
+In file included from src/physics/GJK.cpp:1:
+src/physics/GJK.h:13:5: error: 'math' does not name a type
+   13 |     math::Vector3D simplex[4];
+      |     ^~~~
+src/physics/GJK.h:19:5: error: 'math' does not name a type
+   19 |     math::Vector3D normal; // Apunta desde B hacia A
+      |     ^~~~
+src/physics/GJK.h:21:5: error: 'math' does not name a type
+   21 |     math::Vector3D contactPoint;
+      |     ^~~~
+src/physics/GJK.h:33:31: error: 'math' has not been declared
+   33 |     static bool handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                               ^~~~
+src/physics/GJK.h:33:45: error: expected ',' or '...' before '*' token
+   33 |     static bool handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                                             ^
+src/physics/GJK.h:34:26: error: 'math' has not been declared
+   34 |     static bool lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                          ^~~~
+src/physics/GJK.h:34:40: error: expected ',' or '...' before '*' token
+   34 |     static bool lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                                        ^
+src/physics/GJK.h:35:30: error: 'math' has not been declared
+   35 |     static bool triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                              ^~~~
+src/physics/GJK.h:35:44: error: expected ',' or '...' before '*' token
+   35 |     static bool triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                                            ^
+src/physics/GJK.h:36:33: error: 'math' has not been declared
+   36 |     static bool tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                                 ^~~~
+src/physics/GJK.h:36:47: error: expected ',' or '...' before '*' token
+   36 |     static bool tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+      |                                               ^
+src/physics/GJK.h:39:12: error: 'math' does not name a type
+   39 |     static math::Vector3D support(const ShapeA& a, const ShapeB& b, const math::Vector3D& dir) {
+      |            ^~~~
+In file included from src/physics/GJK.h:51:
+src/physics/GJK.inl: In static member function 'static engine::physics::GJKResult engine::physics::GJK::intersect(const ShapeA&, const ShapeB&)':
+src/physics/GJK.inl:10:5: error: 'math' has not been declared [-Wtemplate-body]
+   10 |     math::Vector3D initialDir = (a.center - b.center);
+      |     ^~~~
+src/physics/GJK.inl:11:9: error: 'initialDir' was not declared in this scope [-Wtemplate-body]
+   11 |     if (initialDir.sqrMagnitude() < 1e-6f) initialDir = math::Vector3D(0, 1, 0);
+      |         ^~~~~~~~~~
+src/physics/GJK.inl:11:57: error: 'math' has not been declared [-Wtemplate-body]
+   11 |     if (initialDir.sqrMagnitude() < 1e-6f) initialDir = math::Vector3D(0, 1, 0);
+      |                                                         ^~~~
+src/physics/GJK.inl:13:5: error: 'math' has not been declared [-Wtemplate-body]
+   13 |     math::Vector3D dir = initialDir.normalized();
+      |     ^~~~
+src/physics/GJK.inl:14:5: error: 'math' has not been declared [-Wtemplate-body]
+   14 |     math::Vector3D supportP = support(a, b, dir);
+      |     ^~~~
+src/physics/GJK.inl:16:12: error: 'struct engine::physics::GJKResult' has no member named 'simplex'; did you mean 'simplexSize'? [-Wtemplate-body]
+   16 |     result.simplex[0] = supportP;
+      |            ^~~~~~~
+      |            simplexSize
+src/physics/GJK.inl:16:25: error: 'supportP' was not declared in this scope [-Wtemplate-body]
+   16 |     result.simplex[0] = supportP;
+      |                         ^~~~~~~~
+src/physics/GJK.inl:18:5: error: 'dir' was not declared in this scope; did you mean 'div'? [-Wtemplate-body]
+   18 |     dir = -supportP;
+      |     ^~~
+      |     div
+src/physics/GJK.inl:21:47: error: 'math' has not been declared [-Wtemplate-body]
+   21 |         if (dir.sqrMagnitude() < 1e-6f) dir = math::Vector3D(0, 1, 0);
+      |                                               ^~~~
+src/physics/GJK.inl:30:16: error: 'struct engine::physics::GJKResult' has no member named 'simplex'; did you mean 'simplexSize'? [-Wtemplate-body]
+   30 |         result.simplex[result.simplexSize++] = supportP;
+      |                ^~~~~~~
+      |                simplexSize
+src/physics/GJK.inl:31:34: error: 'struct engine::physics::GJKResult' has no member named 'simplex'; did you mean 'simplexSize'? [-Wtemplate-body]
+   31 |         if (handleSimplex(result.simplex, result.simplexSize, dir)) {
+      |                                  ^~~~~~~
+      |                                  simplexSize
+src/physics/GJK.inl: In static member function 'static engine::physics::EPAResult engine::physics::GJK::solveEPA(const ShapeA&, const ShapeB&, engine::physics::GJKResult&)':
+src/physics/GJK.inl:47:9: error: 'math' does not name a type [-Wtemplate-body]
+   47 |         math::Vector3D normal;
+      |         ^~~~
+src/physics/GJK.inl:50:17: error: 'math' was not declared in this scope [-Wtemplate-body]
+   50 |     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+      |                 ^~~~
+src/physics/GJK.inl:50:31: error: template argument 1 is invalid [-Wtemplate-body]
+   50 |     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+      |                               ^
+src/physics/GJK.inl:50:31: error: template argument 2 is invalid [-Wtemplate-body]
+src/physics/GJK.inl:50:52: error: 'struct engine::physics::GJKResult' has no member named 'simplex'; did you mean 'simplexSize'? [-Wtemplate-body]
+   50 |     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+      |                                                    ^~~~~~~
+      |                                                    simplexSize
+src/physics/GJK.inl:50:71: error: 'struct engine::physics::GJKResult' has no member named 'simplex'; did you mean 'simplexSize'? [-Wtemplate-body]
+   50 |     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+      |                                                                       ^~~~~~~
+      |                                                                       simplexSize
+src/physics/GJK.inl:50:82: error: expression list treated as compound expression in initializer [-Wtemplate-body]
+   50 |     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+      |                                                                                  ^
+src/physics/GJK.inl: In lambda function:
+src/physics/GJK.inl:54:9: error: 'math' is not a class, namespace, or enumeration [-Wtemplate-body]
+   54 |         math::Vector3D ab = polytope[b] - polytope[a];
+      |         ^~~~
+src/physics/GJK.inl:55:9: error: 'math' is not a class, namespace, or enumeration [-Wtemplate-body]
+   55 |         math::Vector3D ac = polytope[c] - polytope[a];
+      |         ^~~~
+src/physics/GJK.inl:56:9: error: 'math' is not a class, namespace, or enumeration [-Wtemplate-body]
+   56 |         math::Vector3D n = ab.cross(ac).normalized();
+      |         ^~~~
+src/physics/GJK.inl:58:13: error: 'n' was not declared in this scope [-Wtemplate-body]
+   58 |         if (n.dot(polytope[a]) < 0) {
+      |             ^
+src/physics/GJK.inl:58:27: error: invalid types 'int[int]' for array subscript [-Wtemplate-body]
+   58 |         if (n.dot(polytope[a]) < 0) {
+      |                           ^
+src/physics/GJK.inl: In static member function 'static engine::physics::EPAResult engine::physics::GJK::solveEPA(const ShapeA&, const ShapeB&, engine::physics::GJKResult&)':
+src/physics/GJK.inl:87:9: error: 'math' is not a class, namespace, or enumeration [-Wtemplate-body]
+   87 |         math::Vector3D searchDir = faces[closestFace].normal;
+      |         ^~~~
+src/physics/GJK.inl:88:9: error: 'math' is not a class, namespace, or enumeration [-Wtemplate-body]
+   88 |         math::Vector3D p = support(a, b, searchDir);
+      |         ^~~~
+src/physics/GJK.inl:89:23: error: 'p' was not declared in this scope [-Wtemplate-body]
+   89 |         float pDist = p.dot(searchDir);
+      |                       ^
+src/physics/GJK.inl:89:29: error: 'searchDir' was not declared in this scope [-Wtemplate-body]
+   89 |         float pDist = p.dot(searchDir);
+      |                             ^~~~~~~~~
+src/physics/GJK.inl:93:20: error: 'struct engine::physics::EPAResult' has no member named 'normal' [-Wtemplate-body]
+   93 |             result.normal = searchDir;
+      |                    ^~~~~~
+src/physics/GJK.inl:117:34: error: request for member 'size' in 'polytope', which is of non-class type 'int' [-Wtemplate-body]
+  117 |         int pIdx = (int)polytope.size();
+      |                                  ^~~~
+src/physics/GJK.inl:118:18: error: request for member 'push_back' in 'polytope', which is of non-class type 'int' [-Wtemplate-body]
+  118 |         polytope.push_back(p);
+      |                  ^~~~~~~~~
+src/physics/GJK.inl:127:16: error: 'struct engine::physics::EPAResult' has no member named 'normal' [-Wtemplate-body]
+  127 |         result.normal = faces[closestFace].normal;
+      |                ^~~~~~
+src/physics/GJK.cpp: At global scope:
+src/physics/GJK.cpp:6:6: error: 'bool engine::physics::GJK::handleSimplex' is not a static data member of 'class engine::physics::GJK'
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |      ^~~
+src/physics/GJK.cpp:6:25: error: 'math' has not been declared
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                         ^~~~
+src/physics/GJK.cpp:6:41: error: 'simplex' was not declared in this scope
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                         ^~~~~~~
+src/physics/GJK.cpp:6:50: error: expected primary-expression before 'int'
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                  ^~~
+src/physics/GJK.cpp:6:61: error: 'math' has not been declared
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                             ^~~~
+src/physics/GJK.cpp:6:77: error: 'dir' was not declared in this scope; did you mean 'div'?
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                             ^~~
+      |                                                                             div
+src/physics/GJK.cpp:6:80: error: expression list treated as compound expression in initializer [-fpermissive]
+    6 | bool GJK::handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                                ^
+src/physics/GJK.cpp:13:6: error: 'bool engine::physics::GJK::lineCase' is not a static data member of 'class engine::physics::GJK'
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |      ^~~
+src/physics/GJK.cpp:13:20: error: 'math' has not been declared
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                    ^~~~
+src/physics/GJK.cpp:13:36: error: 'simplex' was not declared in this scope
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                    ^~~~~~~
+src/physics/GJK.cpp:13:45: error: expected primary-expression before 'int'
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                             ^~~
+src/physics/GJK.cpp:13:56: error: 'math' has not been declared
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                        ^~~~
+src/physics/GJK.cpp:13:72: error: 'dir' was not declared in this scope; did you mean 'div'?
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                        ^~~
+      |                                                                        div
+src/physics/GJK.cpp:13:75: error: expression list treated as compound expression in initializer [-fpermissive]
+   13 | bool GJK::lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                           ^
+src/physics/GJK.cpp:29:6: error: 'bool engine::physics::GJK::triangleCase' is not a static data member of 'class engine::physics::GJK'
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |      ^~~
+src/physics/GJK.cpp:29:24: error: 'math' has not been declared
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                        ^~~~
+src/physics/GJK.cpp:29:40: error: 'simplex' was not declared in this scope
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                        ^~~~~~~
+src/physics/GJK.cpp:29:49: error: expected primary-expression before 'int'
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                 ^~~
+src/physics/GJK.cpp:29:60: error: 'math' has not been declared
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                            ^~~~
+src/physics/GJK.cpp:29:76: error: 'dir' was not declared in this scope; did you mean 'div'?
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                            ^~~
+      |                                                                            div
+src/physics/GJK.cpp:29:79: error: expression list treated as compound expression in initializer [-fpermissive]
+   29 | bool GJK::triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                               ^
+src/physics/GJK.cpp:63:6: error: 'bool engine::physics::GJK::tetrahedronCase' is not a static data member of 'class engine::physics::GJK'
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |      ^~~
+src/physics/GJK.cpp:63:27: error: 'math' has not been declared
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                           ^~~~
+src/physics/GJK.cpp:63:43: error: 'simplex' was not declared in this scope
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                           ^~~~~~~
+src/physics/GJK.cpp:63:52: error: expected primary-expression before 'int'
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                    ^~~
+src/physics/GJK.cpp:63:63: error: 'math' has not been declared
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                               ^~~~
+src/physics/GJK.cpp:63:79: error: 'dir' was not declared in this scope; did you mean 'div'?
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                               ^~~
+      |                                                                               div
+src/physics/GJK.cpp:63:82: error: expression list treated as compound expression in initializer [-fpermissive]
+   63 | bool GJK::tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir) {
+      |                                                                                  ^

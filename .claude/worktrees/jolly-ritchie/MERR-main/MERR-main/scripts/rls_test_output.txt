@@ -1,0 +1,74 @@
+﻿
+Running 5 tests using 5 workers
+
+[1A[2K[1/5] [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:51:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B pickers (SELECT blocked)
+[1A[2K[2/5] [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:159:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT picker into Orchard B
+[1A[2K[3/5] [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:78:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B bucket records (SELECT blocked)
+[1A[2K[4/5] [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:114:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT bucket into Orchard B
+[1A[2K[5/5] [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:202:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot UPDATE Orchard B attendance
+[1A[2K  1) [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:159:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT picker into Orchard B 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    Call log:
+    [2m  - navigating to "http://localhost:5173/login", waiting until "load"[22m
+
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\tests\e2e\rls-cross-tenant.spec.ts:160:20)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:323:15)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\testInfo.js:320:17)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:321:22)
+
+
+[1A[2K  2) [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:51:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B pickers (SELECT blocked) 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    Call log:
+    [2m  - navigating to "http://localhost:5173/login", waiting until "load"[22m
+
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\tests\e2e\rls-cross-tenant.spec.ts:53:20)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:323:15)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\testInfo.js:320:17)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:321:22)
+
+
+[1A[2K  3) [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:114:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT bucket into Orchard B 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    Call log:
+    [2m  - navigating to "http://localhost:5173/login", waiting until "load"[22m
+
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\tests\e2e\rls-cross-tenant.spec.ts:116:20)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:323:15)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\testInfo.js:320:17)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:321:22)
+
+
+[1A[2K  4) [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:78:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B bucket records (SELECT blocked) 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    Call log:
+    [2m  - navigating to "http://localhost:5173/login", waiting until "load"[22m
+
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\tests\e2e\rls-cross-tenant.spec.ts:80:20)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:323:15)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\testInfo.js:320:17)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:321:22)
+
+
+[1A[2K  5) [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:202:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot UPDATE Orchard B attendance 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    Call log:
+    [2m  - navigating to "http://localhost:5173/login", waiting until "load"[22m
+
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\tests\e2e\rls-cross-tenant.spec.ts:203:20)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:323:15)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\testInfo.js:320:17)
+        at C:\Users\ibrab\Downloads\app\harvestpro-nz (1)\node_modules\playwright\lib\worker\workerMain.js:321:22)
+
+
+[1A[2K  5 failed
+    [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:51:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B pickers (SELECT blocked) 
+    [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:78:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: Manager A cannot see Orchard B bucket records (SELECT blocked) 
+    [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:114:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT bucket into Orchard B 
+    [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:159:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot INSERT picker into Orchard B 
+    [chromium] ÔÇ║ tests\e2e\rls-cross-tenant.spec.ts:202:5 ÔÇ║ Cross-Tenant RLS Security ÔÇ║ CRITICAL: IDOR ÔÇö Manager A cannot UPDATE Orchard B attendance 

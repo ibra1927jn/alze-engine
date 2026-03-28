@@ -1,0 +1,12 @@
+build/
+*.csv
+*.inp
+*.exe
+*.o
+*.a
+*.obj
+*.lib
+.vs/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

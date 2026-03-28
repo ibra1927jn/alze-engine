@@ -1,0 +1,40 @@
+﻿
+========================================
+  RLS CROSS-TENANT SECURITY TEST
+========================================
+
+Logging in Manager A (Orchard 1)...
+  OK: acid_manager_1_1@harvestpro.test (b1000000-0000-0000-0001-000000000001)
+
+Logging in Manager B (Orchard 2)...
+  OK: acid_manager_2_1@harvestpro.test (b1000000-0000-0000-0002-000000000001)
+
+Logging in Runner A (Orchard 1)...
+  OK: acid_runner_1_3@harvestpro.test (b1000000-0000-0000-0001-000000000003)
+
+--- TEST 1: SELECT isolation (pickers) ---
+  PASS: Manager A cannot see Orchard B pickers
+
+--- TEST 2: SELECT isolation (bucket_records) ---
+  PASS: Manager A cannot see Orchard B bucket_records
+
+--- TEST 3: SELECT isolation (attendance) ---
+  PASS: Manager A cannot see Orchard B attendance
+
+--- TEST 4: IDOR INSERT (bucket_records) ---
+  PASS: IDOR: Manager A cannot INSERT bucket into Orchard B
+
+--- TEST 5: IDOR INSERT via Runner (bucket_records) ---
+  PASS: IDOR: Runner A cannot INSERT bucket into Orchard B
+
+--- TEST 6: IDOR INSERT (pickers) ---
+  PASS: IDOR: Manager A cannot INSERT picker into Orchard B
+
+--- TEST 7: Positive control (Manager B sees own data) ---
+  PASS: Positive: Manager B CAN see Orchard B pickers
+
+========================================
+  RESULTS: 7 passed, 0 failed
+========================================
+
+  VERDICT: ALL RLS POLICIES SECURE

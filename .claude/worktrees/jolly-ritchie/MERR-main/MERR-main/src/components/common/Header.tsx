@@ -1,0 +1,135 @@
+/**
+ * Header.tsx — Shared Mobile Header
+ *
+ * Used by all BottomNav pages: TeamLeader, Runner, Manager, QC
+ * Features: App branding, notifications with unread badge + dropdown, user avatar, sign-out with offline guard
+ */
+import React, { useState, useCallback } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { useMessaging } from '@/context/MessagingContext';
+import { useNavigate } from 'react-router-dom';
+import { offlineService } from '@/services/offline.service';
+import NotificationPanel from './NotificationPanel';
+
+interface HeaderProps {
+    title: string;
+    subtitle: string;
+    /** Optional callback when profile avatar is tapped (e.g. open settings) */
+    onProfileClick?: () => void;
+    /** Callback to navigate to messaging tab */
+    onNavigateToMessaging?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ title, subtitle, onProfileClick, onNavigateToMessaging }) => {
+    const { appUser, signOut } = useAuth();
+    const { unreadCount } = useMessaging();
+    const navigate = useNavigate();
+    const [signingOut, setSigningOut] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    // Derive user initials from full name
+    const initials = (appUser?.full_name || 'U')
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+
+    const handleSignOut = useCallback(async () => {
+        if (signingOut) return;
+        setSigningOut(true);
+
+        try {
+            // Offline guard: check for pending sync items
+            const pendingCount = await offlineService.getPendingCount();
+            if (pendingCount > 0) {
+                const confirmed = window.confirm(
+                    `⚠️ Tienes ${pendingCount} registro(s) sin sincronizar.\n\n` +
+                    `Si cierras sesión ahora, podrías perder estos datos.\n\n` +
+                    `Conéctate a internet y espera a que se sincronicen antes de cerrar sesión.\n\n` +
+                    `¿Quieres cerrar sesión de todas formas?`
+                );
+                if (!confirmed) {
+                    setSigningOut(false);
+                    return;
+                }
+            }
+
+            await signOut();
+            navigate('/login', { replace: true });
+        } catch {
+            setSigningOut(false);
+        }
+    }, [signingOut, signOut, navigate]);
+
+    return (
+        <header className="sticky top-0 z-30 glass-header">
+            <div className="flex items-center px-4 py-3 justify-between">
+                <div className="flex items-center gap-3">
+                    {/* Logo mark */}
+                    <div className="size-10 rounded-xl bg-primary shadow-md shadow-primary/20 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-[22px]">agriculture</span>
+                    </div>
+                    <div>
+                        <h1 className="text-text-main text-lg font-bold tracking-tight">{title}</h1>
+                        <p className="text-xs text-text-muted">{subtitle}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    {/* Notifications bell with unread badge + dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowNotifications(!showNotifications)}
+                            className="size-10 rounded-xl bg-slate-100 border border-border-light flex items-center justify-center text-text-muted hover:bg-slate-200 transition-colors relative"
+                            title="Notifications"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">notifications</span>
+                            {unreadCount > 0 ? (
+                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                </span>
+                            ) : (
+                                <span className="absolute top-1.5 right-1.5 size-2 bg-primary rounded-full ring-2 ring-white" />
+                            )}
+                        </button>
+
+                        {showNotifications && (
+                            <NotificationPanel
+                                onViewAll={onNavigateToMessaging}
+                                onClose={() => setShowNotifications(false)}
+                            />
+                        )}
+                    </div>
+
+                    {/* Profile avatar */}
+                    {onProfileClick ? (
+                        <button
+                            onClick={onProfileClick}
+                            className="size-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary-dim transition-colors"
+                        >
+                            {initials}
+                        </button>
+                    ) : (
+                        <div className="size-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md shadow-primary/20">
+                            {initials}
+                        </div>
+                    )}
+
+                    {/* Sign-out button */}
+                    <button
+                        onClick={handleSignOut}
+                        disabled={signingOut}
+                        className="size-10 rounded-xl bg-slate-100 border border-border-light flex items-center justify-center text-text-muted hover:text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors disabled:opacity-50"
+                        title="Sign Out"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">
+                            {signingOut ? 'hourglass_empty' : 'logout'}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </header>
+    );
+};
+
+export default Header;

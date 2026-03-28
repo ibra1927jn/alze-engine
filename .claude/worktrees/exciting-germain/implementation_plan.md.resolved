@@ -1,0 +1,362 @@
+# Plan de Resolución de Deficiencias — HarvestPro NZ
+
+> **Basado en**: Auditoría 5 Mar 2026
+> **Estado actual**: ~35-40% completado
+> **Objetivo**: Resolver TODAS las deficiencias pendientes del audit
+> **Estimación total**: ~7-10 semanas (con AI)
+
+---
+
+## 📊 Inventario de Deficiencias
+
+Extraídas directamente del audit report, organizadas por severidad:
+
+### 🔴 CRÍTICAS (bloquean producción)
+
+| # | Deficiencia | Sección Audit | Riesgo |
+|---|-------------|---------------|--------|
+| D1 | Edge Functions sin JWT verification (`--no-verify-jwt`) | §6 Seguridad | Cualquiera puede ejecutar funciones sin auth |
+| D2 | Supabase anon key expuesta en código | §6 Seguridad | API key pública, riesgo de abuso |
+| D3 | Sin Content Security Policy | §6 Seguridad | XSS, clickjacking |
+| D4 | Sin rate limiting | §6 Seguridad | DDoS, abuso de API |
+| D5 | Solo 2 Edge Functions para 47 servicios | §1 Código | 96% lógica en cliente, manipulable |
+| D6 | Free tier Supabase (500MB, hibernación, sin backups) | §2 Supabase | App muere en producción |
+
+### 🟡 IMPORTANTES (degradan calidad)
+
+| # | Deficiencia | Sección Audit | Impacto |
+|---|-------------|---------------|---------|
+| D7 | Component tests 12% (150 componentes, 18 testeados) | §3 Testing | UI bugs sin detectar |
+| D8 | Context tests 0% (Auth, Messaging, App) | §3 Testing | Estado global sin testear |
+| D9 | Pages tests 0% (9 páginas) | §3 Testing | Flujos de página sin coverage |
+| D10 | Servicios aún importan Supabase directamente (~32 de 47) | §1 Código | Vendor lock-in |
+| D11 | E2E: 68/87 fallan (necesitan seed data) | §3 Testing | Cobertura E2E baja |
+| D12 | Sin Storybook | §4 UI/UX | Componentes sin documentar |
+
+### 🟢 MEJORAS (elevan calidad profesional)
+
+| # | Deficiencia | Sección Audit | Beneficio |
+|---|-------------|---------------|-----------|
+| D13 | Sin dark mode (config existe, no implementado) | §4 UI/UX | UX premium |
+| D14 | Design System incompleto (falta DatePicker, Dropdown) | §4 UI/UX | Consistencia UI |
+| D15 | Sin responsive testing formal | §4 UI/UX | Mobile reliability |
+| D16 | Prop drilling en componentes | §4 UI/UX | Mantenibilidad |
+| D17 | Schema SQL: naming inconsistente en migraciones | §2 Supabase | Limpieza |
+| D18 | Performance: sin bundle analysis, code splitting parcial | §7 Deuda | Load time |
+
+---
+
+## 🏗️ Plan de Sprints
+
+### Sprint A: 🔒 SEGURIDAD (D1, D2, D3, D4) — ~1 semana
+
+> **Por qué primero**: Sin esto, la app es vulnerable. Un inversor lo nota al instante.
+
+#### A1. JWT Verification en Edge Functions (D1)
+
+**Archivos a modificar:**
+- [supabase/functions/calculate-payroll/index.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/supabase/functions/calculate-payroll/index.ts) — quitar `--no-verify-jwt`, añadir verificación manual
+- [supabase/functions/detect-anomalies/index.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/supabase/functions/detect-anomalies/index.ts) — idem
+- `supabase/config.toml` — quitar flag `--no-verify-jwt`
+
+**Implementación:**
+```typescript
+// Patrón para CADA Edge Function:
+const authHeader = req.headers.get('Authorization');
+if (!authHeader) return new Response('Unauthorized', { status: 401 });
+const { data: { user }, error } = await supabase.auth.getUser(
+  authHeader.replace('Bearer ', '')
+);
+if (error || !user) return new Response('Forbidden', { status: 403 });
+```
+
+#### A2. Secrets Management (D2)
+
+**Archivos a modificar/crear:**
+- [DELETE] [.env](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/.env) del repositorio (añadir a `.gitignore` si no está)
+- [NEW] [.env.example](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/.env.example) — template sin valores reales
+- `vercel.json` — configurar environment variables reference
+- Documentar: mover keys a Vercel Dashboard → Environment Variables
+
+#### A3. Content Security Policy (D3)
+
+**Archivos a modificar:**
+- `vercel.json` — añadir headers CSP
+- `index.html` — añadir meta CSP como fallback
+
+```json
+{
+  "headers": [{
+    "source": "/(.*)",
+    "headers": [{
+      "key": "Content-Security-Policy",
+      "value": "default-src 'self'; script-src 'self'; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'"
+    }, {
+      "key": "X-Frame-Options", "value": "DENY"
+    }, {
+      "key": "X-Content-Type-Options", "value": "nosniff"
+    }]
+  }]
+}
+```
+
+#### A4. Input Sanitization con Zod (D4 parcial)
+
+**Archivos a crear:**
+- [NEW] `src/schemas/auth.schema.ts` — login, register inputs
+- [NEW] `src/schemas/payroll.schema.ts` — payroll calculation inputs
+- [NEW] `src/schemas/attendance.schema.ts` — check-in/out inputs
+- [NEW] `src/schemas/index.ts` — barrel
+
+**Verificación Sprint A:**
+```bash
+# Edge Functions responden 401 sin token
+curl -X POST https://project.supabase.co/functions/v1/calculate-payroll
+# CSP headers presentes
+curl -I https://app.harvestpro.nz
+```
+
+---
+
+### Sprint B: 🧪 TESTING GAPS (D7, D8, D9, D11) — ~2 semanas
+
+> **Por qué segundo**: La base de tests ya es fuerte (82-107% en lógica). Cerrar los gaps de UI y contexto completa la historia.
+
+#### B1. Context Tests — 0% → ~80% (D8)
+
+**Archivos a crear:**
+- [NEW] `src/context/__tests__/AuthContext.test.tsx` — login/logout/role flows
+- [NEW] `src/context/__tests__/MessagingContext.test.tsx` — send/receive/channels
+- [NEW] `src/context/__tests__/AppContext.test.tsx` — theme, language, offline state
+
+**Estimación**: ~3 archivos, ~150 tests, ~2 días
+
+#### B2. Component Tests — 12% → 30% (D7)
+
+**Prioridad por impacto de negocio (componentes más críticos primero):**
+
+| Prioridad | Componente | Tests |
+|---|---|---|
+| P0 | [AddPickerModal](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/modals/AddPickerModal.tsx#36-175) | Validación, submit, error handling |
+| P0 | [DaySettingsModal](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/modals/DaySettingsModal.tsx#23-98) | Configuration flows |
+| P0 | `ScanBucketView` | QR scan, bucket creation |
+| P1 | `AttendanceCard` | Check-in/out display |
+| P1 | `PayrollSummaryCard` | Calculations display |
+| P1 | [PickerProfileDrawer](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/common/PickerProfileDrawer.tsx#80-345) | Profile render, tabs |
+| P2 | `ChatWindow` | Messages render |
+| P2 | `WeeklyCharts` | Chart rendering |
+
+**Estimación**: ~15-20 archivos nuevos, ~250 tests, ~5 días
+
+#### B3. E2E Seed Data (D11)
+
+**Archivos a crear:**
+- [NEW] `tests/helpers/seed-database.ts` — crear datos de prueba en Supabase
+- [NEW] `tests/helpers/cleanup-database.ts` — limpiar después de cada run
+- [MODIFY] `tests/e2e/global-setup.ts` — ejecutar seed antes de suite
+
+**Datos a sembrar:**
+- 1 orchard, 3 bloques, 2 team leaders, 10 pickers
+- 7 días de attendance records
+- 7 días de bucket records
+- 1 semana de payroll data
+
+**Estimación**: ~3 días
+
+**Verificación Sprint B:**
+```bash
+npx vitest run                    # 136+ test files, 0 failures
+npx playwright test --project=chromium  # 50+/87 pass (vs. 19/87 actual)
+```
+
+---
+
+### Sprint C: 🏛️ ARQUITECTURA (D5, D10) — ~2-3 semanas
+
+> **Por qué tercero**: Mover lógica al server y desacoplar Supabase. El resultado más profesional.
+
+#### C1. Migrar Servicios a Repositories (D10)
+
+**Estado actual**: 15/47 servicios usan repositories. Faltan ~32.
+
+**Prioridad de migración:**
+
+| Batch | Servicios | Archivos |
+|---|---|---|
+| C1.1 | `payroll.service`, `bucket-ledger.service` | 🔴 Dinero — migrar primero |
+| C1.2 | `attendance.service`, `picker.service` | 🔴 Core CRUD |
+| C1.3 | `analytics.service`, `compliance.service` | 🟡 Reportes |
+| C1.4 | `messaging.service`, `notification.service` | 🟡 Comunicación |
+| C1.5 | Resto (~20 servicios menores) | 🟢 Gradual |
+
+**Patrón por servicio:**
+```diff
+- import { supabase } from '@/lib/supabase';
++ import { bucketRecordsRepository } from '@/repositories';
+
+- const { data } = await supabase.from('bucket_records').select('*');
++ const data = await bucketRecordsRepository.findMany({ orchard_id });
+```
+
+**Estimación**: ~2 archivos/día → ~10 días para todos
+
+#### C2. Nuevas Edge Functions (D5)
+
+**De 2 → ~6 Edge Functions:**
+
+| Edge Function | Lógica a mover del cliente |
+|---|---|
+| ~~`calculate-payroll`~~ | ✅ Ya existe |
+| ~~`detect-anomalies`~~ | ✅ Ya existe |
+| [NEW] `validate-attendance` | Validación de check-in/out (horarios, duplicados, geofencing) |
+| [NEW] `process-day-closure` | Cierre de día atómico (server-side) |
+| [NEW] `generate-reports` | Generación de reportes pesados (PDF, analytics) |
+| [NEW] `sync-resolver` | Resolución de conflictos offline → online |
+
+**Estimación**: ~3-4 días por Edge Function, ~2 semanas total
+
+**Verificación Sprint C:**
+```bash
+# Verificar que servicios ya no importan supabase directamente
+grep -r "from.*supabase" src/services/ --include="*.ts" | wc -l
+# Objetivo: < 5 (solo los que genuinamente necesitan realtime)
+```
+
+---
+
+### Sprint D: 🎨 UI/UX POLISH (D12, D13, D14, D15, D16) — ~1-2 semanas
+
+> **Por qué cuarto**: El producto debe verse profesional. Estos son los acabados.
+
+#### D1. Dark Mode (D13)
+
+**Archivos a modificar:**
+- `tailwind.config.js` — activar `darkMode: 'class'`
+- `src/context/AppContext.tsx` — toggle de tema
+- [src/index.css](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/index.css) — CSS variables para colores dark
+- ~10-15 componentes con colores hardcoded → usar variables CSS
+
+**Estimación**: ~2 días
+
+#### D2. Design System Completo (D14)
+
+**Componentes faltantes:**
+- [NEW] `src/components/ui/DatePicker.tsx`
+- [NEW] `src/components/ui/Dropdown.tsx`
+- [NEW] `src/components/ui/ConfirmDialog.tsx`
+- [MODIFY] [src/components/ui/index.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/components/ui/index.ts) — actualizar barrel
+
+**Estimación**: ~1 día
+
+#### D3. Storybook (D12)
+
+**Setup:**
+```bash
+npx storybook@latest init --type react_vite
+```
+
+**Archivos a crear:**
+- [NEW] `.storybook/main.ts`
+- [NEW] `.storybook/preview.ts`
+- [NEW] `src/components/ui/Button.stories.tsx` (1 story por UI component)
+- ~19 archivos `.stories.tsx` para los 19 UI components
+
+**Estimación**: ~3 días
+
+#### D4. Responsive Testing (D15)
+
+**Archivos a modificar:**
+- [playwright.config.ts](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/playwright.config.ts) — añadir viewports mobile y tablet
+- [NEW] `tests/e2e/responsive.spec.ts` — verificar layout en 3 viewports
+
+**Estimación**: ~1 día
+
+**Verificación Sprint D:**
+```bash
+npm run storybook      # Storybook arranca en localhost:6006
+npx playwright test tests/e2e/responsive.spec.ts
+```
+
+---
+
+### Sprint E: ⚡ PERFORMANCE + INFRA (D6, D17, D18) — ~1 semana
+
+> **Por qué último**: Optimización cuando todo lo demás está listo.
+
+#### E1. Bundle Analysis (D18)
+
+```bash
+npm i -D vite-plugin-visualizer
+```
+- Analizar chunks, identificar dependencias grandes
+- Implementar lazy loading por ruta en [Manager.tsx](file:///c:/Users/ibrab/Downloads/app/harvestpro-nz%20%281%29/src/pages/Manager.tsx)
+- Verificar code splitting actual
+
+#### E2. Supabase Pro (D6)
+
+- Upgrade a Supabase Pro ($25/mes)
+- Activar connection pooling
+- Activar daily backups
+- Configurar alertas de DB size
+
+#### E3. Migration Cleanup (D17)
+
+- Consolidar migraciones patch (`fix_*`) en una migración limpia
+- Documentar naming convention: `YYYYMMDD_action_table.sql`
+
+**Verificación Sprint E:**
+```bash
+npx vite build --report  # Verificar bundle size < 500KB gzipped
+lighthouse https://app.harvestpro.nz --output=json  # Score > 90
+```
+
+---
+
+## 📅 Timeline Estimada
+
+```mermaid
+gantt
+    title Plan de Resolución de Deficiencias
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+
+    section Sprint A - Seguridad
+    JWT + Secrets + CSP + Zod    :a1, 2026-03-06, 5d
+
+    section Sprint B - Testing
+    Context tests               :b1, after a1, 2d
+    Component tests 12→30%      :b2, after b1, 5d
+    E2E seed data               :b3, after b2, 3d
+
+    section Sprint C - Arquitectura
+    Services → Repositories     :c1, after b3, 10d
+    Nuevas Edge Functions       :c2, after c1, 10d
+
+    section Sprint D - UI/UX
+    Dark Mode + DS + Storybook  :d1, after c2, 7d
+    Responsive testing          :d2, after d1, 1d
+
+    section Sprint E - Performance
+    Bundle + Supabase Pro       :e1, after d2, 5d
+```
+
+---
+
+## 📊 Impacto Esperado
+
+| Métrica | Antes (5 Mar) | **Después (meta)** |
+|---|---|---|
+| Deficiencias críticas (🔴) | 6 | **0** |
+| Deficiencias importantes (🟡) | 6 | **0-1** |
+| Component test coverage | 12% | **30%+** |
+| Context test coverage | 0% | **80%+** |
+| E2E tests passing | 19/87 | **60+/87** |
+| Edge Functions | 2 | **6** |
+| Services con Supabase directo | ~32 | **<5** |
+| Security issues | 5 activos | **0** |
+| Storybook | ❌ | **✅ 19 stories** |
+| Dark mode | ❌ | **✅** |
+| Bundle optimizado | ❌ | **✅ <500KB gz** |
+
+> [!IMPORTANT]
+> **Al completar los 5 sprints, el proyecto pasará de ~35-40% a ~70-75%.** El 25-30% restante son las features nuevas de Fase 2 del roadmap (Push Notifications, Multitenancy, Inventory, Weather, etc.) que añaden funcionalidad nueva, no arreglan deficiencias.

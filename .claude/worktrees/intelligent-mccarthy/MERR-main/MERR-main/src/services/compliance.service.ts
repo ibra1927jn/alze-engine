@@ -1,0 +1,379 @@
+// =============================================
+// NZ COMPLIANCE SERVICE - Labor law compliance
+// =============================================
+// New Zealand Employment Relations Act requirements:
+// - Rest breaks: 10min paid break every 2 hours
+// - Meal breaks: 30min unpaid break every 4 hours
+// - Minimum wage: $23.50/hour (as of 2024)
+// - Max consecutive hours before mandatory break
+// =============================================
+
+import { MINIMUM_WAGE, PIECE_RATE } from '../types';
+import { nowNZST } from '@/utils/nzst';
+
+/**
+ * Break type definitions per NZ law
+ */
+export type BreakType = 'rest' | 'meal' | 'hydration';
+
+/**
+ * Compliance status for a picker
+ */
+export interface ComplianceStatus {
+    pickerId: string;
+    isCompliant: boolean;
+    violations: ComplianceViolation[];
+    nextBreakDue?: {
+        type: BreakType;
+        dueAt: Date;
+        overdue: boolean;
+        minutesOverdue?: number;
+    };
+    wageCompliance: {
+        isCompliant: boolean;
+        effectiveHourlyRate: number;
+        minimumWage: number;
+        shortfall?: number;
+    };
+    workHours: {
+        consecutiveMinutes: number;
+        totalToday: number;
+        maxRecommended: number;
+        needsBreak: boolean;
+    };
+}
+
+/**
+ * Compliance violation record
+ */
+export interface ComplianceViolation {
+    type: 'break_overdue' | 'wage_below_minimum' | 'excessive_hours' | 'hydration_reminder';
+    severity: 'low' | 'medium' | 'high';
+    message: string;
+    details?: Record<string, unknown>;
+    occurredAt: Date;
+}
+
+/**
+ * NZ Employment law break requirements
+ */
+export const NZ_BREAK_REQUIREMENTS = {
+    REST_BREAK_INTERVAL_MINUTES: 120, // 10min break every 2 hours
+    REST_BREAK_DURATION_MINUTES: 10,
+    MEAL_BREAK_INTERVAL_MINUTES: 240, // 30min break every 4 hours
+    MEAL_BREAK_DURATION_MINUTES: 30,
+    HYDRATION_REMINDER_INTERVAL_MINUTES: 45, // Field work recommendation
+    MAX_CONSECUTIVE_WORK_HOURS: 10,
+    RECOMMENDED_MAX_DAILY_HOURS: 12,
+} as const;
+
+/**
+ * NZ minimum wage (updated per legislation)
+ */
+export const NZ_MINIMUM_WAGE = MINIMUM_WAGE; // $23.50/hour from types.ts
+
+// =============================================
+// BREAK COMPLIANCE
+// =============================================
+
+/**
+ * Calculate when next break is due
+ */
+export function calculateNextBreakDue(
+    lastBreakAt: Date | null,
+    breakType: BreakType,
+    workStartTime: Date
+): Date {
+    const baseTime = lastBreakAt || workStartTime;
+
+    let intervalMinutes: number;
+    switch (breakType) {
+        case 'rest':
+            intervalMinutes = NZ_BREAK_REQUIREMENTS.REST_BREAK_INTERVAL_MINUTES;
+            break;
+        case 'meal':
+            intervalMinutes = NZ_BREAK_REQUIREMENTS.MEAL_BREAK_INTERVAL_MINUTES;
+            break;
+        case 'hydration':
+            intervalMinutes = NZ_BREAK_REQUIREMENTS.HYDRATION_REMINDER_INTERVAL_MINUTES;
+            break;
+        default:
+            intervalMinutes = NZ_BREAK_REQUIREMENTS.REST_BREAK_INTERVAL_MINUTES;
+    }
+
+    return new Date(baseTime.getTime() + intervalMinutes * 60 * 1000);
+}
+
+/**
+ * Check if a break is overdue
+ */
+export function isBreakOverdue(
+    lastBreakAt: Date | null,
+    breakType: BreakType,
+    workStartTime: Date
+): {
+    overdue: boolean;
+    minutesOverdue: number;
+    dueAt: Date;
+} {
+    // 🔧 L7: Use NZST time, not UTC — prevents 12-13h error in break checks
+    const now = new Date(nowNZST());
+    const dueAt = calculateNextBreakDue(lastBreakAt, breakType, workStartTime);
+    const overdue = now > dueAt;
+    const minutesOverdue = overdue ? Math.floor((now.getTime() - dueAt.getTime()) / 60000) : 0;
+
+    return { overdue, minutesOverdue, dueAt };
+}
+
+/**
+ * Get required break duration in minutes
+ */
+export function getRequiredBreakDuration(breakType: BreakType): number {
+    switch (breakType) {
+        case 'rest':
+            return NZ_BREAK_REQUIREMENTS.REST_BREAK_DURATION_MINUTES;
+        case 'meal':
+            return NZ_BREAK_REQUIREMENTS.MEAL_BREAK_DURATION_MINUTES;
+        case 'hydration':
+            return 5; // Quick hydration break
+        default:
+            return NZ_BREAK_REQUIREMENTS.REST_BREAK_DURATION_MINUTES;
+    }
+}
+
+// =============================================
+// WAGE COMPLIANCE
+// =============================================
+
+/**
+ * Calculate effective hourly rate for piece-rate worker
+ */
+export function calculateEffectiveHourlyRate(
+    bucketCount: number,
+    hoursWorked: number,
+    pieceRate: number = PIECE_RATE
+): number {
+    if (hoursWorked <= 0) return 0;
+    return (bucketCount * pieceRate) / hoursWorked;
+}
+
+/**
+ * Check if piece-rate earnings meet minimum wage
+ */
+export function checkWageCompliance(
+    bucketCount: number,
+    hoursWorked: number,
+    pieceRate: number = PIECE_RATE
+): {
+    isCompliant: boolean;
+    effectiveHourlyRate: number;
+    minimumWage: number;
+    shortfall: number;
+    topUpRequired: number;
+} {
+    const effectiveRate = calculateEffectiveHourlyRate(bucketCount, hoursWorked, pieceRate);
+    const isCompliant = effectiveRate >= NZ_MINIMUM_WAGE;
+    const shortfall = isCompliant ? 0 : NZ_MINIMUM_WAGE - effectiveRate;
+
+    // Calculate top-up required to meet minimum wage
+    const earnedAmount = bucketCount * pieceRate;
+    const minimumRequired = hoursWorked * NZ_MINIMUM_WAGE;
+    const topUpRequired = Math.max(0, minimumRequired - earnedAmount);
+
+    return {
+        isCompliant,
+        effectiveHourlyRate: Math.round(effectiveRate * 100) / 100,
+        minimumWage: NZ_MINIMUM_WAGE,
+        shortfall: Math.round(shortfall * 100) / 100,
+        topUpRequired: Math.round(topUpRequired * 100) / 100,
+    };
+}
+
+/**
+ * Calculate minimum buckets needed per hour to earn minimum wage
+ */
+export function getMinimumBucketsPerHour(pieceRate: number = PIECE_RATE): number {
+    return Math.ceil((NZ_MINIMUM_WAGE / pieceRate) * 10) / 10; // Round up to 1 decimal
+}
+
+// =============================================
+// WORK HOURS COMPLIANCE
+// =============================================
+
+/**
+ * Check work hours compliance
+ */
+export function checkWorkHoursCompliance(
+    consecutiveMinutes: number,
+    totalMinutesToday: number
+): {
+    needsBreak: boolean;
+    maxRecommendedReached: boolean;
+    warning?: string;
+} {
+    const maxConsecutiveMinutes = NZ_BREAK_REQUIREMENTS.MAX_CONSECUTIVE_WORK_HOURS * 60;
+    const maxDailyMinutes = NZ_BREAK_REQUIREMENTS.RECOMMENDED_MAX_DAILY_HOURS * 60;
+
+    const needsBreak = consecutiveMinutes >= 110; // 10 minutes before 2-hour mark
+    const maxRecommendedReached = totalMinutesToday >= maxDailyMinutes;
+
+    let warning: string | undefined;
+    if (consecutiveMinutes >= maxConsecutiveMinutes) {
+        warning = `Worker has been working ${Math.round(consecutiveMinutes / 60)} hours without a mandatory break`;
+    } else if (maxRecommendedReached) {
+        warning = `Worker has exceeded recommended ${NZ_BREAK_REQUIREMENTS.RECOMMENDED_MAX_DAILY_HOURS} hours for the day`;
+    }
+
+    return { needsBreak, maxRecommendedReached, warning };
+}
+
+// =============================================
+// FULL COMPLIANCE CHECK
+// =============================================
+
+/**
+ * Perform full compliance check for a picker
+ */
+export function checkPickerCompliance(input: {
+    pickerId: string;
+    bucketCount: number;
+    hoursWorked: number;
+    consecutiveMinutesWorked: number;
+    totalMinutesToday: number;
+    lastRestBreakAt: Date | null;
+    lastMealBreakAt: Date | null;
+    lastHydrationAt: Date | null;
+    workStartTime: Date;
+}): ComplianceStatus {
+    // 🔧 L17: Use NZST, not UTC — violation timestamps must match NZST break checks
+    const now = new Date(nowNZST());
+    const violations: ComplianceViolation[] = [];
+
+    // Check wage compliance
+    const wageCheck = checkWageCompliance(input.bucketCount, input.hoursWorked);
+    if (!wageCheck.isCompliant && input.hoursWorked >= 1) {
+        violations.push({
+            type: 'wage_below_minimum',
+            severity: 'high',
+            message: `Effective rate $${wageCheck.effectiveHourlyRate}/hr is below minimum wage $${NZ_MINIMUM_WAGE}/hr`,
+            details: { shortfall: wageCheck.shortfall, topUpRequired: wageCheck.topUpRequired },
+            occurredAt: now,
+        });
+    }
+
+    // Check rest break compliance
+    const restBreakCheck = isBreakOverdue(input.lastRestBreakAt, 'rest', input.workStartTime);
+    if (restBreakCheck.overdue) {
+        violations.push({
+            type: 'break_overdue',
+            severity: restBreakCheck.minutesOverdue > 30 ? 'high' : 'medium',
+            message: `Rest break overdue by ${restBreakCheck.minutesOverdue} minutes`,
+            details: { breakType: 'rest', dueAt: restBreakCheck.dueAt },
+            occurredAt: now,
+        });
+    }
+
+    // Check meal break compliance
+    const mealBreakCheck = isBreakOverdue(input.lastMealBreakAt, 'meal', input.workStartTime);
+    if (mealBreakCheck.overdue) {
+        violations.push({
+            type: 'break_overdue',
+            severity: 'high',
+            message: `Meal break overdue by ${mealBreakCheck.minutesOverdue} minutes`,
+            details: { breakType: 'meal', dueAt: mealBreakCheck.dueAt },
+            occurredAt: now,
+        });
+    }
+
+    // Check hydration (lower severity, field work recommendation)
+    const hydrationCheck = isBreakOverdue(input.lastHydrationAt, 'hydration', input.workStartTime);
+    if (hydrationCheck.overdue && hydrationCheck.minutesOverdue > 15) {
+        violations.push({
+            type: 'hydration_reminder',
+            severity: 'low',
+            message: `Hydration reminder - ${hydrationCheck.minutesOverdue} minutes since last water break`,
+            occurredAt: now,
+        });
+    }
+
+    // Check work hours
+    const hoursCheck = checkWorkHoursCompliance(
+        input.consecutiveMinutesWorked,
+        input.totalMinutesToday
+    );
+    if (hoursCheck.warning) {
+        violations.push({
+            type: 'excessive_hours',
+            severity: 'high',
+            message: hoursCheck.warning,
+            occurredAt: now,
+        });
+    }
+
+    // Determine next break due
+
+    const breakChecks = [
+        { type: 'rest' as BreakType, check: restBreakCheck },
+        { type: 'meal' as BreakType, check: mealBreakCheck },
+        { type: 'hydration' as BreakType, check: hydrationCheck },
+    ];
+
+    // Find the soonest break that's due or overdue
+    const sortedBreaks = breakChecks.sort(
+        (a, b) => a.check.dueAt.getTime() - b.check.dueAt.getTime()
+    );
+    const nextBreak = sortedBreaks[0];
+    const nextBreakDue: ComplianceStatus['nextBreakDue'] = {
+        type: nextBreak.type,
+        dueAt: nextBreak.check.dueAt,
+        overdue: nextBreak.check.overdue,
+        minutesOverdue: nextBreak.check.minutesOverdue,
+    };
+
+    return {
+        pickerId: input.pickerId,
+        isCompliant: violations.filter((v) => v.severity !== 'low').length === 0,
+        violations,
+        nextBreakDue,
+        wageCompliance: {
+            isCompliant: wageCheck.isCompliant,
+            effectiveHourlyRate: wageCheck.effectiveHourlyRate,
+            minimumWage: NZ_MINIMUM_WAGE,
+            shortfall: wageCheck.shortfall,
+        },
+        workHours: {
+            consecutiveMinutes: input.consecutiveMinutesWorked,
+            totalToday: input.totalMinutesToday,
+            maxRecommended: NZ_BREAK_REQUIREMENTS.RECOMMENDED_MAX_DAILY_HOURS * 60,
+            needsBreak: hoursCheck.needsBreak,
+        },
+    };
+}
+
+// =============================================
+// EXPORTS
+// =============================================
+
+export const complianceService = {
+    // Break compliance
+    calculateNextBreakDue,
+    isBreakOverdue,
+    getRequiredBreakDuration,
+
+    // Wage compliance
+    calculateEffectiveHourlyRate,
+    checkWageCompliance,
+    getMinimumBucketsPerHour,
+
+    // Work hours
+    checkWorkHoursCompliance,
+
+    // Full check
+    checkPickerCompliance,
+
+    // Constants
+    NZ_BREAK_REQUIREMENTS,
+    NZ_MINIMUM_WAGE,
+};
+
+export default complianceService;

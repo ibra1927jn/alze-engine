@@ -1,0 +1,58 @@
+{
+    "version": "1.0.0",
+    "description": "Compliance thresholds for NZ Employment Relations Act",
+    "minimumWage": {
+        "hourlyRate": 23.50,
+        "warningThreshold": 0.95,
+        "criticalThreshold": 1.0,
+        "description": "Alert at 95% of minimum wage, critical below 100%"
+    },
+    "breaks": {
+        "rest": {
+            "intervalMinutes": 120,
+            "durationMinutes": 10,
+            "description": "10min paid break every 2 hours"
+        },
+        "meal": {
+            "intervalMinutes": 240,
+            "durationMinutes": 30,
+            "description": "30min unpaid break every 4 hours"
+        },
+        "hydration": {
+            "intervalMinutes": 45,
+            "durationMinutes": 5,
+            "description": "Field work hydration reminder"
+        }
+    },
+    "workHours": {
+        "maxConsecutiveHours": 10,
+        "recommendedMaxDailyHours": 12,
+        "warningBeforeBreakMinutes": 10,
+        "description": "Warn 10 minutes before mandatory break"
+    },
+    "alerts": {
+        "wageViolation": {
+            "severity": "high",
+            "gracePeriodMinutes": 0,
+            "minimumHoursBeforeAlert": 1.0
+        },
+        "breakOverdue": {
+            "rest": {
+                "severity": "medium",
+                "criticalAfterMinutes": 30
+            },
+            "meal": {
+                "severity": "high",
+                "criticalAfterMinutes": 15
+            }
+        },
+        "excessiveHours": {
+            "severity": "high",
+            "enabled": true
+        }
+    },
+    "pieceRate": {
+        "bucketRate": 6.50,
+        "description": "NZD per bucket"
+    }
+}

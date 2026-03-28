@@ -1,0 +1,63 @@
+﻿[hhrr]
+  CalendarTab.tsx,63
+  ContractsTab.tsx,173
+  DocumentsTab.tsx,56
+  EmployeesTab.tsx,162
+  PayrollTab.tsx,62
+  SeasonalPlanningTab.tsx,221
+[logistics]
+  BinsTab.tsx,71
+  FleetTab.tsx,142
+  HistoryTab.tsx,46
+  RequestsTab.tsx,226
+  RoutesTab.tsx,54
+[manager]
+  RunnersSection.tsx,55
+  TeamsToolbar.tsx,84
+  BroadcastModal.tsx,110
+  CostAnalyticsView.tsx,234
+  DashboardView.tsx,195
+  DayClosureButton.tsx,234
+  DeadLetterQueueView.tsx,290
+  GoalProgress.tsx,53
+  HeatMapView.tsx,196
+  InsightsView.tsx,57
+  LiveFloor.tsx,68
+  LogisticsView.tsx,190
+  MessagingView.tsx,8
+  OrchardMapView.tsx,352
+  RowAssignmentModal.tsx,96
+  RowListView.tsx,178
+  SettingsView.tsx,409
+  TeamLeaderCard.tsx,114
+  TeamLeadersSidebar.tsx,57
+  TeamsView.tsx,125
+  TimesheetEditor.tsx,358
+  VelocityChart.tsx,131
+  WageShieldPanel.tsx,190
+  WeeklyReportView.tsx,199
+[payroll]
+  ExportHistoryTab.tsx,141
+[qc]
+  DistributionBar.tsx,40
+  HistoryTab.tsx,144
+  InspectTab.tsx,280
+  StatsTab.tsx,77
+  TrendsTab.tsx,188
+[runner]
+  LogisticsView.tsx,230
+  MessagingView.tsx,8
+  RunnersView.tsx,80
+  WarehouseView.tsx,116
+[team-leader]
+  AttendanceView.tsx,135
+  Header.tsx,37
+  HomeView.tsx,202
+  index.tsx,16
+  LogisticsView.tsx,133
+  MessagingView.tsx,8
+  ProfileView.tsx,123
+  RunnersView.tsx,75
+  TasksView.tsx,174
+  TeamView.tsx,212
+
