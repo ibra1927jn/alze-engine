@@ -75,6 +75,7 @@ public:
     }
 
     bool has(const std::string& id) const {
+        std::lock_guard<std::mutex> lock(m_mutex); // Proteger contra data race
         auto it = m_cache.find(id);
         return it != m_cache.end() && !it->second.expired();
     }
@@ -105,6 +106,7 @@ public:
     }
 
     int getAliveCount() const {
+        std::lock_guard<std::mutex> lock(m_mutex); // Proteger contra data race
         int count = 0;
         for (auto& [id, wp] : m_cache)
             if (!wp.expired()) count++;

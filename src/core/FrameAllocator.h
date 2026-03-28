@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <mutex>
 
 namespace engine {
 namespace core {
@@ -50,12 +51,14 @@ public:
 
     /// Resetear al inicio de cada frame (O(1), coste cero)
     static void reset() {
+        std::lock_guard<std::mutex> lock(s_mutex); // Proteger contra data race
         s_offset = 0;
         s_allocCount = 0;
     }
 
     /// Reservar N bytes alineados
     static void* alloc(size_t bytes, size_t alignment = 8) {
+        std::lock_guard<std::mutex> lock(s_mutex); // Proteger contra data race
         // Alinear el offset
         size_t aligned = (s_offset + alignment - 1) & ~(alignment - 1);
 
@@ -104,6 +107,7 @@ private:
     static inline size_t s_peakUsage = 0;
     static inline int s_allocCount = 0;
     static inline int s_totalAllocCount = 0;
+    static inline std::mutex s_mutex;
 };
 
 /// FrameArray - Un arreglo rápido respaldado por el FrameAllocator.

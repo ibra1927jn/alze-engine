@@ -15,12 +15,12 @@
 
 ## P1 — Bugs funcionales serios
 
-- [2026-03-28] | core/StateManager.h:106-117 | Render loop de estados transparentes puede ir a indice -1 si no hay estado opaco debajo — out-of-bounds | Clampar firstVisible a 0
-- [2026-03-28] | core/EventBus.h | Sin mecanismo de unsubscribe — lambdas con captures se vuelven dangling pointers al destruir states | Agregar unsubscribe o weak references
-- [2026-03-28] | core/FrameAllocator.h | No es thread-safe pero se usa desde JobSystem workers — data race en s_offset | Usar atomic o allocator per-thread
-- [2026-03-28] | core/Logger.h | No es thread-safe (s_file, s_lineCount) pese a incluir <mutex> — data race en output | Agregar lock_guard en log()
-- [2026-03-28] | core/Profiler.h | No thread-safe — data race si se profila desde workers | Agregar locks o profiler per-thread
-- [2026-03-28] | core/ResourceManager.h:77,107 | has() y getAliveCount() no toman lock del mutex — data race | Agregar lock
+- [2026-03-28] | core/StateManager.h:106-117 | Render loop de estados transparentes puede ir a indice -1 si no hay estado opaco debajo — out-of-bounds | **FIXED** Clamp firstVisible a 0, early return si vacio
+- [2026-03-28] | core/EventBus.h | Sin mecanismo de unsubscribe — lambdas con captures se vuelven dangling pointers al destruir states | **FIXED** subscribe() retorna SubscriptionId, agregado unsubscribe() y unsubscribeAll<T>()
+- [2026-03-28] | core/FrameAllocator.h | No es thread-safe pero se usa desde JobSystem workers — data race en s_offset | **FIXED** Agregado std::mutex con lock_guard en alloc() y reset()
+- [2026-03-28] | core/Logger.h | No es thread-safe (s_file, s_lineCount) pese a incluir <mutex> — data race en output | **FIXED** Agregado lock_guard en log(), setFile(), closeFile(), flush()
+- [2026-03-28] | core/Profiler.h | No thread-safe — data race si se profila desde workers | **FIXED** Agregado std::mutex con lock_guard en beginFrame/endFrame/begin/end/generateReport
+- [2026-03-28] | core/ResourceManager.h:77,107 | has() y getAliveCount() no toman lock del mutex — data race | **FIXED** Agregado lock_guard en has() y getAliveCount()
 - [2026-03-28] | renderer/ForwardRenderer.cpp:350-355 | Texture slots 4-6 colisionan entre IBL (irradiance/prefilter/brdfLUT) y material (emissive/AO/height) | **FIXED** IBL reasignado a slots 7-9, shadows a 10-11. Material mantiene 0-6
 - [2026-03-28] | renderer/ForwardRenderer.cpp:334 | Material skip compara direcciones de copias en RenderItem3D — siempre false, optimizacion nunca activa | Comparar por material ID o por valor
 - [2026-03-28] | physics/GJK.inl:94 | EPA nunca calcula contactPoint — convex hull collisions obtienen punto (0,0,0) | **FIXED** Interpolacion baricentrica de support points en la cara mas cercana del polytope; se trackean supportA/supportB por vertice

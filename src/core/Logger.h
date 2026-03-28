@@ -40,6 +40,7 @@ public:
 
     /// Activar salida a archivo (además de consola)
     static void setFile(const std::string& path) {
+        std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
         if (s_file.is_open()) s_file.close();
         s_file.open(path, std::ios::out | std::ios::trunc);
         s_fileEnabled = s_file.is_open();
@@ -51,6 +52,7 @@ public:
 
     /// Cerrar archivo de log
     static void closeFile() {
+        std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
         if (s_file.is_open()) {
             s_file << "=== Engine Log Ended ===" << std::endl;
             s_file.close();
@@ -60,6 +62,7 @@ public:
 
     /// Forzar escritura a disco
     static void flush() {
+        std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
         if (s_file.is_open()) s_file.flush();
     }
 
@@ -86,6 +89,9 @@ public:
         char timeBuf[16];
         time_t now = time(nullptr);
         strftime(timeBuf, sizeof(timeBuf), "%H:%M:%S", localtime(&now));
+
+        // Proteger escritura a consola y archivo contra data race
+        std::lock_guard<std::mutex> lock(s_mutex);
 
         // Console output (with color)
         std::cout << colorCode
@@ -124,6 +130,7 @@ private:
     static inline bool s_fileEnabled = false;
     static inline std::string s_filePath;
     static inline int s_lineCount = 0;
+    static inline std::mutex s_mutex;
 };
 
 } // namespace core

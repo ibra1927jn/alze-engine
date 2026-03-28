@@ -9,6 +9,7 @@
 #include <array>
 #include <algorithm>
 #include <cstdint>
+#include <mutex>
 
 namespace engine {
 namespace core {
@@ -59,12 +60,14 @@ public:
 
     /// Iniciar medición del frame
     static void beginFrame() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger contra data race
         s_frameStart = Clock::now();
         s_drawCalls = 0;
     }
 
     /// Finalizar medición del frame
     static void endFrame() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger contra data race
         auto now = Clock::now();
         float ms = std::chrono::duration<float, std::milli>(now - s_frameStart).count();
 
@@ -83,6 +86,7 @@ public:
     /// Iniciar medición de un bloque por ID (O(1), zero alloc)
     static void begin(uint32_t sectionId) {
         if (sectionId >= MAX_SECTIONS) return;
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger contra data race
         s_sectionTimers[sectionId] = Clock::now();
     }
 
@@ -90,6 +94,7 @@ public:
     static void end(uint32_t sectionId) {
         if (sectionId >= MAX_SECTIONS) return;
 
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger contra data race
         auto now = Clock::now();
         float ms = std::chrono::duration<float, std::milli>(now - s_sectionTimers[sectionId]).count();
 
@@ -182,6 +187,7 @@ public:
 
     /// Texto completo del profiler
     static std::string generateReport() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger lectura de datos
         std::ostringstream oss;
         oss << std::fixed << std::setprecision(2);
         oss << "=== PROFILER ===\n";
@@ -203,6 +209,7 @@ public:
 private:
     /// Map nombre → ID (lazy, solo para backward compat)
     static uint32_t getOrCreateId(std::string_view name) {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger name map
         for (uint32_t i = 0; i < s_nameCount; i++) {
             if (s_sectionNames[i] == name) return i;
         }
@@ -248,6 +255,7 @@ private:
     // Name mapping (backward compat)
     inline static std::array<std::string, MAX_SECTIONS> s_sectionNames = {};
     inline static uint32_t s_nameCount = 0;
+    inline static std::recursive_mutex s_mutex; // Recursivo: begin(string_view) -> getOrCreateId -> begin(uint32_t)
 };
 
 /// ScopedTimer — RAII profiler guard. Automatically calls begin/end.

@@ -50,9 +50,10 @@
 - [2026-03-28] | AdvancedFriction.h (Pacejka), MolecularDynamics.h | Implementadas, standalone
 
 ## Pendiente
-- Fix P0: thread safety restante (FrameAllocator, Logger, Profiler) | Prioridad: alta
+- ~~Fix P0: thread safety restante (FrameAllocator, Logger, Profiler)~~ | **DONE**
 - ~~Fix P1: EPA contactPoint~~ | **DONE**
-- Fix P1: subsystem dt, StateManager bounds | Prioridad: alta
+- ~~Fix P1: StateManager bounds, EventBus unsubscribe, ResourceManager locks~~ | **DONE**
+- Fix P1: subsystem dt (physics), ForwardRenderer material skip | Prioridad: alta
 - ~~Fix P1: texture slot collision en ForwardRenderer~~ | **DONE**
 - Tests: renderer, audio, NavMesh, Color, MathConstants, Transform2D | Prioridad: media
 - Performance: BVH raycast, island adjacency, deferred uniform cache | Prioridad: media

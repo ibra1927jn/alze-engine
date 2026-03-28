@@ -80,9 +80,14 @@ struct DebugEvent {
 
 // ── EventBus ───────────────────────────────────────────────────
 
+/// ID opaco para desuscribirse de un evento
+using SubscriptionId = uint32_t;
+
 class IEventHandler {
 public:
     virtual ~IEventHandler() = default;
+    /// Remover un listener por su ID de suscripcion
+    virtual bool remove(SubscriptionId id) = 0;
 };
 
 template<typename T>
@@ -90,31 +95,89 @@ class EventHandler : public IEventHandler {
 public:
     using Callback = std::function<void(const T&)>;
 
-    void add(Callback cb) {
-        m_callbacks.push_back(std::move(cb));
+    /// Agregar callback y devolver ID para desuscripcion
+    SubscriptionId add(Callback cb) {
+        SubscriptionId id = m_nextId++;
+        m_callbacks.push_back({id, std::move(cb)});
+        return id;
     }
 
     void invoke(const T& event) {
-        for (auto& cb : m_callbacks) {
-            cb(event);
+        for (auto& entry : m_callbacks) {
+            entry.callback(event);
         }
     }
 
+    /// Remover listener por ID — retorna true si se encontro
+    bool remove(SubscriptionId id) override {
+        for (auto it = m_callbacks.begin(); it != m_callbacks.end(); ++it) {
+            if (it->id == id) {
+                m_callbacks.erase(it);
+                return true;
+            }
+        }
+        return false;
+    }
+
 private:
-    std::vector<Callback> m_callbacks;
+    struct Entry {
+        SubscriptionId id;
+        Callback callback;
+    };
+    std::vector<Entry> m_callbacks;
+    SubscriptionId m_nextId = 0;
 };
 
 class EventBus {
 public:
-    /// Suscribirse a un tipo de evento
+    /// Suscribirse a un tipo de evento — retorna ID para desuscripcion
     template<typename T>
-    void subscribe(std::function<void(const T&)> callback) {
+    SubscriptionId subscribe(std::function<void(const T&)> callback) {
         auto typeId = getEventTypeId<T>();
         auto it = m_handlers.find(typeId);
         if (it == m_handlers.end()) {
             m_handlers[typeId] = std::make_unique<EventHandler<T>>();
         }
-        static_cast<EventHandler<T>*>(m_handlers[typeId].get())->add(std::move(callback));
+        SubscriptionId subId = static_cast<EventHandler<T>*>(m_handlers[typeId].get())->add(std::move(callback));
+        // Codificar typeId + subId local para busqueda rapida al desuscribir
+        SubscriptionId globalId = m_nextGlobalId++;
+        m_subscriptionMap[globalId] = typeId;
+        m_localIds[globalId] = subId;
+        return globalId;
+    }
+
+    /// Desuscribirse por ID — evita dangling pointers al destruir states
+    bool unsubscribe(SubscriptionId globalId) {
+        auto mapIt = m_subscriptionMap.find(globalId);
+        if (mapIt == m_subscriptionMap.end()) return false;
+
+        EventTypeId typeId = mapIt->second;
+        SubscriptionId localId = m_localIds[globalId];
+
+        auto handlerIt = m_handlers.find(typeId);
+        if (handlerIt != m_handlers.end()) {
+            handlerIt->second->remove(localId);
+        }
+
+        m_subscriptionMap.erase(mapIt);
+        m_localIds.erase(globalId);
+        return true;
+    }
+
+    /// Remover todos los listeners de un tipo de evento
+    template<typename T>
+    void unsubscribeAll() {
+        auto typeId = getEventTypeId<T>();
+        m_handlers.erase(typeId);
+        // Limpiar mapeos correspondientes a ese tipo
+        for (auto it = m_subscriptionMap.begin(); it != m_subscriptionMap.end();) {
+            if (it->second == typeId) {
+                m_localIds.erase(it->first);
+                it = m_subscriptionMap.erase(it);
+            } else {
+                ++it;
+            }
+        }
     }
 
     /// Emitir un evento (notifica a todos los suscriptores)
@@ -135,6 +198,10 @@ public:
 
 private:
     std::unordered_map<EventTypeId, std::unique_ptr<IEventHandler>> m_handlers;
+    // Mapeo global ID → tipo de evento y ID local dentro del handler
+    std::unordered_map<SubscriptionId, EventTypeId> m_subscriptionMap;
+    std::unordered_map<SubscriptionId, SubscriptionId> m_localIds;
+    SubscriptionId m_nextGlobalId = 0;
     uint32_t m_totalEmitted = 0;
 };
 
