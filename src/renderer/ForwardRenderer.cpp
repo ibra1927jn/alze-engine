@@ -335,7 +335,8 @@ void ForwardRenderer::renderScenePass(const math::Matrix4x4 lightSpaceMatrices[2
         setNormalMatrix(item.modelMatrix);
 
         const auto& mat = item.material;
-        const bool sameMat = (lastMat && lastMat == &mat);
+        // Comparar por valor en vez de por puntero (las copias en RenderItem3D tienen direcciones distintas)
+        const bool sameMat = (lastMat && *lastMat == mat);
         if (!sameMat) {
             glUniform3f(m_uniforms.matAlbedo, mat.albedoColor.x, mat.albedoColor.y, mat.albedoColor.z);
             glUniform1f(m_uniforms.matMetallic, mat.metallic);

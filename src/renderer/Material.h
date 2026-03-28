@@ -37,6 +37,18 @@ struct Material {
     const Texture2D* heightMap              = nullptr;   // For parallax occlusion mapping
     float parallaxScale = 0.05f;                         // Height scale for POM
 
+    // ── Comparacion por valor (para skip de material redundante) ──
+    bool operator==(const Material& o) const {
+        return albedoColor == o.albedoColor
+            && metallic == o.metallic && roughness == o.roughness && ao == o.ao
+            && emissiveColor == o.emissiveColor && emissiveIntensity == o.emissiveIntensity
+            && albedoTexture == o.albedoTexture && normalMap == o.normalMap
+            && metallicRoughnessMap == o.metallicRoughnessMap
+            && emissiveTexture == o.emissiveTexture && aoTexture == o.aoTexture
+            && heightMap == o.heightMap && parallaxScale == o.parallaxScale;
+    }
+    bool operator!=(const Material& o) const { return !(*this == o); }
+
     // ── Apply to active shader ─────────────────────────────────
     void apply(const ShaderProgram& shader) const;
 

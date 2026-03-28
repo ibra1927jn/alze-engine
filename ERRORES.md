@@ -22,9 +22,9 @@
 - [2026-03-28] | core/Profiler.h | No thread-safe — data race si se profila desde workers | **FIXED** Agregado std::mutex con lock_guard en beginFrame/endFrame/begin/end/generateReport
 - [2026-03-28] | core/ResourceManager.h:77,107 | has() y getAliveCount() no toman lock del mutex — data race | **FIXED** Agregado lock_guard en has() y getAliveCount()
 - [2026-03-28] | renderer/ForwardRenderer.cpp:350-355 | Texture slots 4-6 colisionan entre IBL (irradiance/prefilter/brdfLUT) y material (emissive/AO/height) | **FIXED** IBL reasignado a slots 7-9, shadows a 10-11. Material mantiene 0-6
-- [2026-03-28] | renderer/ForwardRenderer.cpp:334 | Material skip compara direcciones de copias en RenderItem3D — siempre false, optimizacion nunca activa | Comparar por material ID o por valor
+- [2026-03-28] | renderer/ForwardRenderer.cpp:334 | Material skip compara direcciones de copias en RenderItem3D — siempre false, optimizacion nunca activa | **FIXED** Agregado operator== a Material, comparacion por valor en vez de por puntero
 - [2026-03-28] | physics/GJK.inl:94 | EPA nunca calcula contactPoint — convex hull collisions obtienen punto (0,0,0) | **FIXED** Interpolacion baricentrica de support points en la cara mas cercana del polytope; se trackean supportA/supportB por vertice
-- [2026-03-28] | physics/PhysicsWorld3D.cpp:344-357 | Subsistemas fuera del substep loop reciben subDt en vez de dt — simulacion a velocidad incorrecta | Pasar dt a fluid/EM/softbody/gravity/wave
+- [2026-03-28] | physics/PhysicsWorld3D.cpp:344-357 | Subsistemas fuera del substep loop reciben subDt en vez de dt — simulacion a velocidad incorrecta | **FIXED** Cambiado subDt a dt para fluid/EM/softbody/gravity/wave
 
 ## P2 — Bugs menores y performance
 
@@ -33,9 +33,9 @@
 - [2026-03-28] | physics/PhysicsWorld3D.cpp:368 | Raycast es O(N) brute force ignorando el BVH que ya existe | Usar BVH para raycast
 - [2026-03-28] | physics/Constraints3D.h:277 + PhysicsWorld3D.cpp:224-226 | Double iteration loop: solver.iterations * world.iterations = 80 iteraciones | Quitar uno de los dos loops
 - [2026-03-28] | renderer/DeferredRenderer.cpp:102-113 | glGetUniformLocation llamado por-objeto por-frame en vez de cacheado | Cachear como ForwardRenderer
-- [2026-03-28] | core/ProceduralAudio.cpp:49 | Vibrato usa vibratoDept para rate en vez de vibratoRate — audio incorrecto | Cambiar a p.vibratoRate
-- [2026-03-28] | ecs/EntityManager.h:61-63 | Entity{0} gen 0 es indistinguible del sentinel "not found" | Reservar index 0 o usar Optional
-- [2026-03-28] | renderer/Texture2D.h:155-157 | wrapHandle() no libera handle previo si ya tenia ownership — GPU memory leak | Verificar y liberar handle existente
+- [2026-03-28] | core/ProceduralAudio.cpp:49 | Vibrato usa vibratoDept para rate en vez de vibratoRate — audio incorrecto | **FIXED** Cambiado p.vibratoDept a p.vibratoRate en sine de vibrato; default vibratoRate cambiado a 5.0f
+- [2026-03-28] | ecs/ECSCoordinator.h:231 | Entity{0} gen 0 es indistinguible del sentinel "not found" | **FIXED** findFirstByTag retorna NULL_ENTITY (UINT32_MAX) en vez de Entity{0}
+- [2026-03-28] | renderer/Texture2D.h:155-157 | wrapHandle() no libera handle previo si ya tenia ownership — GPU memory leak | **FIXED** Agregado glDeleteTextures antes de asignar nuevo handle si m_owned era true
 - [2026-03-28] | ecs/ECSCoordinator.h:289-322 | parallelForEach() crea std::thread por llamada (~100us por thread) | Usar JobSystem existente
 
 ## P3 — Deuda tecnica / cleanup

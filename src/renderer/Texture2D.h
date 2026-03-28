@@ -153,6 +153,8 @@ public:
 
     /// Wrap an existing GL handle (does NOT take ownership — will NOT delete)
     void wrapHandle(GLuint handle, int w = 0, int h = 0) {
+        // Liberar handle previo si teniamos ownership para evitar GPU memory leak
+        if (m_handle && m_owned) { glDeleteTextures(1, &m_handle); }
         m_handle = handle; m_width = w; m_height = h; m_owned = false;
     }
 

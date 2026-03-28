@@ -218,7 +218,7 @@ public:
         }
     }
 
-    /// Find the first entity with a specific tag (or Entity{0} if not found)
+    /// Find the first entity with a specific tag (or NULL_ENTITY if not found)
     Entity findFirstByTag(uint8_t tag) const {
         const auto& em = m_entityManager;
         const auto& aliveList = em.m_aliveList;
@@ -228,7 +228,7 @@ public:
                 return makeEntity(idx, em.m_generations[idx]);
             }
         }
-        return Entity{0};
+        return NULL_ENTITY;
     }
 
     // ── Sistemas ───────────────────────────────────────────────

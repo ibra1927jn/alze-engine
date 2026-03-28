@@ -45,7 +45,7 @@ namespace ProceduralAudio {
             float freq      = p.freqStart + (p.freqEnd - p.freqStart) * freqRatio;
 
             if (p.vibratoDept > 0.0f) {
-                float semitones = p.vibratoDept * std::sin(PA_TWO_PI * p.vibratoDept * t);
+                float semitones = p.vibratoDept * std::sin(PA_TWO_PI * p.vibratoRate * t);
                 freq *= std::pow(2.0f, semitones / 12.0f);
             }
 

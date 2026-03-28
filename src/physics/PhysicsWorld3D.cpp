@@ -341,19 +341,19 @@ void PhysicsWorld3D::step(float dt) {
         m_thermalSystem->step(dt, m_bodies);
     }
     if (m_fluidSystem) {
-        m_fluidSystem->step(subDt);
+        m_fluidSystem->step(dt);
     }
     if (m_emSystem) {
-        m_emSystem->step(subDt, m_bodies);
+        m_emSystem->step(dt, m_bodies);
     }
     if (m_softBodySystem) {
-        m_softBodySystem->step(subDt);
+        m_softBodySystem->step(dt);
     }
     if (m_gravityNBodySystem) {
-        m_gravityNBodySystem->step(subDt, m_bodies);
+        m_gravityNBodySystem->step(dt, m_bodies);
     }
     if (m_waveSystem) {
-        m_waveSystem->step(subDt, m_bodies);
+        m_waveSystem->step(dt, m_bodies);
     }
 
     // Fire contact callbacks
