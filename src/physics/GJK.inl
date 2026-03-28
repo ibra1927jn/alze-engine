@@ -46,34 +46,103 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         int a, b, c;
         math::Vector3D normal;
     };
-    
+
+    // Almacenar puntos del polytope con sus soportes individuales
+    // para poder reconstruir el contacto por interpolacion baricentrica
     std::vector<math::Vector3D> polytope(gjkResult.simplex, gjkResult.simplex + 4);
+    std::vector<math::Vector3D> supportA(4);
+    std::vector<math::Vector3D> supportB(4);
+
+    // Recalcular los support points individuales del simplex inicial
+    for (int i = 0; i < 4; ++i) {
+        math::Vector3D dir = gjkResult.simplex[i].normalized();
+        if (dir.sqrMagnitude() < 1e-6f) dir = math::Vector3D(0, 1, 0);
+        supportA[i] = a.getSupport(dir);
+        supportB[i] = b.getSupport(-dir);
+    }
+
     std::vector<Face> faces;
-    
-    auto addFace = [&](int a, int b, int c) {
-        math::Vector3D ab = polytope[b] - polytope[a];
-        math::Vector3D ac = polytope[c] - polytope[a];
+
+    auto addFace = [&](int ia, int ib, int ic) {
+        math::Vector3D ab = polytope[ib] - polytope[ia];
+        math::Vector3D ac = polytope[ic] - polytope[ia];
         math::Vector3D n = ab.cross(ac).normalized();
-        // Check winding
-        if (n.dot(polytope[a]) < 0) {
+        // Asegurar que la normal apunta hacia afuera (lejos del origen)
+        if (n.dot(polytope[ia]) < 0) {
             n = -n;
-            faces.push_back({c, b, a, n});
+            faces.push_back({ic, ib, ia, n});
         } else {
-            faces.push_back({a, b, c, n});
+            faces.push_back({ia, ib, ic, n});
         }
     };
-    
+
     addFace(0, 1, 2);
     addFace(0, 3, 1);
     addFace(0, 2, 3);
     addFace(1, 3, 2);
 
     int closestFace = 0;
-    
+
+    // Lambda para calcular contacto por interpolacion baricentrica
+    // Proyecta el origen sobre la cara mas cercana y usa las coordenadas
+    // baricentricas para interpolar los support points de cada shape
+    auto computeContact = [&](int faceIdx) {
+        const Face& f = faces[faceIdx];
+        const math::Vector3D& va = polytope[f.a];
+        const math::Vector3D& vb = polytope[f.b];
+        const math::Vector3D& vc = polytope[f.c];
+
+        // Proyectar el origen sobre el plano de la cara
+        math::Vector3D ab = vb - va;
+        math::Vector3D ac = vc - va;
+        math::Vector3D n = f.normal;
+
+        // Coordenadas baricentricas del origen proyectado sobre el triangulo
+        // Usando el metodo de areas con productos cruz
+        math::Vector3D v0 = vb - va;
+        math::Vector3D v1 = vc - va;
+        // Punto proyectado = origen proyectado al plano = va + t*(n) donde t = n.dot(va)
+        // p = n * n.dot(va) (proyeccion del origen al plano)
+        math::Vector3D p = n * n.dot(va);
+        math::Vector3D v2 = p - va;
+
+        float d00 = v0.dot(v0);
+        float d01 = v0.dot(v1);
+        float d11 = v1.dot(v1);
+        float d20 = v2.dot(v0);
+        float d21 = v2.dot(v1);
+
+        float denom = d00 * d11 - d01 * d01;
+        if (std::abs(denom) < 1e-10f) {
+            // Cara degenerada — usar punto medio como fallback
+            result.contactPoint = (supportA[f.a] + supportA[f.b] + supportA[f.c]) * (1.0f / 3.0f);
+            return;
+        }
+
+        float u = (d11 * d20 - d01 * d21) / denom;
+        float v = (d00 * d21 - d01 * d20) / denom;
+        float w = 1.0f - u - v;
+
+        // Clampear coordenadas baricentricas para robustez numerica
+        u = std::max(0.0f, u);
+        v = std::max(0.0f, v);
+        w = std::max(0.0f, w);
+        float sum = u + v + w;
+        if (sum > 1e-10f) { u /= sum; v /= sum; w /= sum; }
+        else { u = v = w = 1.0f / 3.0f; }
+
+        // Interpolar support points de shape A para obtener contacto en A
+        math::Vector3D contactOnA = supportA[f.a] * w + supportA[f.b] * u + supportA[f.c] * v;
+        math::Vector3D contactOnB = supportB[f.a] * w + supportB[f.b] * u + supportB[f.c] * v;
+
+        // Punto de contacto = punto medio entre ambas superficies
+        result.contactPoint = (contactOnA + contactOnB) * 0.5f;
+    };
+
     for (int iter = 0; iter < EPA_MAX_ITERATIONS; ++iter) {
         float minDist = 1e30f;
         closestFace = -1;
-        
+
         for (int i = 0; i < (int)faces.size(); ++i) {
             float dist = faces[i].normal.dot(polytope[faces[i].a]);
             if (dist < minDist) {
@@ -81,23 +150,24 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
                 closestFace = i;
             }
         }
-        
+
         if (closestFace == -1) break;
-        
+
         math::Vector3D searchDir = faces[closestFace].normal;
-        math::Vector3D p = support(a, b, searchDir);
-        float pDist = p.dot(searchDir);
-        
+        SupportData sd = supportFull(a, b, searchDir);
+        float pDist = sd.point.dot(searchDir);
+
         if (pDist - minDist < EPA_TOLERANCE) {
             result.success = true;
             result.normal = searchDir;
             result.penetration = pDist;
+            computeContact(closestFace);
             return result;
         }
 
         std::vector<std::pair<int, int>> edges;
         for (auto it = faces.begin(); it != faces.end(); ) {
-            if (it->normal.dot(p - polytope[it->a]) > 0) {
+            if (it->normal.dot(sd.point - polytope[it->a]) > 0) {
                 auto addEdge = [&](int e1, int e2) {
                     auto match = std::find_if(edges.begin(), edges.end(), [&](const std::pair<int, int>& edge) {
                         return edge.first == e2 && edge.second == e1;
@@ -113,19 +183,22 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
                 ++it;
             }
         }
-        
+
         int pIdx = (int)polytope.size();
-        polytope.push_back(p);
-        
+        polytope.push_back(sd.point);
+        supportA.push_back(sd.pointA);
+        supportB.push_back(sd.pointB);
+
         for (auto& e : edges) {
             addFace(e.first, e.second, pIdx);
         }
     }
-    
+
     if (closestFace != -1) {
         result.success = true;
         result.normal = faces[closestFace].normal;
         result.penetration = faces[closestFace].normal.dot(polytope[faces[closestFace].a]);
+        computeContact(closestFace);
     }
     return result;
 }

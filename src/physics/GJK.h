@@ -36,9 +36,26 @@ private:
     static bool triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
     static bool tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
     
+    /// Soporte en el Minkowski difference (solo el punto)
     template<typename ShapeA, typename ShapeB>
     static math::Vector3D support(const ShapeA& a, const ShapeB& b, const math::Vector3D& dir) {
         return a.getSupport(dir) - b.getSupport(-dir);
+    }
+
+    /// Soporte con puntos individuales de cada shape (para calcular contacto)
+    struct SupportData {
+        math::Vector3D point;  // Punto en Minkowski difference
+        math::Vector3D pointA; // Punto de soporte en shape A
+        math::Vector3D pointB; // Punto de soporte en shape B
+    };
+
+    template<typename ShapeA, typename ShapeB>
+    static SupportData supportFull(const ShapeA& a, const ShapeB& b, const math::Vector3D& dir) {
+        SupportData s;
+        s.pointA = a.getSupport(dir);
+        s.pointB = b.getSupport(-dir);
+        s.point = s.pointA - s.pointB;
+        return s;
     }
     
     static const int EPA_MAX_ITERATIONS = 32;

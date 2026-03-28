@@ -21,9 +21,9 @@
 - [2026-03-28] | core/Logger.h | No es thread-safe (s_file, s_lineCount) pese a incluir <mutex> — data race en output | Agregar lock_guard en log()
 - [2026-03-28] | core/Profiler.h | No thread-safe — data race si se profila desde workers | Agregar locks o profiler per-thread
 - [2026-03-28] | core/ResourceManager.h:77,107 | has() y getAliveCount() no toman lock del mutex — data race | Agregar lock
-- [2026-03-28] | renderer/ForwardRenderer.cpp:350-355 | Texture slots 4-6 colisionan entre IBL (irradiance/prefilter/brdfLUT) y material (emissive/AO/height) | Reasignar slots: IBL 7-9 o material 10-12
+- [2026-03-28] | renderer/ForwardRenderer.cpp:350-355 | Texture slots 4-6 colisionan entre IBL (irradiance/prefilter/brdfLUT) y material (emissive/AO/height) | **FIXED** IBL reasignado a slots 7-9, shadows a 10-11. Material mantiene 0-6
 - [2026-03-28] | renderer/ForwardRenderer.cpp:334 | Material skip compara direcciones de copias en RenderItem3D — siempre false, optimizacion nunca activa | Comparar por material ID o por valor
-- [2026-03-28] | physics/GJK.inl:94 | EPA nunca calcula contactPoint — convex hull collisions obtienen punto (0,0,0) | Calcular punto de contacto en superficie del polytope
+- [2026-03-28] | physics/GJK.inl:94 | EPA nunca calcula contactPoint — convex hull collisions obtienen punto (0,0,0) | **FIXED** Interpolacion baricentrica de support points en la cara mas cercana del polytope; se trackean supportA/supportB por vertice
 - [2026-03-28] | physics/PhysicsWorld3D.cpp:344-357 | Subsistemas fuera del substep loop reciben subDt en vez de dt — simulacion a velocidad incorrecta | Pasar dt a fluid/EM/softbody/gravity/wave
 
 ## P2 — Bugs menores y performance

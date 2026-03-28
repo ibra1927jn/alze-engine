@@ -84,6 +84,8 @@ void UniformCache::resolve(GLuint phongHandle, GLuint depthHandle) {
 bool ForwardRenderer::init(int viewportWidth, int viewportHeight) {
     m_viewW = viewportWidth;
     m_viewH = viewportHeight;
+    // Cargar shaders desde archivos .glsl (fallback a embebidos si no existen)
+    ShaderLibrary::init();
     m_phongShader.compile(ShaderLibrary::PBR_VERT, ShaderLibrary::PBR_FRAG);
     m_depthShader.compile(ShaderLibrary::DEPTH_VERT, ShaderLibrary::DEPTH_FRAG);
     m_shadowMap.init(m_settings.shadowResolution);
@@ -279,10 +281,11 @@ void ForwardRenderer::renderScenePass(const math::Matrix4x4 lightSpaceMatrices[2
     glUniformMatrix4fv(m_uniforms.lightSpaceMatrix[1], 1, GL_FALSE, lightSpaceMatrices[1].data());
     glUniform1i(m_uniforms.shadowEnabled, m_settings.shadows ? 1 : 0);
     if (m_settings.shadows) {
-        m_shadowMap.bindTexture(0, 7);
-        glUniform1i(m_uniforms.shadowMap[0], 7);
-        m_shadowMap.bindTexture(1, 8);
-        glUniform1i(m_uniforms.shadowMap[1], 8);
+        // Slots 10-11: shadow maps (antes 7-8, movidos para evitar colision con IBL)
+        m_shadowMap.bindTexture(0, 10);
+        glUniform1i(m_uniforms.shadowMap[0], 10);
+        m_shadowMap.bindTexture(1, 11);
+        glUniform1i(m_uniforms.shadowMap[1], 11);
         glUniform1f(m_uniforms.cascadeSplit, m_cascadeSplitDepth);
     }
     if (m_uniforms.volumetricIntensity >= 0) glUniform1f(m_uniforms.volumetricIntensity, m_settings.volumetricIntensity);
@@ -290,10 +293,11 @@ void ForwardRenderer::renderScenePass(const math::Matrix4x4 lightSpaceMatrices[2
     if (m_uniforms.renderMode >= 0)          glUniform1i(m_uniforms.renderMode, m_settings.renderMode);
 
     if (m_envMap && m_envMap->isValid()) {
-        m_envMap->bind(4, 5, 6);
-        glUniform1i(m_uniforms.irradianceMap, 4);
-        glUniform1i(m_uniforms.prefilterMap, 5);
-        glUniform1i(m_uniforms.brdfLUT, 6);
+        // Slots 7-9: IBL (antes 4-6, colisionaban con material emissive/AO/height)
+        m_envMap->bind(7, 8, 9);
+        glUniform1i(m_uniforms.irradianceMap, 7);
+        glUniform1i(m_uniforms.prefilterMap, 8);
+        glUniform1i(m_uniforms.brdfLUT, 9);
         glUniform1i(m_uniforms.iblEnabled, 1);
         if (m_uniforms.iblIntensity >= 0) glUniform1f(m_uniforms.iblIntensity, m_settings.iblIntensity);
     } else {

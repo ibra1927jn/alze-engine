@@ -10,6 +10,8 @@
 ## En curso
 - [2026-03-28] | Auditoria completa | 100% — terminada, pendiente aplicar fixes
 - [2026-03-28] | Aplicar fixes P0 criticos | 100% — 5 fixes P0 + cleanup aplicados
+- [2026-03-28] | Refactor shader system + slot fix | 100%
+- [2026-03-28] | Scene Editor foundation | 100% — hierarchy, inspector, gizmo con flechas
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
@@ -22,7 +24,7 @@
 - [2026-03-28] | Electromagnetism (Coulomb, Lorentz, dipoles) | Funcional
 - [2026-03-28] | N-Body gravity (Barnes-Hut octree) | Funcional
 - [2026-03-28] | Wave system (acoustic, Doppler) | Funcional
-- [2026-03-28] | Forward renderer PBR (Cook-Torrance, CSM shadows, IBL, normal/parallax mapping) | Funcional (texture slot collision)
+- [2026-03-28] | Forward renderer PBR (Cook-Torrance, CSM shadows, IBL, normal/parallax mapping) | Estable
 - [2026-03-28] | Deferred renderer (G-Buffer, PBR lighting pass) | Funcional (uniforms no cacheados)
 - [2026-03-28] | Post-process (bloom, tonemapping, FXAA, vignette, chromatic aberration, film grain) | Funcional
 - [2026-03-28] | SSAO | Funcional
@@ -35,6 +37,12 @@
 - [2026-03-28] | Frame profiling (CSV export) | Funcional
 - [2026-03-28] | PWA toggle 2D/3D con Tab key | Funcional
 - [2026-03-28] | 9 test executables | Funcional
+- [2026-03-28] | Fix texture slot collision (IBL 7-9, shadows 10-11, material 0-6) | Estable
+- [2026-03-28] | Shaders extraidos a assets/shaders/ con ShaderLoader + fallback embebido | Estable
+- [2026-03-28] | README actualizado (178 files, 25-30k lines, phases 2.5-11 done) | Estable
+- [2026-03-28] | Fix EPA contactPoint — interpolacion baricentrica de support points | Estable
+- [2026-03-28] | Physics2D system (AABB, Circle, RigidBody2D, broadphase spatial hash) | Funcional
+- [2026-03-28] | Scene Editor foundation (hierarchy, inspector, gizmos, F1 toggle) | Funcional
 
 ## Completado — Formula reference (no simulacion)
 - [2026-03-28] | QuantumSystem.h, NuclearPhysics.h, Relativity.h | Formulas correctas, sin loop de simulacion
@@ -43,8 +51,9 @@
 
 ## Pendiente
 - Fix P0: thread safety restante (FrameAllocator, Logger, Profiler) | Prioridad: alta
-- Fix P1: EPA contactPoint, subsystem dt, StateManager bounds | Prioridad: alta
-- Fix P1: texture slot collision en ForwardRenderer | Prioridad: alta
+- ~~Fix P1: EPA contactPoint~~ | **DONE**
+- Fix P1: subsystem dt, StateManager bounds | Prioridad: alta
+- ~~Fix P1: texture slot collision en ForwardRenderer~~ | **DONE**
 - Tests: renderer, audio, NavMesh, Color, MathConstants, Transform2D | Prioridad: media
 - Performance: BVH raycast, island adjacency, deferred uniform cache | Prioridad: media
 - Cleanup: build duplicates (CMakeLists duplicado Engine.cpp, NavMesh en math) | Prioridad: baja

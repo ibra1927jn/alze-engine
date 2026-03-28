@@ -38,6 +38,7 @@ add_subdirectory(src/physics)
 add_subdirectory(src/renderer)
 add_subdirectory(src/core)
 add_subdirectory(src/ecs)
+add_subdirectory(src/editor)
 
 # ── Ejecutable principal ────────────────────────────────────────
 add_executable(ALZE src/main.cpp src/game/Play3DState.cpp src/game/PlayState.cpp src/game/WorldScene3D.cpp)
@@ -49,6 +50,7 @@ target_include_directories(ALZE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_link_libraries(ALZE
     PRIVATE
+        engine_editor
         engine_ecs
         engine_core
         engine_renderer
@@ -94,7 +96,7 @@ target_link_libraries(test_math3d PRIVATE engine_math)
 add_executable(demo_3d src/demo_3d.cpp)
 target_compile_definitions(demo_3d PRIVATE SDL_MAIN_HANDLED)
 target_include_directories(demo_3d PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(demo_3d PRIVATE engine_ecs engine_core engine_renderer engine_physics engine_math SDL2::SDL2)
+target_link_libraries(demo_3d PRIVATE engine_editor engine_ecs engine_core engine_renderer engine_physics engine_math SDL2::SDL2)
 
 # ── Benchmark 3D ────────────────────────────────────────────────
 # Escena de stress test 250 objetos físicos — arranca sin juego principal
