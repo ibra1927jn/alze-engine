@@ -12,6 +12,7 @@
 - [2026-03-28] | Aplicar fixes P0 criticos | 100% — 5 fixes P0 + cleanup aplicados
 - [2026-03-28] | Refactor shader system + slot fix | 100%
 - [2026-03-28] | Scene Editor foundation | 100% — hierarchy, inspector, gizmo con flechas
+- [2026-03-28] | Quality/hardening pass | 100% — 8 fixes: adjacency CSR, double iteration, SIMD negation, JobSystem allocs, FPS title, Quaternion dedup, sortByMaterial .get(), ForwardRenderer negation
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable

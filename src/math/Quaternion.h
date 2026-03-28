@@ -140,12 +140,9 @@ public:
         return Quaternion(x * inv, y * inv, z * inv, w * inv);
     }
 
-    /// Rotate a vector by this quaternion (q * v * q^-1, optimized)
+    /// Rotate a vector by this quaternion — alias de rotate() (mantener retrocompatibilidad)
     inline Vector3D rotateVector(const Vector3D& v) const {
-        // Optimized Rodrigues: t = 2 * cross(q.xyz, v), result = v + w*t + cross(q.xyz, t)
-        Vector3D qv(x, y, z);
-        Vector3D t = qv.cross(v) * 2.0f;
-        return v + t * w + qv.cross(t);
+        return rotate(v);
     }
 
     /// Scalar multiplication (named method — avoids operator ambiguity with Quaternion*Quaternion)

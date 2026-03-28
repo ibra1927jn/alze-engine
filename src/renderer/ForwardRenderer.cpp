@@ -155,14 +155,14 @@ void ForwardRenderer::sortByMaterial() {
     // This groups same-material objects together, minimizing GPU state changes
     std::sort(m_renderQueue.begin(), m_renderQueue.end(),
         [this](const RenderItem3D& a, const RenderItem3D& b) -> bool {
-            // Primary sort: by albedo texture (same texture = no rebind)
-            uintptr_t texA = a.material.albedoTexture ? reinterpret_cast<uintptr_t>(a.material.albedoTexture.get()) : 0;
-            uintptr_t texB = b.material.albedoTexture ? reinterpret_cast<uintptr_t>(b.material.albedoTexture.get()) : 0;
+            // Primary sort: por albedo texture (mismo puntero = sin rebind)
+            uintptr_t texA = reinterpret_cast<uintptr_t>(a.material.albedoTexture);
+            uintptr_t texB = reinterpret_cast<uintptr_t>(b.material.albedoTexture);
             if (texA != texB) return texA < texB;
 
-            // Secondary: by normal map
-            uintptr_t nmA = a.material.normalMap ? reinterpret_cast<uintptr_t>(a.material.normalMap.get()) : 0;
-            uintptr_t nmB = b.material.normalMap ? reinterpret_cast<uintptr_t>(b.material.normalMap.get()) : 0;
+            // Secondary: por normal map
+            uintptr_t nmA = reinterpret_cast<uintptr_t>(a.material.normalMap);
+            uintptr_t nmB = reinterpret_cast<uintptr_t>(b.material.normalMap);
             if (nmA != nmB) return nmA < nmB;
 
             // Tertiary: by PBR parameters (group similar materials)
@@ -270,7 +270,7 @@ void ForwardRenderer::renderScenePass(const math::Matrix4x4 lightSpaceMatrices[2
     glUniformMatrix4fv(m_uniforms.projection, 1, GL_FALSE, m_projection.data());
     glUniform3f(m_uniforms.viewPos, m_viewPos.x, m_viewPos.y, m_viewPos.z);
 
-    math::Vector3D lightDir = (math::Vector3D::Zero - m_dirLight.direction).normalized();
+    math::Vector3D lightDir = (-m_dirLight.direction).normalized();
     glUniform3f(m_uniforms.dirLightDir, lightDir.x, lightDir.y, lightDir.z);
     glUniform3f(m_uniforms.dirLightColor, m_dirLight.color.x, m_dirLight.color.y, m_dirLight.color.z);
     glUniform3f(m_uniforms.skyColor, m_dirLight.skyColor.x, m_dirLight.skyColor.y, m_dirLight.skyColor.z);

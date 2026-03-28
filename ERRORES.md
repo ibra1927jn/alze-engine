@@ -31,7 +31,7 @@
 - [2026-03-28] | physics/Collider3D.cpp:253-263 | capsuleVsOBB usa 5 muestras discretas — pierde colisiones entre samples | **FIXED** Aumentado a 16 muestras para mejor cobertura del segmento
 - [2026-03-28] | physics/PhysicsWorld3D.cpp:155-168 | Island building escanea TODOS los contactos por body — O(N*M) | **FIXED** Adjacency list construida una vez antes del island loop, lookup O(1) por vecino
 - [2026-03-28] | physics/PhysicsWorld3D.cpp:368 | Raycast es O(N) brute force ignorando el BVH que ya existe | **FIXED** Raycast usa DynamicBVH3D::raycast() con callback — O(log N)
-- [2026-03-28] | physics/Constraints3D.h:277 + PhysicsWorld3D.cpp:224-226 | Double iteration loop: solver.iterations * world.iterations = 80 iteraciones | Quitar uno de los dos loops
+- [2026-03-28] | physics/Constraints3D.h:277 + PhysicsWorld3D.cpp:224-226 | Double iteration loop: solver.iterations * world.iterations = 80 iteraciones | **FIXED** Removido loop externo, ConstraintSolver3D::solve() ya itera internamente
 - [2026-03-28] | renderer/DeferredRenderer.cpp:102-113 | glGetUniformLocation llamado por-objeto por-frame en vez de cacheado | **FIXED** Uniform locations cacheados en struct m_uniforms durante init(), patron igual a ForwardRenderer
 - [2026-03-28] | core/ProceduralAudio.cpp:49 | Vibrato usa vibratoDept para rate en vez de vibratoRate — audio incorrecto | **FIXED** Cambiado p.vibratoDept a p.vibratoRate en sine de vibrato; default vibratoRate cambiado a 5.0f
 - [2026-03-28] | ecs/ECSCoordinator.h:231 | Entity{0} gen 0 es indistinguible del sentinel "not found" | **FIXED** findFirstByTag retorna NULL_ENTITY (UINT32_MAX) en vez de Entity{0}
@@ -46,6 +46,13 @@
 - [2026-03-28] | tests/test_memory.cpp | No esta en CMakeLists.txt — no se puede compilar | Agregar al build
 - [2026-03-28] | raiz del repo | ~35 frames_*.csv + ~35 input_*.inp + test_physics3d.exe — artifacts de runtime | **FIXED** Agregado *.csv, *.inp, *.exe, *.o, *.a a .gitignore
 - [2026-03-28] | recover.py, refactor.py | Scripts one-time ya ejecutados | **FIXED** Eliminados
-- [2026-03-28] | math/Quaternion.h:144,178 | rotateVector() y rotate() son identicos — codigo duplicado | Eliminar uno, alias el otro
+- [2026-03-28] | math/Quaternion.h:144,178 | rotateVector() y rotate() son identicos — codigo duplicado | **FIXED** rotateVector() ahora delega a rotate()
+- [2026-03-28] | physics/PhysicsWorld3D.cpp:122 | std::vector<vector<int>> adj heap-allocated cada substep en hot loop | **FIXED** Reemplazado con flat arrays via FrameAllocator (CSR format)
+- [2026-03-28] | core/Engine.cpp:140 | std::ostringstream construido cada segundo para FPS display | **FIXED** Reemplazado con snprintf a buffer stack. Tambien corregido titulo de ventana a "ALZE Engine"
+- [2026-03-28] | core/JobSystem.h:79 | std::vector<pair<int,int>> chunks allocado en cada parallel_for | **FIXED** Eliminado vector, chunks calculados inline con aritmetica. body capturada por referencia
+- [2026-03-28] | physics/*.cpp | V * -1.0f en vez de -V (pierde ruta SIMD del operator-) | **FIXED** Reemplazado por negacion unaria en PhysicsWorld3D.cpp y Constraints3D.cpp
+- [2026-03-28] | renderer/ForwardRenderer.cpp:273 | (Zero - dir).normalized() en vez de (-dir).normalized() — temporal innecesario | **FIXED** Usar negacion unaria directa
 - [2026-03-28] | math/MathConstants.h | Duplica PI y EPSILON de MathUtils.h | Unificar en una sola fuente
 - [2026-03-28] | ~20 physics headers (Quantum, Nuclear, Relativity, etc.) | Formula reference sheets sin simulacion real ni integracion a PhysicsWorld3D | Documentar como "reference only" o mover a physics/reference/
+- [2026-03-28] | core/UISystem.h + editor/Editor.cpp | API mismatch: drawRoundedRectFilled, drawRectFilled, drawLine, drawCircleFilled, drawText no existen en ShapeRenderer2D/TextRenderer | Alinear API names (36 errores de compilacion, bloquean build de ALZE.exe)
+- [2026-03-28] | renderer/ForwardRenderer.cpp:159-165 | sortByMaterial llamaba .get() en raw Texture2D* — no compila | **FIXED** Usar reinterpret_cast directo sobre raw pointers

@@ -75,30 +75,27 @@ public:
             return;
         }
 
-        // Dividir en chunks
-        std::vector<std::pair<int,int>> chunks;
-        for (int i = start; i < end; i += chunkSize) {
-            int chunkEnd = i + chunkSize;
-            if (chunkEnd > end) chunkEnd = end;
-            chunks.push_back({i, chunkEnd});
-        }
+        // Contar chunks sin allocar
+        int numChunks = (end - start + chunkSize - 1) / chunkSize;
 
         // Si solo 1 chunk, ejecutar directamente
-        if (chunks.size() <= 1) {
+        if (numChunks <= 1) {
             body(start, end);
             return;
         }
 
-        // Encolar chunks como jobs
-        m_pendingJobs.store(static_cast<int>(chunks.size()));
+        // Encolar chunks como jobs (sin vector intermedio)
+        m_pendingJobs.store(numChunks);
 
         {
             std::lock_guard<std::mutex> lock(m_mutex);
-            for (auto& chunk : chunks) {
-                m_jobs.push_back([this, body, chunk]() {
-                    body(chunk.first, chunk.second);
+            for (int i = start; i < end; i += chunkSize) {
+                int chunkEnd = i + chunkSize;
+                if (chunkEnd > end) chunkEnd = end;
+                m_jobs.push_back([this, &body, i, chunkEnd]() {
+                    body(i, chunkEnd);
                     if (m_pendingJobs.fetch_sub(1) == 1) {
-                        // Último job: notificar al hilo principal
+                        // Ultimo job: notificar al hilo principal
                         m_doneCv.notify_one();
                     }
                 });

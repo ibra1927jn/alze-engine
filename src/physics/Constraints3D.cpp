@@ -32,7 +32,7 @@ void DistanceConstraint::preStep(std::vector<RigidBody3D>& bodies, float dt) {
     m_bias = -0.2f * invDt * error * stiffness;
     if (m_impulse != 0.0f) {
         math::Vector3D P = m_n * m_impulse;
-        A.applyImpulseAtPoint(P * -1.0f, wA);
+        A.applyImpulseAtPoint(-P, wA);
         B.applyImpulseAtPoint(P, wB);
     }
 }
@@ -51,7 +51,7 @@ void DistanceConstraint::solve(std::vector<RigidBody3D>& bodies) {
     float lambda = m_effectiveMass * (-(vn + m_bias));
     m_impulse += lambda;
     math::Vector3D P = m_n * lambda;
-    A.applyImpulseAtPoint(P * -1.0f, wA);
+    A.applyImpulseAtPoint(-P, wA);
     B.applyImpulseAtPoint(P, wB);
 }
 
@@ -79,7 +79,7 @@ void BallSocketConstraint::preStep(std::vector<RigidBody3D>& bodies, float dt) {
     }
     math::Vector3D P(m_impulse[0], m_impulse[1], m_impulse[2]);
     if (P.dot(P) > 1e-10f) {
-        A.applyImpulseAtPoint(P * -1.0f, wA);
+        A.applyImpulseAtPoint(-P, wA);
         B.applyImpulseAtPoint(P, wB);
     }
 }
@@ -101,7 +101,7 @@ void BallSocketConstraint::solve(std::vector<RigidBody3D>& bodies) {
         float lambda = m_effectiveMass[i] * (-(vn + m_bias[i]));
         m_impulse[i] += lambda;
         math::Vector3D P = axes[i] * lambda;
-        A.applyImpulseAtPoint(P * -1.0f, wA);
+        A.applyImpulseAtPoint(-P, wA);
         B.applyImpulseAtPoint(P, wB);
     }
 }

@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "Timer.h"
 #include <sstream>
+#include <cstdio>
 
 namespace engine {
 namespace core {
@@ -137,9 +138,10 @@ void Engine::run() {
         if (fpsTimer >= 1.0f) {
             m_fps = static_cast<float>(frameCount) / fpsTimer;
 
-            std::ostringstream title;
-            title << "PhysicsEngine2D | FPS: " << static_cast<int>(m_fps);
-            m_window.setTitle(title.str());
+            // Evitar ostringstream cada segundo — snprintf sin heap alloc
+            char titleBuf[64];
+            std::snprintf(titleBuf, sizeof(titleBuf), "ALZE Engine | FPS: %d", static_cast<int>(m_fps));
+            m_window.setTitle(titleBuf);
 
             frameCount = 0;
             fpsTimer = 0.0f;

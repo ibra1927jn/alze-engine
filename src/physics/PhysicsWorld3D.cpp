@@ -4,6 +4,7 @@
 #include "CollisionSolver3D.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include "DynamicBVH3D.h"
 #include "core/FrameAllocator.h"
 #include "core/JobSystem.h"
@@ -119,10 +120,27 @@ void PhysicsWorld3D::step(float dt) {
         int maxBodies = static_cast<int>(m_bodies.size());
 
         // Construir lista de adyacencia una vez — O(C) en vez de O(N*C) por body
-        std::vector<std::vector<int>> adj(maxBodies);
-        for (auto& contact : m_contacts) {
-            adj[contact.bodyA].push_back(contact.bodyB);
-            adj[contact.bodyB].push_back(contact.bodyA);
+        // Usar FrameAllocator para evitar heap alloc de vector<vector<int>> cada substep
+        int* adjCounts = core::FrameAllocator::alloc<int>(maxBodies);
+        std::memset(adjCounts, 0, sizeof(int) * maxBodies);
+        for (const auto& contact : m_contacts) {
+            adjCounts[contact.bodyA]++;
+            adjCounts[contact.bodyB]++;
+        }
+        // Prefijos acumulados para indexar un arreglo flat
+        int* adjOffsets = core::FrameAllocator::alloc<int>(maxBodies + 1);
+        adjOffsets[0] = 0;
+        for (int i = 0; i < maxBodies; ++i) {
+            adjOffsets[i + 1] = adjOffsets[i] + adjCounts[i];
+        }
+        int totalAdj = adjOffsets[maxBodies];
+        int* adjData = core::FrameAllocator::alloc<int>(totalAdj > 0 ? totalAdj : 1);
+        // Reusar adjCounts como write cursors
+        std::memset(adjCounts, 0, sizeof(int) * maxBodies);
+        for (const auto& contact : m_contacts) {
+            int a = contact.bodyA, b = contact.bodyB;
+            adjData[adjOffsets[a] + adjCounts[a]++] = b;
+            adjData[adjOffsets[b] + adjCounts[b]++] = a;
         }
 
         // We need to keep track of islands for parallel solving
@@ -158,8 +176,9 @@ void PhysicsWorld3D::step(float dt) {
                     islandCanSleep = false;
                 }
 
-                // Buscar vecinos via lista de adyacencia — O(1) por vecino
-                for (int neighborIdx : adj[bodyIdx]) {
+                // Buscar vecinos via lista de adyacencia flat — O(1) por vecino
+                for (int ni = adjOffsets[bodyIdx]; ni < adjOffsets[bodyIdx] + adjCounts[bodyIdx]; ++ni) {
+                    int neighborIdx = adjData[ni];
                     auto& neighbor = m_bodies[neighborIdx];
                     if (neighbor.isDynamic() && neighbor.islandId == -1) {
                         neighbor.islandId = currentIslandId;
@@ -220,10 +239,9 @@ void PhysicsWorld3D::step(float dt) {
                     }
                 }
             });
-            // After parallel solving, global constraints might still need a pass if not island-aware
-            for (int iter = 0; iter < m_solver.iterations; iter++) {
-                m_constraintSolver.solve(m_bodies);
-            }
+            // Constraints: una sola pasada, la iteracion interna la maneja ConstraintSolver3D
+            // (antes iteraba m_solver.iterations * m_constraintSolver.iterations = 80x)
+            m_constraintSolver.solve(m_bodies);
 
         } else {
             // Sequential fallback (guaranteed to work)
@@ -233,8 +251,9 @@ void PhysicsWorld3D::step(float dt) {
             for (int iter = 0; iter < m_solver.iterations; iter++) {
                 for (auto& c : m_contacts)
                     solveSingleContact(c);
-                m_constraintSolver.solve(m_bodies);
             }
+            // Constraints: una sola llamada, iteracion interna en ConstraintSolver3D
+            m_constraintSolver.solve(m_bodies);
         }
 
         // 6. Integrate (WITH CCD)
@@ -409,7 +428,7 @@ void PhysicsWorld3D::solveSingleContact(Contact3D& c) {
     lambda = newImpulse - c.normalImpulse;
     c.normalImpulse = newImpulse;
     math::Vector3D P = c.normal * lambda;
-    A.applyImpulseAtArm(P * -1.0f, rA);
+    A.applyImpulseAtArm(-P, rA);
     B.applyImpulseAtArm(P, rB);
 
     // Friction
@@ -433,7 +452,7 @@ void PhysicsWorld3D::solveSingleContact(Contact3D& c) {
     c.tangentImpulse1 = newT1;
     c.tangentImpulse2 = newT2;
     math::Vector3D fP = c.tangent1 * lt1 + c.tangent2 * lt2;
-    A.applyImpulseAtArm(fP * -1.0f, rA);
+    A.applyImpulseAtArm(-fP, rA);
     B.applyImpulseAtArm(fP, rB);
 }
 
@@ -446,7 +465,7 @@ ContactInfo PhysicsWorld3D::narrowphaseTest(int a, int b) {
         return sphereVsSphere(bodyA.getWorldSphere(), bodyB.getWorldSphere());
     if (bodyA.shape == S::SPHERE && bodyB.shape == S::BOX) {
         ContactInfo info = obbVsSphere(bodyB.getWorldOBB(), bodyA.getWorldSphere());
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     if (bodyA.shape == S::BOX && bodyB.shape == S::SPHERE)
@@ -457,7 +476,7 @@ ContactInfo PhysicsWorld3D::narrowphaseTest(int a, int b) {
         return capsuleVsSphere(bodyA.getWorldCapsule(), bodyB.getWorldSphere());
     if (bodyA.shape == S::SPHERE && bodyB.shape == S::CAPSULE) {
         ContactInfo info = capsuleVsSphere(bodyB.getWorldCapsule(), bodyA.getWorldSphere());
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     if (bodyA.shape == S::CAPSULE && bodyB.shape == S::CAPSULE)
@@ -466,14 +485,14 @@ ContactInfo PhysicsWorld3D::narrowphaseTest(int a, int b) {
         return capsuleVsOBB(bodyA.getWorldCapsule(), bodyB.getWorldOBB());
     if (bodyA.shape == S::BOX && bodyB.shape == S::CAPSULE) {
         ContactInfo info = capsuleVsOBB(bodyB.getWorldCapsule(), bodyA.getWorldOBB());
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     if (bodyA.shape == S::SPHERE && bodyB.shape == S::HEIGHTFIELD && bodyB.heightfield)
         return sphereVsHeightfield(bodyA.getWorldSphere(), *bodyB.heightfield, bodyB.position);
     if (bodyA.shape == S::HEIGHTFIELD && bodyB.shape == S::SPHERE && bodyA.heightfield) {
         ContactInfo info = sphereVsHeightfield(bodyB.getWorldSphere(), *bodyA.heightfield, bodyA.position);
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
 
