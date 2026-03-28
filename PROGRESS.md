@@ -44,6 +44,9 @@
 - [2026-03-28] | Fix EPA contactPoint — interpolacion baricentrica de support points | Estable
 - [2026-03-28] | Physics2D system (AABB, Circle, RigidBody2D, broadphase spatial hash) | Funcional
 - [2026-03-28] | Scene Editor foundation (hierarchy, inspector, gizmos, F1 toggle) | Funcional
+- [2026-03-28] | 6 P0 bugs fixed (vibrato, GPU leak, material cmp, subsystem dt, entity sentinel) | Commit 1ba4872
+- [2026-03-28] | 6 P1/P2 bugs fixed (capsule 16pts, island O(N+M), raycast BVH, deferred cache, JobSystem, NavMesh move) | Commit f2b97f1
+- [2026-03-28] | 8 quality fixes (zero-alloc CSR, fix 80→8 iterations, SIMD negation, snprintf FPS, inline chunks, deduplicate quaternion) | Commit 45a9373
 
 ## Completado — Formula reference (no simulacion)
 - [2026-03-28] | QuantumSystem.h, NuclearPhysics.h, Relativity.h | Formulas correctas, sin loop de simulacion
