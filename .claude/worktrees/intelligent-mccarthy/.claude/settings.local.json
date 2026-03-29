@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/Users/ibrab/Desktop/set up/**)",
-      "Bash(find . -maxdepth 3 -type f ! -path */node_modules/* ! -path */.git/* ! -path */.claude/*)"
-    ]
-  }
-}

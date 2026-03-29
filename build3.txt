@@ -1,5 +1,0 @@
-tests/test_physics3d.cpp: In function 'void testSolidMechanics()':
-tests/test_physics3d.cpp:2221:62: error: 'constraint' was not declared in this scope; did you mean 'dConstraint'?
- 2221 |     auto* dConstraint = static_cast<XPBDDistanceConstraint*>(constraint.get());
-      |                                                              ^~~~~~~~~~
-      |                                                              dConstraint

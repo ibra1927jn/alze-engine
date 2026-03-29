@@ -11,6 +11,12 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 
+# Claude Code worktrees
+.claude/worktrees/
+
+# Build logs
+build*.txt
+
 # Sensitive files
 .env
 .env.*

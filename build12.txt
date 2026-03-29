@@ -1,7 +1,0 @@
-tests/test_physics3d.cpp: In function 'void testAdvancedThermodynamics()':
-tests/test_physics3d.cpp:2154:8: error: 'struct engine::physics::ThermalBody' has no member named 'heatTransferRate'
- 2154 |     tb.heatTransferRate = 167000.0f; // Manually deposit exactly half the latent heat
-      |        ^~~~~~~~~~~~~~~~
-tests/test_physics3d.cpp:2163:8: error: 'struct engine::physics::ThermalBody' has no member named 'heatTransferRate'
- 2163 |     tb.heatTransferRate = 167000.0f; // Add another half of the latent heat + extra
-      |        ^~~~~~~~~~~~~~~~
