@@ -16,6 +16,7 @@
 - [2026-03-29] | Fix build errors UISystem+Editor API mismatch | 100% — ALZE.exe compila
 - [2026-03-29] | Heartbeat maintenance pass | 100% — .gitignore security, NavMesh neighbor bug fix, 111 new tests
 - [2026-03-29] | Heartbeat maintenance pass #2 | 100% — getActiveVoices data race fix, 28 Serializer tests, CLAUDE.md bugs section updated
+- [2026-03-29] | Heartbeat maintenance pass #3 | 100% — build fix (ostream includes), header include optimization (iostream→iosfwd), Texture2D RAII fix, unused cassert removal, repo cleanup (3861 junk files removed from tracking)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
