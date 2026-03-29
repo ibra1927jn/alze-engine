@@ -42,6 +42,57 @@ namespace PhysicsMath {
         return 2.0f * std::sqrt(mass * stiffness);
     }
 
+    /// Damping ratio: zeta = c / c_critical. zeta<1 underdamped, =1 critical, >1 overdamped
+    inline float dampingRatio(float damping, float mass, float stiffness) {
+        float cc = criticalDamping(mass, stiffness);
+        return (cc > 1e-8f) ? damping / cc : 0.0f;
+    }
+
+    /// Create spring parameters from natural frequency (Hz) and damping ratio
+    /// Returns {stiffness, damping}
+    inline void springFromFrequency(float mass, float frequencyHz, float dampingRatio,
+                                     float& outStiffness, float& outDamping) {
+        float omega = 6.28318530718f * frequencyHz; // omega = 2*pi*f
+        outStiffness = mass * omega * omega;         // k = m * omega^2
+        outDamping = dampingRatio * 2.0f * mass * omega; // c = zeta * 2 * m * omega
+    }
+
+    /// Implicit (semi-implicit) Euler spring-damper step for stiff springs.
+    /// Computes new velocity and position in a single step, unconditionally stable.
+    /// Returns {newPosition, newVelocity}
+    inline void implicitSpringDamperStep(
+        const math::Vector3D& position, const math::Vector3D& velocity,
+        const math::Vector3D& anchor,   // Rest position / target
+        float stiffness, float damping, float mass, float dt,
+        math::Vector3D& outPosition, math::Vector3D& outVelocity)
+    {
+        // Implicit Euler: v_{n+1} = v_n + dt * (-k * x_{n+1} - c * v_{n+1}) / m
+        // Solving: v_{n+1} = (v_n - dt*k*x_n/m) / (1 + dt*c/m + dt^2*k/m)
+        if (mass < 1e-8f) { outPosition = position; outVelocity = velocity; return; }
+        float invMass = 1.0f / mass;
+        float dtk = dt * stiffness * invMass;
+        float dtc = dt * damping * invMass;
+        float denom = 1.0f / (1.0f + dtc + dt * dtk);
+
+        math::Vector3D displacement = position - anchor;
+        outVelocity = (velocity - displacement * dtk) * denom;
+        outPosition = position + outVelocity * dt;
+    }
+
+    /// Damped harmonic oscillator exact solution (for 1D analytical reference)
+    /// x(t) = A * e^(-zeta*omega*t) * cos(omega_d*t + phi)
+    /// omega_d = omega * sqrt(1 - zeta^2) for underdamped
+    inline float dampedOscillator(float amplitude, float omega, float zeta,
+                                   float phase, float time) {
+        if (zeta >= 1.0f) {
+            // Critically/overdamped: simple exponential decay
+            return amplitude * std::exp(-omega * zeta * time);
+        }
+        float omegaD = omega * std::sqrt(1.0f - zeta * zeta);
+        return amplitude * std::exp(-zeta * omega * time) *
+               std::cos(omegaD * time + phase);
+    }
+
     // ── Wave Equation ───────────────────────────────────────────
 
     /// Simple harmonic wave: y = A * sin(2πft + φ)

@@ -99,6 +99,10 @@ add_executable(test_navmesh tests/test_navmesh.cpp)
 target_include_directories(test_navmesh PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_navmesh PRIVATE engine_core engine_math)
 
+add_executable(test_deep_physics tests/test_deep_physics.cpp)
+target_include_directories(test_deep_physics PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_deep_physics PRIVATE engine_physics engine_core engine_math)
+
 # ── Demo 3D ─────────────────────────────────────────────────────
 add_executable(demo_3d src/demo_3d.cpp)
 target_compile_definitions(demo_3d PRIVATE SDL_MAIN_HANDLED)

@@ -5,6 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 namespace engine {
 namespace physics {
@@ -212,6 +213,64 @@ struct XPBDBendingConstraint : public XPBDConstraint {
     }
 };
 
+// Volume Preservation Constraint (for inflated soft bodies / jelly)
+struct XPBDVolumeConstraint : public XPBDConstraint {
+    std::vector<std::array<int, 3>> triangles;
+    float restVolume = 0.0f;
+    float pressure = 1.0f;
+
+    XPBDVolumeConstraint(const std::vector<std::array<int, 3>>& tris, float _compliance = 0.0f)
+        : triangles(tris) { compliance = _compliance; }
+
+    void computeRestVolume(const std::vector<XPBDParticle>& particles) {
+        restVolume = computeVolume(particles);
+    }
+
+    float computeVolume(const std::vector<XPBDParticle>& particles) const {
+        float vol = 0.0f;
+        for (const auto& tri : triangles) {
+            const auto& p0 = particles[tri[0]].position;
+            const auto& p1 = particles[tri[1]].position;
+            const auto& p2 = particles[tri[2]].position;
+            vol += p0.dot(p1.cross(p2));
+        }
+        return vol / 6.0f;
+    }
+
+    void solve(std::vector<XPBDParticle>& particles, float dt) override {
+        if (triangles.empty() || std::abs(restVolume) < 1e-8f) return;
+        float currentVol = computeVolume(particles);
+        float C = currentVol - restVolume * pressure;
+        float alpha = compliance / (dt * dt);
+
+        std::vector<math::Vector3D> grads(particles.size(), math::Vector3D::Zero);
+        for (const auto& tri : triangles) {
+            const auto& p0 = particles[tri[0]].position;
+            const auto& p1 = particles[tri[1]].position;
+            const auto& p2 = particles[tri[2]].position;
+            grads[tri[0]] += p1.cross(p2) * (1.0f / 6.0f);
+            grads[tri[1]] += p2.cross(p0) * (1.0f / 6.0f);
+            grads[tri[2]] += p0.cross(p1) * (1.0f / 6.0f);
+        }
+
+        float wGradSum = 0.0f;
+        for (size_t i = 0; i < particles.size(); i++) {
+            if (!particles[i].isStatic)
+                wGradSum += particles[i].invMass * grads[i].sqrMagnitude();
+        }
+        if (wGradSum < 1e-10f) return;
+
+        float dLambda = (-C - alpha * lambda) / (wGradSum + alpha);
+        for (size_t i = 0; i < particles.size(); i++) {
+            if (!particles[i].isStatic)
+                particles[i].position += grads[i] * (dLambda * particles[i].invMass);
+        }
+        lambda += dLambda;
+    }
+
+    void applySolidMechanics(float /*dt*/) override {}
+};
+
 // ═══════════════════════════════════════════════════════════════
 // SoftBody3D — Container for a single soft body (cloth, rope, jelly)
 // ═══════════════════════════════════════════════════════════════
@@ -365,6 +424,10 @@ public:
     float frictionCoeff = 0.5f;
     float damping = 0.99f; // Velocity damping factor per 1/60s frame
 
+    // Self-collision
+    bool enableSelfCollision = false;
+    float selfCollisionRadius = 0.05f; // Minimum distance between particles
+
     /// Add a soft body to the system
     int addBody(SoftBody3D&& body) {
         m_softBodies.push_back(std::move(body));
@@ -400,6 +463,34 @@ public:
             for (int iter = 0; iter < solverIterations; iter++) {
                 for (auto& c : body.m_constraints) {
                     if (!c->broken) c->solve(body.m_particles, dt);
+                }
+
+                // Self-collision: enforce minimum distance between particles
+                if (enableSelfCollision) {
+                    float r2 = selfCollisionRadius * selfCollisionRadius;
+                    int nParts = static_cast<int>(body.m_particles.size());
+                    for (int i = 0; i < nParts; i++) {
+                        auto& pi = body.m_particles[i];
+                        if (pi.isStatic) continue;
+                        for (int j = i + 1; j < nParts; j++) {
+                            auto& pj = body.m_particles[j];
+                            math::Vector3D diff = pi.position - pj.position;
+                            float dist2 = diff.sqrMagnitude();
+                            if (dist2 < r2 && dist2 > 1e-12f) {
+                                float dist = std::sqrt(dist2);
+                                math::Vector3D n = diff * (1.0f / dist);
+                                float overlap = selfCollisionRadius - dist;
+                                float wi = pi.invMass;
+                                float wj = pj.isStatic ? 0.0f : pj.invMass;
+                                float wSum = wi + wj;
+                                if (wSum > 1e-10f) {
+                                    math::Vector3D correction = n * (overlap / wSum);
+                                    pi.position += correction * wi;
+                                    if (!pj.isStatic) pj.position -= correction * wj;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Simple collision resolution (floor)
