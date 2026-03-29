@@ -29,11 +29,42 @@
     #define ENGINE_SIMD_SSE41 0
 #endif
 
+// ── Detección AVX ──────────────────────────────────────────────
+#if defined(__AVX__)
+    #define ENGINE_SIMD_AVX 1
+    #include <immintrin.h>  // AVX intrinsics
+#else
+    #define ENGINE_SIMD_AVX 0
+#endif
+
+// ── Detección AVX2 ─────────────────────────────────────────────
+#if defined(__AVX2__)
+    #define ENGINE_SIMD_AVX2 1
+    #ifndef ENGINE_SIMD_AVX
+        #define ENGINE_SIMD_AVX 1
+    #endif
+    #include <immintrin.h>
+#else
+    #define ENGINE_SIMD_AVX2 0
+#endif
+
+// ── Detección FMA ──────────────────────────────────────────────
+#if defined(__FMA__)
+    #define ENGINE_SIMD_FMA 1
+#else
+    #define ENGINE_SIMD_FMA 0
+#endif
+
 // ── Alineación de memoria para SIMD ────────────────────────────
-#if ENGINE_SIMD_SSE2
+#if ENGINE_SIMD_AVX
+    #define ENGINE_ALIGN alignas(32)
+    #define ENGINE_ALIGN16 alignas(16)
+#elif ENGINE_SIMD_SSE2
     #define ENGINE_ALIGN alignas(16)
+    #define ENGINE_ALIGN16 alignas(16)
 #else
     #define ENGINE_ALIGN
+    #define ENGINE_ALIGN16
 #endif
 
 namespace engine {
@@ -50,7 +81,11 @@ constexpr bool hasSIMD() {
 
 /// Nombre de la extensión SIMD disponible
 constexpr const char* simdName() {
-    #if ENGINE_SIMD_SSE41
+    #if ENGINE_SIMD_AVX2
+        return "AVX2";
+    #elif ENGINE_SIMD_AVX
+        return "AVX";
+    #elif ENGINE_SIMD_SSE41
         return "SSE4.1";
     #elif ENGINE_SIMD_SSE2
         return "SSE2";
