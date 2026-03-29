@@ -17,6 +17,7 @@
 #include "ecs/EntityManager.h"
 #include "ecs/Components3D.h"
 #include "renderer/ShapeRenderer2D.h"
+#include "renderer/SpriteBatch2D.h"
 #include "renderer/TextRenderer.h"
 #include <string>
 #include <vector>
@@ -39,7 +40,8 @@ public:
     void update(float dt);
 
     /// Renderizar UI del editor sobre la escena
-    void render(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text);
+    void render(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                renderer::SpriteBatch2D& batch);
 
     /// Estado del editor
     bool isActive() const { return m_active; }
@@ -51,9 +53,12 @@ public:
 
 private:
     // Paneles individuales
-    void renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text);
-    void renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text);
-    void renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text);
+    void renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                              renderer::SpriteBatch2D& batch);
+    void renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                              renderer::SpriteBatch2D& batch);
+    void renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                       renderer::SpriteBatch2D& batch);
 
     // Utilidades
     std::string entityLabel(ecs::Entity entity) const;

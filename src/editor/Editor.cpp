@@ -118,51 +118,72 @@ void Editor::update(float dt) {
 // Render
 // ════════════════════════════════════════════════════════════════
 
-void Editor::render(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text) {
+void Editor::render(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                    renderer::SpriteBatch2D& batch) {
     if (!m_active || !m_ecs) return;
 
-    m_ui.begin(m_mouseX, m_mouseY, m_mouseDown, m_mousePressed);
+    m_ui.begin(m_mouseX, m_mouseY, m_mouseDown, m_mousePressed, batch);
 
-    renderToolbar(shapes, text);
-    renderHierarchyPanel(shapes, text);
-    renderInspectorPanel(shapes, text);
+    renderToolbar(shapes, text, batch);
+    renderHierarchyPanel(shapes, text, batch);
+    renderInspectorPanel(shapes, text, batch);
 
     m_ui.end();
 }
 
 // ── Toolbar ────────────────────────────────────────────────────
 
-void Editor::renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text) {
-    // Barra superior
-    shapes.drawRectFilled(TOOLBAR_X, TOOLBAR_Y, TOOLBAR_W, TOOLBAR_H,
-                          math::Color(25, 25, 40, 240));
-    shapes.drawLine(TOOLBAR_X, TOOLBAR_H, TOOLBAR_X + TOOLBAR_W, TOOLBAR_H,
-                    math::Color(70, 70, 100));
+void Editor::renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                           renderer::SpriteBatch2D& batch) {
+    // Barra superior — coordenadas centradas para ShapeRenderer2D
+    auto toShapeCol = [](const math::Color& c) -> renderer::ShapeRenderer2D::Color {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    };
+    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    };
 
-    text.drawText("ALZE Editor", 10, 8, 1.0f, math::Color(140, 200, 255));
+    shapes.rectFill(TOOLBAR_X + TOOLBAR_W * 0.5f, TOOLBAR_Y + TOOLBAR_H * 0.5f,
+                    TOOLBAR_W, TOOLBAR_H, toShapeCol(math::Color(25, 25, 40, 240)));
+    shapes.line(TOOLBAR_X, TOOLBAR_H, TOOLBAR_X + TOOLBAR_W, TOOLBAR_H,
+                toShapeCol(math::Color(70, 70, 100)));
+
+    text.draw(batch, "ALZE Editor", 10.0f, 8.0f, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
 
     // Info de entidades
     char buf[64];
     snprintf(buf, sizeof(buf), "Entities: %d", (int)m_entityList.size());
-    text.drawText(buf, 200, 8, 1.0f, math::Color(160, 170, 190));
+    text.draw(batch, buf, 200.0f, 8.0f, 1.0f, toSpriteCol(math::Color(160, 170, 190)));
 
     // Indicador de entidad seleccionada
     if (m_selectedEntity != ecs::NULL_ENTITY) {
         snprintf(buf, sizeof(buf), "Selected: %s", entityLabel(m_selectedEntity).c_str());
-        text.drawText(buf, 400, 8, 1.0f, math::Color(255, 220, 100));
+        text.draw(batch, buf, 400.0f, 8.0f, 1.0f, toSpriteCol(math::Color(255, 220, 100)));
     }
 
     // Ayuda
-    text.drawText("[F1] Close | Arrows: Move | PgUp/Dn: Y", 600, 8, 1.0f,
-                  math::Color(100, 110, 130));
+    text.draw(batch, "[F1] Close | Arrows: Move | PgUp/Dn: Y", 600.0f, 8.0f, 1.0f,
+              toSpriteCol(math::Color(100, 110, 130)));
 }
 
 // ── Panel de jerarquia ─────────────────────────────────────────
 
-void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text) {
+void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                                  renderer::SpriteBatch2D& batch) {
     m_ui.panel(shapes, text, "Hierarchy", HIERARCHY_X, HIERARCHY_Y, HIERARCHY_W, HIERARCHY_H);
 
-    float startY = HIERARCHY_Y + 30;
+    auto toShapeCol = [](const math::Color& c) -> renderer::ShapeRenderer2D::Color {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    };
+    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    };
+
+    float startY = HIERARCHY_Y + 30.0f;
     int visibleCount = std::min((int)m_entityList.size() - m_hierarchyScroll, MAX_VISIBLE_ENTITIES);
 
     for (int i = 0; i < visibleCount; ++i) {
@@ -171,19 +192,20 @@ void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::T
 
         ecs::Entity entity = m_entityList[idx];
         float y = startY + i * ENTRY_HEIGHT;
-        float x = HIERARCHY_X + 5;
-        float w = HIERARCHY_W - 10;
+        float x = HIERARCHY_X + 5.0f;
+        float w = HIERARCHY_W - 10.0f;
+        float h = ENTRY_HEIGHT - 2.0f;
 
-        // Highlight seleccionado
+        // Highlight seleccionado — coordenadas centradas para rectFill
         bool isSelected = (entity == m_selectedEntity);
         if (isSelected) {
-            shapes.drawRectFilled(x, y, w, ENTRY_HEIGHT - 2,
-                                  math::Color(60, 100, 160, 180));
+            shapes.rectFill(x + w * 0.5f, y + h * 0.5f, w, h,
+                            toShapeCol(math::Color(60, 100, 160, 180)));
         }
 
         // Boton de seleccion (toda la fila es clickeable)
-        std::string label = entityLabel(entity);
-        if (m_ui.button(shapes, text, label, x, y, w, ENTRY_HEIGHT - 2)) {
+        std::string lbl = entityLabel(entity);
+        if (m_ui.button(shapes, text, lbl, x, y, w, h)) {
             m_selectedEntity = entity;
         }
     }
@@ -193,35 +215,41 @@ void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::T
         char scrollInfo[32];
         snprintf(scrollInfo, sizeof(scrollInfo), "[+/-] %d/%d",
                  m_hierarchyScroll + 1, (int)m_entityList.size());
-        text.drawText(scrollInfo, HIERARCHY_X + 10, HIERARCHY_Y + HIERARCHY_H - 20, 1.0f,
-                      math::Color(120, 130, 150));
+        text.draw(batch, scrollInfo, HIERARCHY_X + 10.0f, HIERARCHY_Y + HIERARCHY_H - 20.0f,
+                  1.0f, toSpriteCol(math::Color(120, 130, 150)));
     }
 }
 
 // ── Panel inspector ────────────────────────────────────────────
 
-void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text) {
+void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
+                                  renderer::SpriteBatch2D& batch) {
     m_ui.panel(shapes, text, "Inspector", INSPECTOR_X, INSPECTOR_Y, INSPECTOR_W, INSPECTOR_H);
 
+    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    };
+
     if (m_selectedEntity == ecs::NULL_ENTITY || !m_ecs->isAlive(m_selectedEntity)) {
-        m_ui.label(text, "No entity selected", INSPECTOR_X + 10, INSPECTOR_Y + 35,
+        m_ui.label(text, "No entity selected", INSPECTOR_X + 10.0f, INSPECTOR_Y + 35.0f,
                    math::Color(120, 130, 150));
         return;
     }
 
-    float y = INSPECTOR_Y + 35;
-    float x = INSPECTOR_X + 10;
-    float w = INSPECTOR_W - 20;
+    float y = INSPECTOR_Y + 35.0f;
+    float x = INSPECTOR_X + 10.0f;
+    float w = INSPECTOR_W - 20.0f;
     char buf[128];
 
     // ── Entity ID ──────────────────────────────────────────────
     snprintf(buf, sizeof(buf), "ID: %u (gen %u)",
              ecs::getIndex(m_selectedEntity), ecs::getGeneration(m_selectedEntity));
     m_ui.label(text, buf, x, y, math::Color(180, 190, 210));
-    y += 18;
+    y += 18.0f;
 
     m_ui.separator(shapes, x, y, w);
-    y += 8;
+    y += 8.0f;
 
     // ── Transform3DComponent ───────────────────────────────────
     if (m_ecs->hasComponent<ecs::Transform3DComponent>(m_selectedEntity)) {
@@ -230,64 +258,64 @@ void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::T
         const auto& rot = tc.transform.rotation;
         const auto& scl = tc.transform.scale;
 
-        text.drawText("Transform3D", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "Transform3D", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         snprintf(buf, sizeof(buf), "Pos: %.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Rot: %.2f, %.2f, %.2f, %.2f", rot.x, rot.y, rot.z, rot.w);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Scl: %.2f, %.2f, %.2f", scl.x, scl.y, scl.z);
-        m_ui.label(text, buf, x + 5, y);
-        y += 20;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 20.0f;
 
         m_ui.separator(shapes, x, y, w);
-        y += 8;
+        y += 8.0f;
     }
 
     // ── Physics3DComponent ─────────────────────────────────────
     if (m_ecs->hasComponent<ecs::Physics3DComponent>(m_selectedEntity)) {
         auto& pc = m_ecs->getComponent<ecs::Physics3DComponent>(m_selectedEntity);
 
-        text.drawText("Physics3D", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "Physics3D", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         snprintf(buf, sizeof(buf), "Vel: %.2f, %.2f, %.2f", pc.velocity.x, pc.velocity.y, pc.velocity.z);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Mass: %.2f  Drag: %.3f", pc.mass, pc.drag);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Rest: %.2f  Fric: %.2f", pc.restitution, pc.friction);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Static: %s  Sleep: %s",
                  pc.isStatic ? "yes" : "no", pc.sleeping ? "yes" : "no");
-        m_ui.label(text, buf, x + 5, y);
-        y += 20;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 20.0f;
 
         m_ui.separator(shapes, x, y, w);
-        y += 8;
+        y += 8.0f;
     }
 
     // ── Collider3DComponent ────────────────────────────────────
     if (m_ecs->hasComponent<ecs::Collider3DComponent>(m_selectedEntity)) {
         auto& cc = m_ecs->getComponent<ecs::Collider3DComponent>(m_selectedEntity);
 
-        text.drawText("Collider3D", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "Collider3D", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         const char* shapeNames[] = { "Sphere", "Box", "Capsule" };
         snprintf(buf, sizeof(buf), "Shape: %s", shapeNames[cc.shape]);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         if (cc.shape == ecs::Collider3DComponent::SPHERE) {
             snprintf(buf, sizeof(buf), "Radius: %.2f", cc.radius);
@@ -297,49 +325,49 @@ void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::T
         } else {
             snprintf(buf, sizeof(buf), "H: %.2f  R: %.2f", cc.capsuleHeight, cc.radius);
         }
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Layer: %u  Trigger: %s",
                  cc.layer, cc.isTrigger ? "yes" : "no");
-        m_ui.label(text, buf, x + 5, y);
-        y += 20;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 20.0f;
 
         m_ui.separator(shapes, x, y, w);
-        y += 8;
+        y += 8.0f;
     }
 
     // ── MeshComponent ──────────────────────────────────────────
     if (m_ecs->hasComponent<ecs::MeshComponent>(m_selectedEntity)) {
         auto& mc = m_ecs->getComponent<ecs::MeshComponent>(m_selectedEntity);
 
-        text.drawText("Mesh", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "Mesh", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         snprintf(buf, sizeof(buf), "Visible: %s  Mesh: %s",
                  mc.visible ? "yes" : "no",
                  mc.mesh ? "loaded" : "null");
-        m_ui.label(text, buf, x + 5, y);
-        y += 20;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 20.0f;
 
         m_ui.separator(shapes, x, y, w);
-        y += 8;
+        y += 8.0f;
     }
 
     // ── PointLightComponent ────────────────────────────────────
     if (m_ecs->hasComponent<ecs::PointLightComponent>(m_selectedEntity)) {
         auto& lc = m_ecs->getComponent<ecs::PointLightComponent>(m_selectedEntity);
 
-        text.drawText("PointLight", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "PointLight", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         snprintf(buf, sizeof(buf), "Color: %.1f, %.1f, %.1f", lc.color.x, lc.color.y, lc.color.z);
-        m_ui.label(text, buf, x + 5, y);
-        y += 14;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 14.0f;
 
         snprintf(buf, sizeof(buf), "Atten: %.2f / %.3f / %.4f", lc.constant, lc.linear, lc.quadratic);
-        m_ui.label(text, buf, x + 5, y);
-        y += 20;
+        m_ui.label(text, buf, x + 5.0f, y);
+        y += 20.0f;
     }
 
     // ── TagComponent ───────────────────────────────────────────
@@ -349,11 +377,11 @@ void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::T
         int tagIdx = static_cast<int>(tag.type);
         if (tagIdx < 0 || tagIdx > 5) tagIdx = 0;
 
-        text.drawText("Tag", x, y, 1.0f, math::Color(140, 200, 255));
-        y += 16;
+        text.draw(batch, "Tag", x, y, 1.0f, toSpriteCol(math::Color(140, 200, 255)));
+        y += 16.0f;
 
         snprintf(buf, sizeof(buf), "Type: %s", tagNames[tagIdx]);
-        m_ui.label(text, buf, x + 5, y);
+        m_ui.label(text, buf, x + 5.0f, y);
     }
 }
 
