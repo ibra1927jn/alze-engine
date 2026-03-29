@@ -3,6 +3,7 @@
 #include "math/Vector3D.h"
 #include <cmath>
 #include <limits>
+#include <array>
 #include <vector> // Added for std::vector in HeightfieldCollider
 
 namespace engine {
@@ -219,18 +220,71 @@ struct ConvexHullCollider : public Collider3D {
         center = center * (1.0f / static_cast<float>(vertices.size()));
     }
 
+    /// Support function with hill climbing optimization.
+    /// For large hulls, uses adjacency-based hill climbing O(sqrt(N)) amortized.
+    /// Falls back to brute force O(N) if no adjacency is built.
     math::Vector3D getSupport(const math::Vector3D& dir) const {
-        float bestDot = -1e30f;
-        math::Vector3D best = vertices.empty() ? center : vertices[0];
-        for (const auto& v : vertices) {
-            float d = v.dot(dir);
-            if (d > bestDot) {
-                bestDot = d;
-                best = v;
-            }
+        if (vertices.empty()) return center;
+        if (adjacency.empty() || adjacency.size() != vertices.size()) {
+            return getSupportBruteForce(dir);
         }
-        return best;
+        return getSupportHillClimb(dir);
     }
+
+    /// Build adjacency list from convex hull faces for hill climbing support.
+    /// Call this once after setting vertices. Each vertex stores indices of its neighbors.
+    std::vector<std::vector<int>> adjacency;
+    mutable int lastSupportIdx = 0; // Temporal coherence hint
+
+    void buildAdjacency(const std::vector<std::array<int,3>>& faces) {
+        adjacency.resize(vertices.size());
+        for (auto& a : adjacency) a.clear();
+        for (const auto& f : faces) {
+            auto addEdge = [&](int a, int b) {
+                auto& adj = adjacency[a];
+                bool found = false;
+                for (int n : adj) { if (n == b) { found = true; break; } }
+                if (!found) adj.push_back(b);
+            };
+            addEdge(f[0], f[1]); addEdge(f[1], f[0]);
+            addEdge(f[1], f[2]); addEdge(f[2], f[1]);
+            addEdge(f[2], f[0]); addEdge(f[0], f[2]);
+        }
+    }
+
+private:
+    math::Vector3D getSupportBruteForce(const math::Vector3D& dir) const {
+        float bestDot = -1e30f;
+        int bestIdx = 0;
+        for (int i = 0; i < static_cast<int>(vertices.size()); i++) {
+            float d = vertices[i].dot(dir);
+            if (d > bestDot) { bestDot = d; bestIdx = i; }
+        }
+        lastSupportIdx = bestIdx;
+        return vertices[bestIdx];
+    }
+
+    math::Vector3D getSupportHillClimb(const math::Vector3D& dir) const {
+        int current = lastSupportIdx;
+        if (current < 0 || current >= static_cast<int>(vertices.size())) current = 0;
+        float bestDot = vertices[current].dot(dir);
+
+        for (int iter = 0; iter < static_cast<int>(vertices.size()); iter++) {
+            bool improved = false;
+            for (int neighbor : adjacency[current]) {
+                float d = vertices[neighbor].dot(dir);
+                if (d > bestDot) {
+                    bestDot = d;
+                    current = neighbor;
+                    improved = true;
+                }
+            }
+            if (!improved) break;
+        }
+        lastSupportIdx = current;
+        return vertices[current];
+    }
+public:
 
     AABB3D getAABB() const {
         if (vertices.empty()) return AABB3D();
