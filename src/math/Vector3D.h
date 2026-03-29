@@ -224,9 +224,24 @@ public:
 
     /// Vector normalizado (longitud = 1)
     inline Vector3D normalized() const {
+#if ENGINE_SIMD_SSE2
+        float sqrMag = sqrMagnitude();
+        if (sqrMag < MathUtils::EPSILON * MathUtils::EPSILON) return Zero;
+        // Use rsqrt with one Newton-Raphson refinement for ~23-bit precision
+        __m128 sqrMagV = _mm_set1_ps(sqrMag);
+        __m128 rsqrt = _mm_rsqrt_ss(sqrMagV);
+        // NR step: rsqrt = rsqrt * (1.5 - 0.5 * sqrMag * rsqrt * rsqrt)
+        __m128 half = _mm_set_ss(0.5f);
+        __m128 three_half = _mm_set_ss(1.5f);
+        __m128 muls = _mm_mul_ss(_mm_mul_ss(half, sqrMagV), _mm_mul_ss(rsqrt, rsqrt));
+        rsqrt = _mm_mul_ss(rsqrt, _mm_sub_ss(three_half, muls));
+        __m128 invMag = _mm_shuffle_ps(rsqrt, rsqrt, 0);
+        return Vector3D(_mm_mul_ps(simd, invMag));
+#else
         float mag = magnitude();
         if (mag < MathUtils::EPSILON) return Zero;
         return *this / mag;
+#endif
     }
 
     /// Normalizar in-place
