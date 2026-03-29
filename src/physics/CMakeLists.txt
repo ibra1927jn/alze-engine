@@ -8,6 +8,7 @@ add_library(engine_physics STATIC
     Collider3D.cpp
     RigidBody3D.cpp
     GJK.cpp
+    PhysicsSoA.cpp
 )
 
 target_include_directories(engine_physics
