@@ -92,6 +92,13 @@ target_link_libraries(test_stress PRIVATE engine_ecs engine_physics engine_math)
 add_executable(test_math3d tests/test_math3d.cpp)
 target_link_libraries(test_math3d PRIVATE engine_math)
 
+add_executable(test_utils tests/test_utils.cpp)
+target_link_libraries(test_utils PRIVATE engine_math)
+
+add_executable(test_navmesh tests/test_navmesh.cpp)
+target_include_directories(test_navmesh PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_navmesh PRIVATE engine_core engine_math)
+
 # ── Demo 3D ─────────────────────────────────────────────────────
 add_executable(demo_3d src/demo_3d.cpp)
 target_compile_definitions(demo_3d PRIVATE SDL_MAIN_HANDLED)
