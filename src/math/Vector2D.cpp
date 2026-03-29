@@ -1,4 +1,5 @@
 #include "Vector2D.h"
+#include <ostream>
 
 namespace engine {
 namespace math {
