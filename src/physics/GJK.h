@@ -58,8 +58,8 @@ private:
         return s;
     }
     
-    static const int EPA_MAX_ITERATIONS = 32;
-    static constexpr float EPA_TOLERANCE = 0.0001f;
+    static const int EPA_MAX_ITERATIONS = 64;
+    static constexpr float EPA_TOLERANCE = 0.00001f;
 };
 
 } // namespace physics
