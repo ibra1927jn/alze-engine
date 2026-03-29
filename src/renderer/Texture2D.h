@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "ImageDecoder.h"
 
 namespace engine {
@@ -121,8 +122,7 @@ public:
 
     /// Crear textura checkerboard (para debug/default)
     bool loadCheckerboard(int size = 8, int tileSize = 1) {
-        int totalPixels = size * size * 4;
-        auto* data = new unsigned char[totalPixels];
+        std::vector<unsigned char> data(size * size * 4);
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
                 bool white = ((x / tileSize) + (y / tileSize)) % 2 == 0;
@@ -131,9 +131,7 @@ public:
                 data[idx] = v; data[idx+1] = v; data[idx+2] = v; data[idx+3] = 255;
             }
         }
-        bool ok = loadFromMemory(data, size, size, 4);
-        delete[] data;
-        return ok;
+        return loadFromMemory(data.data(), size, size, 4);
     }
 
     /// Activar textura en un slot (0-15)
