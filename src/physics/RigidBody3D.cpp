@@ -1,7 +1,6 @@
 #include "RigidBody3D.h"
 #include "PhysicsMath.h"
 #include <cmath>
-#include <algorithm>
 
 namespace engine {
 namespace physics {

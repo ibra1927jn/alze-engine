@@ -1,5 +1,4 @@
 ﻿#include "SkeletalAnimation.h"
-#include <algorithm>
 #include <cmath>
 
 namespace engine {
