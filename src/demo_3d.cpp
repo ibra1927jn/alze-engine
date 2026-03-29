@@ -9,7 +9,9 @@
 ///   - Press F to spawn a new ball at camera position
 ///   - Press R to reset all balls
 
+#ifndef SDL_MAIN_HANDLED
 #define SDL_MAIN_HANDLED
+#endif
 #include <SDL.h>
 #include <glad/gl.h>
 #include <iostream>
