@@ -99,9 +99,5 @@ SIMD: SSE2 en Vector2D/3D, Matrix3x3/4x4
 - Commits en ingles: tipo(scope): descripcion breve
 
 ## Bugs conocidos (ver ERRORES.md)
-- P0: JobSystem m_running no-atomico (UB data race)
-- P0: AudioEngine data races en m_instanceCounts
-- P0: cloneEntity() no copia datos de componentes
-- P0: Serializer crash con -fno-exceptions en input invalido
-- P1: EPA no calcula contactPoint, ForwardRenderer texture slot collision
-- P1: Thread safety: FrameAllocator, Logger, Profiler, ResourceManager
+- Todos los P0 y P1 resueltos (ver ERRORES.md para historial completo)
+- ~20 physics headers son formula-reference sin simulacion (Quantum, Nuclear, Relativity, etc.)
