@@ -1,6 +1,7 @@
 #include "EventBus.h"
 #include "Profiler.h"
 #include "ResourceManager.h"
+#include "Serializer.h"
 #include "Vector2D.h"
 #include "MathUtils.h"
 #include <iostream>
@@ -229,6 +230,151 @@ void testResourceManager() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Serializer Tests
+// ═══════════════════════════════════════════════════════════════
+void testSerializer() {
+    std::cout << "\n=== Serializer Tests ===" << std::endl;
+
+    // JsonWriter round-trip
+    {
+        JsonWriter w;
+        w.beginObject();
+        w.keyValue("name", std::string("player"));
+        w.keyValue("health", 100);
+        w.keyValue("speed", 3.5f);
+        w.keyValue("alive", true);
+        w.keyValue("pos", Vector2D(1.0f, 2.0f));
+        w.endObject();
+
+        std::string json = w.toString();
+        TEST("Writer produces output", !json.empty());
+        TEST("Writer contains name", json.find("\"name\"") != std::string::npos);
+        TEST("Writer contains health", json.find("100") != std::string::npos);
+
+        JsonReader r;
+        r.loadFromString(json);
+        TEST("Reader loads string", true);
+
+        r.expectChar('{');
+        std::string k1 = r.readKey();
+        TEST("Key 1 = name", k1 == "name");
+        std::string v1 = r.readString();
+        TEST("Value 1 = player", v1 == "player");
+        r.skipComma();
+
+        std::string k2 = r.readKey();
+        TEST("Key 2 = health", k2 == "health");
+        int v2 = r.readInt();
+        TEST("Value 2 = 100", v2 == 100);
+        r.skipComma();
+
+        std::string k3 = r.readKey();
+        TEST("Key 3 = speed", k3 == "speed");
+        float v3 = r.readFloat();
+        TEST("Value 3 ~ 3.5", MathUtils::approxEqual(v3, 3.5f, 0.01f));
+        r.skipComma();
+
+        std::string k4 = r.readKey();
+        TEST("Key 4 = alive", k4 == "alive");
+        bool v4 = r.readBool();
+        TEST("Value 4 = true", v4 == true);
+        r.skipComma();
+
+        std::string k5 = r.readKey();
+        TEST("Key 5 = pos", k5 == "pos");
+        Vector2D v5 = r.readVector2D();
+        TEST("Pos x = 1", MathUtils::approxEqual(v5.x, 1.0f));
+        TEST("Pos y = 2", MathUtils::approxEqual(v5.y, 2.0f));
+    }
+
+    // Regression: readFloat con input invalido no crashea (P0 fix -fno-exceptions)
+    {
+        JsonReader r;
+        r.loadFromString("abc");
+        float val = r.readFloat();
+        TEST("Invalid float = 0", MathUtils::approxEqual(val, 0.0f));
+    }
+
+    // readBool con input invalido
+    {
+        JsonReader r;
+        r.loadFromString("xyz");
+        bool val = r.readBool();
+        TEST("Invalid bool = false", val == false);
+    }
+
+    // Cadena vacia
+    {
+        JsonReader r;
+        r.loadFromString("");
+        TEST("Empty has no more", !r.hasMore());
+        float val = r.readFloat();
+        TEST("Empty readFloat = 0", MathUtils::approxEqual(val, 0.0f));
+    }
+
+    // Strings con escape
+    {
+        JsonWriter w;
+        w.beginObject();
+        w.keyValue("msg", std::string("hello\\nworld"));
+        w.endObject();
+        std::string json = w.toString();
+        TEST("Escaped string in output", json.find("hello\\nworld") != std::string::npos);
+    }
+
+    // Array
+    {
+        JsonWriter w;
+        w.beginArray();
+        w.value(1);
+        w.value(2);
+        w.value(3);
+        w.endArray();
+        std::string json = w.toString();
+        TEST("Array output", json.find("[") != std::string::npos);
+
+        JsonReader r;
+        r.loadFromString(json);
+        r.expectChar('[');
+        int a = r.readInt(); r.skipComma();
+        int b = r.readInt(); r.skipComma();
+        int c = r.readInt();
+        TEST("Array val 1", a == 1);
+        TEST("Array val 2", b == 2);
+        TEST("Array val 3", c == 3);
+        r.expectChar(']');
+    }
+
+    // skipValue
+    {
+        JsonReader r;
+        r.loadFromString("{\"a\": 42, \"b\": \"hello\"}");
+        r.expectChar('{');
+        std::string k = r.readKey();
+        r.skipValue(); // skip 42
+        r.skipComma();
+        std::string k2 = r.readKey();
+        TEST("Skip value reads next key", k2 == "b");
+        std::string v = r.readString();
+        TEST("Value after skip", v == "hello");
+    }
+
+    // Negative & scientific float
+    {
+        JsonReader r;
+        r.loadFromString("-3.14");
+        float val = r.readFloat();
+        TEST("Negative float", MathUtils::approxEqual(val, -3.14f, 0.01f));
+    }
+    {
+        JsonReader r;
+        r.loadFromString("1.5e2");
+        float val = r.readFloat();
+        TEST("Scientific float", MathUtils::approxEqual(val, 150.0f, 0.1f));
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
 int main() {
     std::cout << "============================================" << std::endl;
     std::cout << "  PhysicsEngine2D — Tests Subsystems" << std::endl;
@@ -237,6 +383,7 @@ int main() {
     testEventBus();
     testProfiler();
     testResourceManager();
+    testSerializer();
 
     std::cout << "\n============================================" << std::endl;
     std::cout << "  Resultados: " << passed << " pasados, " << failed << " fallidos" << std::endl;
