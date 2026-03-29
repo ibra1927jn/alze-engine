@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <mutex>
 
 namespace engine {

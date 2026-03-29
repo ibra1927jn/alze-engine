@@ -20,7 +20,6 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdint>
-#include <cassert>
 
 namespace engine {
 namespace physics {
