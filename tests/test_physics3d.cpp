@@ -37,10 +37,13 @@
 #include "physics/Relativity.h"
 #include "physics/MHDSystem.h"
 #include "physics/PhysicsConfig.h"
+#include "physics/PhysicsMaterial.h"
+#include "physics/PhysicsMath.h"
 #include "physics/UnifiedSimulation.h"
 #include "ecs/ECSCoordinator.h"
 #include "physics/DynamicBVH3D.h"
 #include "physics/PhysicsWorld3D.h"
+#include "physics/Thermodynamics.h"
 
 using namespace engine::math;
 using namespace engine::physics;
@@ -537,9 +540,6 @@ void testConstraints() {
 // ═════════════════════════════════════════════════════════════════
 // Phase 14: PhysicsMaterial Tests
 // ═════════════════════════════════════════════════════════════════
-#include "physics/PhysicsMaterial.h"
-#include "physics/PhysicsMath.h"
-#include "physics/Thermodynamics.h"
 
 void testPhysicsMaterial() {
     std::cout << "\n=== PhysicsMaterial ===" << std::endl;
