@@ -524,14 +524,18 @@ ContactInfo PhysicsWorld3D::narrowphaseTest(int a, int b) {
         int typeB = getShape(bodyB, obbB, sphereB, capsuleB, hullB);
 
         // Dispatch using GJK+EPA for all combinations
+        // EPA normal convention: points from second arg toward first arg (B→A)
+        // Solver convention: normal points from bodyA toward bodyB
+        // When args are (bodyA_shape, bodyB_shape): EPA gives B→A, need to negate
+        // When args are (bodyB_shape, bodyA_shape): EPA gives A→B, already correct
         ContactInfo info;
-        if (typeA == 0 && typeB == 0) info = gjkEpaContact(hullA, hullB);
-        else if (typeA == 0 && typeB == 1) info = gjkEpaContact(hullA, sphereB);
-        else if (typeA == 0 && typeB == 2) info = gjkEpaContact(hullA, obbB);
-        else if (typeA == 0 && typeB == 3) info = gjkEpaContact(hullA, capsuleB);
-        else if (typeA == 1 && typeB == 0) { info = gjkEpaContact(hullB, sphereA); if (info.hasContact) info.normal = info.normal * -1.0f; }
-        else if (typeA == 2 && typeB == 0) { info = gjkEpaContact(hullB, obbA); if (info.hasContact) info.normal = info.normal * -1.0f; }
-        else if (typeA == 3 && typeB == 0) { info = gjkEpaContact(hullB, capsuleA); if (info.hasContact) info.normal = info.normal * -1.0f; }
+        if (typeA == 0 && typeB == 0) { info = gjkEpaContact(hullA, hullB); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 0 && typeB == 1) { info = gjkEpaContact(hullA, sphereB); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 0 && typeB == 2) { info = gjkEpaContact(hullA, obbB); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 0 && typeB == 3) { info = gjkEpaContact(hullA, capsuleB); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 1 && typeB == 0) info = gjkEpaContact(hullB, sphereA);
+        else if (typeA == 2 && typeB == 0) info = gjkEpaContact(hullB, obbA);
+        else if (typeA == 3 && typeB == 0) info = gjkEpaContact(hullB, capsuleA);
         return info;
     }
 
