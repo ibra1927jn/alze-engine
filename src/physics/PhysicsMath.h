@@ -212,6 +212,78 @@ namespace PhysicsMath {
         return vel + (accelOld + accelNew) * (0.5f * dt);
     }
 
+    // ── Symplectic Euler ─────────────────────────────────────────
+
+    struct IntegrationState {
+        math::Vector3D position;
+        math::Vector3D velocity;
+    };
+
+    inline IntegrationState symplecticEulerStep(const math::Vector3D& pos,
+                                                 const math::Vector3D& vel,
+                                                 const math::Vector3D& accel, float dt) {
+        math::Vector3D velNew = vel + accel * dt;
+        return {pos + velNew * dt, velNew};
+    }
+
+    // ── RK4 with force callback ────────────────────────────────
+
+    template<typename ForceFunc>
+    inline IntegrationState rk4Step(const math::Vector3D& pos, const math::Vector3D& vel,
+                                     float invMass, float dt, ForceFunc forceFunc) {
+        math::Vector3D a1 = forceFunc(pos, vel) * invMass;
+        math::Vector3D v1 = vel;
+        math::Vector3D p2 = pos + v1 * (dt * 0.5f);
+        math::Vector3D v2 = vel + a1 * (dt * 0.5f);
+        math::Vector3D a2 = forceFunc(p2, v2) * invMass;
+        math::Vector3D p3 = pos + v2 * (dt * 0.5f);
+        math::Vector3D v3 = vel + a2 * (dt * 0.5f);
+        math::Vector3D a3 = forceFunc(p3, v3) * invMass;
+        math::Vector3D v4 = vel + a3 * dt;
+        math::Vector3D a4 = forceFunc(pos + v3 * dt, v4) * invMass;
+        math::Vector3D posNew = pos + (v1 + v2 * 2.0f + v3 * 2.0f + v4) * (dt / 6.0f);
+        math::Vector3D velNew = vel + (a1 + a2 * 2.0f + a3 * 2.0f + a4) * (dt / 6.0f);
+        return {posNew, velNew};
+    }
+
+    // ── Energy Computation ─────────────────────────────────────
+
+    inline float kineticEnergy(float mass, const math::Vector3D& velocity) {
+        return 0.5f * mass * velocity.dot(velocity);
+    }
+
+    inline float rotationalKineticEnergy(const math::Vector3D& angularVelocity,
+                                          const math::Vector3D& invInertia) {
+        float ex = (invInertia.x > 0) ? angularVelocity.x * angularVelocity.x / invInertia.x : 0;
+        float ey = (invInertia.y > 0) ? angularVelocity.y * angularVelocity.y / invInertia.y : 0;
+        float ez = (invInertia.z > 0) ? angularVelocity.z * angularVelocity.z / invInertia.z : 0;
+        return 0.5f * (ex + ey + ez);
+    }
+
+    inline float gravitationalPotentialEnergy(float mass, float height, float g = GRAVITY_EARTH) {
+        return mass * g * height;
+    }
+
+    inline float totalMechanicalEnergy(float mass, const math::Vector3D& velocity,
+                                        const math::Vector3D& angularVelocity,
+                                        const math::Vector3D& invInertia,
+                                        float height, float g = GRAVITY_EARTH) {
+        return kineticEnergy(mass, velocity) +
+               rotationalKineticEnergy(angularVelocity, invInertia) +
+               gravitationalPotentialEnergy(mass, height, g);
+    }
+
+    // ── Angular Momentum ───────────────────────────────────────
+
+    inline math::Vector3D angularMomentum(const math::Vector3D& angularVelocity,
+                                           const math::Vector3D& invInertia) {
+        return math::Vector3D(
+            invInertia.x > 0 ? angularVelocity.x / invInertia.x : 0,
+            invInertia.y > 0 ? angularVelocity.y / invInertia.y : 0,
+            invInertia.z > 0 ? angularVelocity.z / invInertia.z : 0
+        );
+    }
+
     // ── Interpolation ───────────────────────────────────────────
 
     inline float smoothstep(float edge0, float edge1, float x) {

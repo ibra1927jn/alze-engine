@@ -37,15 +37,39 @@ void RigidBody3D::setSphereInertia(float radius) {
 }
 
 void RigidBody3D::setCapsuleInertia(float h, float r) {
+    if (m_invMass <= 0.0f) return;
     float m = 1.0f / m_invMass;
-    float Iy  = m * r * r * 0.5f;
-    float Ixz = (m / 12.0f) * (3.0f * r * r + h * h);
-    m_invInertia = math::Vector3D(1.0f/Ixz, 1.0f/Iy, 1.0f/Ixz);
+    // Capsule = cylinder of height cylH + two hemispheres of radius r
+    float cylH = h - 2.0f * r;
+    if (cylH < 0.0f) cylH = 0.0f;
+    float cylVol = 3.14159265358979f * r * r * cylH;
+    float sphVol = (4.0f / 3.0f) * 3.14159265358979f * r * r * r;
+    float totalVol = cylVol + sphVol;
+    if (totalVol < 1e-10f) { setSphereInertia(r); return; }
+    float mCyl = m * cylVol / totalVol;
+    float mSph = m * sphVol / totalVol;
+    // Cylinder contributions
+    float Iy_cyl = 0.5f * mCyl * r * r;
+    float Ixz_cyl = mCyl * (3.0f * r * r + cylH * cylH) / 12.0f;
+    // Two hemispheres with parallel axis theorem
+    float halfM = mSph * 0.5f;
+    float Iy_sph = 0.4f * mSph * r * r;
+    float comOffset = cylH * 0.5f + 3.0f * r / 8.0f;
+    float Ixz_sph = 2.0f * (0.4f * halfM * r * r + halfM * comOffset * comOffset);
+    float Iy = Iy_cyl + Iy_sph;
+    float Ixz = Ixz_cyl + Ixz_sph;
+    constexpr float minI = 1e-8f;
+    m_invInertia = math::Vector3D(
+        Ixz > minI ? 1.0f / Ixz : 0.0f,
+        Iy > minI ? 1.0f / Iy : 0.0f,
+        Ixz > minI ? 1.0f / Ixz : 0.0f
+    );
 }
 
 math::Vector3D RigidBody3D::applyInvInertiaWorld(const math::Vector3D& v) const {
     if (m_invMass == 0.0f) return math::Vector3D(0, 0, 0);
-    math::Quaternion invRot(-m_orientation.x, -m_orientation.y, -m_orientation.z, m_orientation.w);
+    // Transform to body space, apply diagonal inverse inertia, transform back
+    math::Quaternion invRot = m_orientation.conjugate();
     math::Vector3D local = invRot.rotateVector(v);
     math::Vector3D scaled(local.x * m_invInertia.x, local.y * m_invInertia.y, local.z * m_invInertia.z);
     return m_orientation.rotateVector(scaled);
@@ -161,50 +185,91 @@ void RigidBody3D::integrate(float dt) {
         }
     }
 
-    // ── Velocity-Verlet Integration ──────────────────────────
-    math::Vector3D accelOld = m_forceAccum * m_invMass;
-    position = PhysicsMath::verletPositionStep(position, velocity, accelOld, dt);
+    // ── Velocity-Verlet Integration ─────────────────────────
+    // Position step first (2nd-order accurate): x' = x + v*dt + 0.5*a*dt²
+    math::Vector3D linearAccel = m_forceAccum * m_invMass;
+    position = PhysicsMath::verletPositionStep(position, velocity, linearAccel, dt);
 
-    // Angular
+    // Angular: apply torque
     angularVelocity += applyInvInertiaWorld(m_torqueAccum) * dt;
 
-    // Gyroscopic torque correction
-    if (angularVelocity.dot(angularVelocity) > 1e-6f) {
-        math::Quaternion invRot(-m_orientation.x, -m_orientation.y, -m_orientation.z, m_orientation.w);
-        math::Vector3D wLocal = invRot.rotateVector(angularVelocity);
-        math::Vector3D Iw(
-            m_invInertia.x > 0 ? wLocal.x / m_invInertia.x : 0,
-            m_invInertia.y > 0 ? wLocal.y / m_invInertia.y : 0,
-            m_invInertia.z > 0 ? wLocal.z / m_invInertia.z : 0
-        );
-        math::Vector3D gyroWorld = m_orientation.rotateVector(wLocal.cross(Iw));
-        angularVelocity -= applyInvInertiaWorld(gyroWorld) * dt;
+    // ── Gyroscopic torque correction (implicit midpoint) ──────
+    // Only apply for asymmetric inertia (spheres have zero gyroscopic torque).
+    float angVelSq = angularVelocity.dot(angularVelocity);
+    if (angVelSq > 1e-6f) {
+        float invIx = m_invInertia.x, invIy = m_invInertia.y, invIz = m_invInertia.z;
+        bool isAsymmetric = (std::abs(invIx - invIy) > 1e-6f * (invIx + invIy + 1e-10f)) ||
+                            (std::abs(invIy - invIz) > 1e-6f * (invIy + invIz + 1e-10f));
+        if (isAsymmetric) {
+            math::Quaternion invRot = m_orientation.conjugate();
+            math::Vector3D wLocal = invRot.rotateVector(angularVelocity);
+            math::Vector3D Iw(
+                invIx > 0 ? wLocal.x / invIx : 0,
+                invIy > 0 ? wLocal.y / invIy : 0,
+                invIz > 0 ? wLocal.z / invIz : 0
+            );
+            math::Vector3D gyroLocal = wLocal.cross(Iw);
+            math::Vector3D gyroWorld = m_orientation.rotateVector(gyroLocal);
+            angularVelocity -= applyInvInertiaWorld(gyroWorld) * (dt * 0.5f);
+        }
     }
 
-    // Velocity update (Verlet half-step)
-    velocity += accelOld * dt;
-
-    // Damping
+    // ── Damping (frame-rate independent) ─────────────────────
     float linDamp = 1.0f / (1.0f + dt * m_linearDamping * 60.0f);
     float angDamp = 1.0f / (1.0f + dt * m_angularDamping * 60.0f);
     velocity = velocity * linDamp;
     angularVelocity = angularVelocity * angDamp;
 
-    // Integrate orientation
-    if (angularVelocity.dot(angularVelocity) > 1e-10f) {
-        math::Quaternion omega(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0.0f);
-        math::Quaternion spin = (omega * m_orientation).scale(0.5f);
-        m_orientation.x += spin.x * dt; m_orientation.y += spin.y * dt;
-        m_orientation.z += spin.z * dt; m_orientation.w += spin.w * dt;
-        m_orientation = m_orientation.normalized();
+    // Velocity update (Verlet second half-step)
+    velocity += linearAccel * dt;
+
+    // ── Quaternion Integration (exponential map, 2nd order) ──
+    angVelSq = angularVelocity.dot(angularVelocity);
+    if (angVelSq > 1e-12f) {
+        float angSpeed = std::sqrt(angVelSq);
+        float halfAngle = angSpeed * dt * 0.5f;
+        float sinHalf, cosHalf;
+        if (halfAngle < 0.01f) {
+            // 4th-order Taylor expansion for small angles
+            float ha2 = halfAngle * halfAngle;
+            sinHalf = halfAngle * (1.0f - ha2 * (1.0f / 6.0f - ha2 / 120.0f));
+            cosHalf = 1.0f - ha2 * (0.5f - ha2 / 24.0f);
+        } else {
+            sinHalf = std::sin(halfAngle);
+            cosHalf = std::cos(halfAngle);
+        }
+        float s = sinHalf / angSpeed;
+        math::Quaternion deltaQ(
+            angularVelocity.x * s, angularVelocity.y * s,
+            angularVelocity.z * s, cosHalf
+        );
+        m_orientation = deltaQ * m_orientation;
     }
 
-    // Velocity clamping
-    constexpr float maxLin = 100.0f, maxLinSq = maxLin * maxLin;
+    // ── Quaternion renormalization (fast first-order correction) ──
+    {
+        float qSqr = m_orientation.x * m_orientation.x +
+                      m_orientation.y * m_orientation.y +
+                      m_orientation.z * m_orientation.z +
+                      m_orientation.w * m_orientation.w;
+        float err = qSqr - 1.0f;
+        if (std::abs(err) > 1e-4f) {
+            m_orientation = m_orientation.normalized();
+        } else if (std::abs(err) > 1e-8f) {
+            float correction = 1.0f - err * 0.5f;
+            m_orientation = math::Quaternion(
+                m_orientation.x * correction, m_orientation.y * correction,
+                m_orientation.z * correction, m_orientation.w * correction
+            );
+        }
+    }
+
+    // ── Velocity clamping (safety limits) ────────────────────
+    constexpr float maxLin = 500.0f, maxLinSq = maxLin * maxLin;
     float linSq = velocity.dot(velocity);
     if (linSq > maxLinSq) velocity = velocity * (maxLin / std::sqrt(linSq));
 
-    constexpr float maxAng = 50.0f, maxAngSq = maxAng * maxAng;
+    constexpr float maxAng = 100.0f, maxAngSq = maxAng * maxAng;
     float angSq = angularVelocity.dot(angularVelocity);
     if (angSq > maxAngSq) angularVelocity = angularVelocity * (maxAng / std::sqrt(angSq));
 
