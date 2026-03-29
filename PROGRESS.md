@@ -2,7 +2,7 @@
 
 ## Metricas generales (2026-03-28)
 - **Archivos fuente:** 178 (.h/.cpp)
-- **Archivos test:** 11 (~4,900 lineas)
+- **Archivos test:** 13 (~5,300 lineas)
 - **Subsistemas physics:** 36 archivos (11 integrados, 6 standalone, ~10 formula-only)
 - **Lineas de codigo estimadas:** 25,000-30,000
 - **Build:** CMake + Ninja + GCC/Clang
@@ -14,6 +14,7 @@
 - [2026-03-28] | Scene Editor foundation | 100% — hierarchy, inspector, gizmo con flechas
 - [2026-03-28] | Quality/hardening pass | 100% — 8 fixes: adjacency CSR, double iteration, SIMD negation, JobSystem allocs, FPS title, Quaternion dedup, sortByMaterial .get(), ForwardRenderer negation
 - [2026-03-29] | Fix build errors UISystem+Editor API mismatch | 100% — ALZE.exe compila
+- [2026-03-29] | Heartbeat maintenance pass | 100% — .gitignore security, NavMesh neighbor bug fix, 111 new tests
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
@@ -38,7 +39,7 @@
 - [2026-03-28] | Input recording/replay (binary .inp format) | Funcional
 - [2026-03-28] | Frame profiling (CSV export) | Funcional
 - [2026-03-28] | PWA toggle 2D/3D con Tab key | Funcional
-- [2026-03-28] | 9 test executables | Funcional
+- [2026-03-28] | 11 test executables | Funcional
 - [2026-03-28] | Fix texture slot collision (IBL 7-9, shadows 10-11, material 0-6) | Estable
 - [2026-03-28] | Shaders extraidos a assets/shaders/ con ShaderLoader + fallback embebido | Estable
 - [2026-03-28] | README actualizado (178 files, 25-30k lines, phases 2.5-11 done) | Estable
@@ -60,7 +61,8 @@
 - ~~Fix P1: StateManager bounds, EventBus unsubscribe, ResourceManager locks~~ | **DONE**
 - ~~Fix P1: subsystem dt (physics), ForwardRenderer material skip~~ | **DONE**
 - ~~Fix P1: texture slot collision en ForwardRenderer~~ | **DONE**
-- Tests: renderer, audio, NavMesh, Color, MathConstants, Transform2D | Prioridad: media
+- ~~Tests: NavMesh, Color, MathConstants, Transform2D~~ | **DONE** (111 tests in test_utils + test_navmesh)
+- Tests: renderer, audio | Prioridad: media
 - ~~Performance: BVH raycast, island adjacency, deferred uniform cache~~ | **DONE**
 - ~~Cleanup: build duplicates (CMakeLists duplicado Engine.cpp, NavMesh en math)~~ | **DONE**
 
