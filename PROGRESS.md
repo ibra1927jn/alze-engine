@@ -15,6 +15,7 @@
 - [2026-03-28] | Quality/hardening pass | 100% — 8 fixes: adjacency CSR, double iteration, SIMD negation, JobSystem allocs, FPS title, Quaternion dedup, sortByMaterial .get(), ForwardRenderer negation
 - [2026-03-29] | Fix build errors UISystem+Editor API mismatch | 100% — ALZE.exe compila
 - [2026-03-29] | Heartbeat maintenance pass | 100% — .gitignore security, NavMesh neighbor bug fix, 111 new tests
+- [2026-03-29] | Heartbeat maintenance pass #2 | 100% — getActiveVoices data race fix, 28 Serializer tests, CLAUDE.md bugs section updated
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
