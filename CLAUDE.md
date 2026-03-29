@@ -1,107 +1,46 @@
-# alze — Motor grafico 2D/3D
+# alze -- Motor grafico 2D/3D custom (C++17)
 
 ## Stack
-C++17 (fno-exceptions, fno-rtti) + CMake 3.20 + Ninja
-SDL2 2.30.12 + OpenGL 3.3 (GLAD loader)
-Librerias embebidas: stb_image, cgltf (glTF)
-Zero dependencias externas para physics, audio, ECS, UI
-SIMD: SSE2 en Vector2D/3D, Matrix3x3/4x4
+- C++17 (-fno-exceptions, -fno-rtti) + CMake 3.20 + Ninja
+- SDL2 2.30.12 + OpenGL 3.3 (GLAD loader)
+- Libs embebidas: stb_image, cgltf (glTF)
+- SIMD SSE2 en Vec2/3, Mat3x3/4x4, Quaternion
+- Compilador: GCC o Clang (MSVC no soportado, Windows requiere MSYS2 MinGW)
 
-## Comandos
-- `cmake -G Ninja -B build -S .` — Configurar build
-- `cmake --build build` — Compilar todo
-- `./build/ALZE.exe` — Ejecutar motor principal
-- `./build/demo_3d.exe` — Demo 3D directo
-- `./build/benchmark_3d.exe` — Benchmark de rendimiento (250 objetos)
-- `./build/test_math.exe` — Tests de matematicas
-- `./build/test_physics3d.exe` — Tests de fisica 3D (el mas completo, 2327 lineas)
-- `./build/test_ecs.exe` — Tests de ECS
-- `./build/test_stress.exe` — Tests de carga
+## Build
+```bash
+cmake -G Ninja -B build -S .
+cmake --build build
+./build/ALZE.exe          # Motor principal
+./build/demo_3d.exe       # Demo 3D
+./build/benchmark_3d.exe  # Benchmark 250 objetos
+./build/test_physics3d.exe # Test mas completo (2327 lineas)
+```
 
-## Arquitectura real (auditada 2026-03-28)
+## Arquitectura (src/)
+- **core/** -- Engine loop 60Hz, Window, InputManager, AudioEngine, JobSystem, EventBus, UISystem, Logger, Profiler, ResourceManager, Serializer
+- **renderer/** -- ForwardRenderer (PBR, CSM, IBL), DeferredRenderer, PostProcess (bloom, FXAA, SSAO), ShaderLibrary, LOD, instancing, skeletal animation, 2D pipeline
+- **ecs/** -- Generational IDs (20-bit index + 12-bit gen), sparse-set SoA, QueryCache FNV-1a, systems: Collision, Physics3D, Render3D
+- **physics/** -- 36 archivos. RigidBody3D, 6 shapes, GJK+EPA, DynamicBVH3D, sequential impulse solver, constraints, SoftBody XPBD, SPH fluids, thermodynamics, electromagnetism, N-Body Barnes-Hut
+- **scene/** -- Camera3D, FPSController, SceneGraph
+- **game/** -- Play3DState, PlayState (2D), WorldScene3D, BenchmarkScene3D, ParticleSystem3D
+- **editor/** -- Scene editor (hierarchy, inspector, gizmos, F1 toggle)
+- **ai/** -- NavMesh (A* pathfinding)
+- **math/** -- Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform (SIMD SSE2)
+- **tests/** -- 11 archivos, ~4900 lineas, asserts custom (sin framework externo)
 
-### Core (src/core/)
-- Engine.h/cpp — Game loop fixed timestep 60Hz, delta cap 0.25s
-- Window.h/cpp — SDL2, OpenGL 3.3 core profile, resize, gamepad
-- InputManager.h/cpp — Keyboard, mouse, gamepad con deadzone
-- StateManager.h — Push/pop/change con transparencia (bug bounds check)
-- EventBus.h — Pub/sub type-erased (sin unsubscribe — dangling risk)
-- JobSystem.h — Thread pool con parallel_for (m_running no-atomico — UB)
-- AudioEngine.h/cpp — 32 voces, positional 3D, crossfade (data races)
-- ProceduralAudio.h/cpp — Synth ADSR, waveforms, LPF (bug vibrato param)
-- FrameAllocator.h — Linear allocator per-frame (no thread-safe)
-- Profiler.h — High-res timer, ring buffers (no thread-safe)
-- Logger.h — Dual output consola+archivo (no thread-safe)
-- ResourceManager.h — Weak-ptr cache, async load (partial thread-safe)
-- UISystem.h — Immediate mode UI
-- Serializer.h — JSON read/write (crash con -fno-exceptions)
-- SceneSerializer.h — Scene save/load (bug parseo isStatic)
-
-### Renderer (src/renderer/)
-- ForwardRenderer — PBR Cook-Torrance, 2-cascade CSM, IBL, 8 point + 4 spot lights
-- DeferredRenderer — G-Buffer (4 RTs), PBR lighting pass
-- ShaderLibrary.h — Shaders embebidos como string literals
-- PostProcess — Bloom, ACES tonemapping, FXAA, vignette, chromatic aberration, film grain, CAS
-- SSAO — Screen-space ambient occlusion
-- ShadowMap — 2-cascade CSM con hardware PCF
-- InstancedRenderer — GPU instancing
-- LODSystem — Distance-based con hysteresis
-- DecalRenderer, ScreenEffects, ProceduralTextures
-- ModelLoader — glTF via cgltf
-- SkeletalAnimation — Bone hierarchy con interpolacion
-- TextRenderer, SpriteBatch2D, TileMap (2D pipeline)
-
-### ECS (src/ecs/)
-- ECSCoordinator — Generational IDs (20-bit index + 12-bit gen)
-- ComponentStorage — Sparse-set SoA, O(1) lookup, dense iteration
-- QueryCache — FNV-1a hash con generation invalidation
-- Systems: CollisionSystem, Physics3DSystem, Render3DSystem, PhysicsSystem, InputSystem, RenderSystem
-
-### Physics (src/physics/) — 36 archivos
-**Integrados en PhysicsWorld3D:**
-- RigidBody3D (6 shapes, aerodynamics, buoyancy)
-- Collider3D (sphere, AABB, OBB, capsule, heightfield, convex hull)
-- CollisionSolver3D (sequential impulse, Coulomb friction, warm start)
-- GJK+EPA (convex collision detection)
-- DynamicBVH3D (broadphase, fat AABBs, AVL balance)
-- Constraints3D (distance, ball-socket, hinge with limits/motor)
-- Integrados via setXXXSystem(): SoftBody3D (XPBD), FluidSystem (SPH), Thermodynamics, Electromagnetism, GravityNBody (Barnes-Hut), WaveSystem
-
-**Standalone (no integrados):**
-- Chemistry, MHDSystem, FractureSystem, MolecularDynamics, CrossSystemCoupling, UnifiedSimulation
-
-**Formula reference (sin simulacion):**
-- QuantumSystem, NuclearPhysics, Relativity, OpticsSystem, Hyperelasticity, CompressibleFlow, AdvancedFriction
-
-### Scene (src/scene/)
-- Camera3D, FPSController, SceneGraph, SceneNode
-
-### Game (src/game/)
-- Play3DState, PlayState (2D), WorldScene3D, BenchmarkScene3D
-- ParticleSystem3D, PauseState, SharedWorldState
-
-### AI (src/ai/)
-- NavMesh (A* pathfinding)
-
-### Tests (tests/)
-- 11 archivos, ~4,900 lineas, asserts custom (sin framework externo)
-- test_physics3d.cpp es el mas completo (2,327 lineas, cubre 20+ subsistemas)
-
-## Reglas del proyecto
-- Header-heavy: mayoria del codigo inline en .h
-- Shaders embebidos como string literals en ShaderLibrary.h
-- Sin framework de test externo: asserts custom con contadores pass/fail
-- Compilador: GCC o Clang (MSVC no soportado)
-- Tab cambia entre 2D y 3D en runtime
-- Ventana: 1024x768, fixed timestep 60Hz
-- Build en Windows requiere MSYS2 MinGW
+## Reglas
 - Codigo en ingles, comentarios en espanol
 - Commits en ingles: tipo(scope): descripcion breve
+- Header-heavy: mayoria del codigo inline en .h
+- Shaders embebidos como string literals en ShaderLibrary.h
+- Tab cambia entre 2D y 3D en runtime
+- Ventana: 1024x768, fixed timestep 60Hz
+- Leer ERRORES.md y PROGRESS.md antes de empezar cualquier tarea
 
-## Bugs conocidos (ver ERRORES.md)
-- P0: JobSystem m_running no-atomico (UB data race)
-- P0: AudioEngine data races en m_instanceCounts
-- P0: cloneEntity() no copia datos de componentes
-- P0: Serializer crash con -fno-exceptions en input invalido
-- P1: EPA no calcula contactPoint, ForwardRenderer texture slot collision
-- P1: Thread safety: FrameAllocator, Logger, Profiler, ResourceManager
+## Estado actual (2026-03-29)
+- ~178 archivos fuente, ~25-30k lineas
+- Build compila (ALZE.exe, demo_3d, benchmark_3d, 9 test executables)
+- 20+ bugs P0/P1/P2 corregidos en sesion 2026-03-28
+- Pendiente: tests para renderer/audio/NavMesh, performance BVH/deferred cache
+- Ver ERRORES.md para bugs conocidos, PROGRESS.md para tareas pendientes
