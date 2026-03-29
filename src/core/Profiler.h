@@ -7,7 +7,6 @@
 #include <sstream>
 #include <iomanip>
 #include <array>
-#include <algorithm>
 #include <cstdint>
 #include <mutex>
 

@@ -1,8 +1,6 @@
 ﻿#pragma once
 
 #include <SDL.h>
-#include <sstream>
-#include <algorithm>
 #include "SystemManager.h"
 #include "ECSCoordinator.h"
 #include "Components.h"

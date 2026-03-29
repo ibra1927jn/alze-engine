@@ -8,7 +8,6 @@
 #include <cmath>
 #include <vector>
 #include <memory>
-#include <algorithm>
 
 namespace engine {
 namespace physics {

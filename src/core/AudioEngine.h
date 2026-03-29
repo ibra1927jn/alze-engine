@@ -9,7 +9,6 @@
 #include <memory>
 #include <cmath>
 #include <cstring>
-#include <algorithm>
 #include <atomic>
 #include <mutex>
 #include "Logger.h"
