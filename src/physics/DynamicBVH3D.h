@@ -3,6 +3,7 @@
 #include "physics/Collider3D.h"
 #include <vector>
 #include <cstdint>
+#include <cmath>
 
 namespace engine {
 namespace physics {
@@ -100,24 +101,45 @@ template<typename T>
 void DynamicBVH3D::raycast(const Ray3D& ray, T callback) const {
     if (m_root == -1) return;
 
-    int stack[256];
+    // Precompute inverse direction for fast AABB slab test
+    math::Vector3D invDir(
+        std::abs(ray.direction.x) > 1e-8f ? 1.0f / ray.direction.x : 1e8f,
+        std::abs(ray.direction.y) > 1e-8f ? 1.0f / ray.direction.y : 1e8f,
+        std::abs(ray.direction.z) > 1e-8f ? 1.0f / ray.direction.z : 1e8f
+    );
+
+    struct StackEntry { int nodeId; float tMin; };
+    StackEntry stack[256];
     int top = 0;
-    stack[top++] = m_root;
+    stack[top++] = {m_root, 0.0f};
 
     while (top > 0) {
-        int nodeId = stack[--top];
+        StackEntry entry = stack[--top];
+        const Node& node = m_nodes[entry.nodeId];
 
-        const Node& node = m_nodes[nodeId];
-        engine::physics::RayHit3D boxHit = engine::physics::rayVsAABB(ray, node.aabb);
-        
-        if (boxHit.hit) {
-            if (node.isLeaf()) {
-                if (!callback(node.userData)) return;
-            } else {
-                if (top < 254) {
-                    stack[top++] = node.left;
-                    stack[top++] = node.right;
+        if (node.isLeaf()) {
+            if (!callback(node.userData)) return;
+        } else {
+            // Test both children and push in front-to-back order (far child first)
+            const Node& leftNode = m_nodes[node.left];
+            const Node& rightNode = m_nodes[node.right];
+
+            engine::physics::RayHit3D hitL = engine::physics::rayVsAABB(ray, leftNode.aabb);
+            engine::physics::RayHit3D hitR = engine::physics::rayVsAABB(ray, rightNode.aabb);
+
+            if (hitL.hit && hitR.hit) {
+                // Push far child first so near child is processed first (stack LIFO)
+                if (hitL.distance <= hitR.distance) {
+                    if (top < 254) { stack[top++] = {node.right, hitR.distance}; }
+                    if (top < 254) { stack[top++] = {node.left, hitL.distance}; }
+                } else {
+                    if (top < 254) { stack[top++] = {node.left, hitL.distance}; }
+                    if (top < 254) { stack[top++] = {node.right, hitR.distance}; }
                 }
+            } else if (hitL.hit) {
+                if (top < 254) { stack[top++] = {node.left, hitL.distance}; }
+            } else if (hitR.hit) {
+                if (top < 254) { stack[top++] = {node.right, hitR.distance}; }
             }
         }
     }
