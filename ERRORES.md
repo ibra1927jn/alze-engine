@@ -52,7 +52,14 @@
 - [2026-03-28] | core/JobSystem.h:79 | std::vector<pair<int,int>> chunks allocado en cada parallel_for | **FIXED** Eliminado vector, chunks calculados inline con aritmetica. body capturada por referencia
 - [2026-03-28] | physics/*.cpp | V * -1.0f en vez de -V (pierde ruta SIMD del operator-) | **FIXED** Reemplazado por negacion unaria en PhysicsWorld3D.cpp y Constraints3D.cpp
 - [2026-03-28] | renderer/ForwardRenderer.cpp:273 | (Zero - dir).normalized() en vez de (-dir).normalized() — temporal innecesario | **FIXED** Usar negacion unaria directa
-- [2026-03-28] | math/MathConstants.h | Duplica PI y EPSILON de MathUtils.h | Unificar en una sola fuente
+- [2026-03-28] | math/MathConstants.h | Duplica PI y EPSILON de MathUtils.h | **FIXED** Constants:: ahora aliasa MathUtils:: como unica fuente de verdad
 - [2026-03-28] | ~20 physics headers (Quantum, Nuclear, Relativity, etc.) | Formula reference sheets sin simulacion real ni integracion a PhysicsWorld3D | Documentar como "reference only" o mover a physics/reference/
 - [2026-03-29] | core/UISystem.h + editor/Editor.cpp | API mismatch: drawRoundedRectFilled, drawRectFilled, drawLine, drawCircleFilled, drawText no existen en ShapeRenderer2D/TextRenderer | **FIXED** Renombrado a roundedRectFill/rectFill/line/circleFill; TextRenderer.draw requiere SpriteBatch2D* almacenado en UISystem::begin(); convertidores toShapeCol/toSpriteCol para math::Color->float; coordenadas centradas via x+w*0.5f,y+h*0.5f; Editor::render ahora acepta SpriteBatch2D& param
 - [2026-03-28] | renderer/ForwardRenderer.cpp:159-165 | sortByMaterial llamaba .get() en raw Texture2D* — no compila | **FIXED** Usar reinterpret_cast directo sobre raw pointers
+- [2026-03-29] | physics/PhysicsWorld3D.h:4 | #include "CollisionSolver3D.H" con extension uppercase — fatal error en Linux (case-sensitive) | **FIXED** Corregido a CollisionSolver3D.h
+- [2026-03-29] | core/UISystem.h:171 | Variable 'id' calculada pero nunca usada en checkbox() — warning -Wunused-variable | **FIXED** Removida variable no utilizada
+- [2026-03-29] | physics/GJK.inl:96-97 | Variables ab/ac set-but-not-used, sombreadas por v0/v1 que calculan lo mismo | **FIXED** Removidas las variables redundantes
+- [2026-03-29] | tests/test_physics3d.cpp:2187 | expectedScale calculada pero no usada — warning -Wunused-variable | **FIXED** Removida
+- [2026-03-29] | demo_3d.cpp:12 | SDL_MAIN_HANDLED redefinido (ya puesto por CMake target_compile_definitions) | **FIXED** Guard con #ifndef
+- [2026-03-29] | renderer/ImageDecoder.cpp:2 | #pragma once en archivo .cpp — warning "pragma once in main file" | **FIXED** Removido
+- [2026-03-29] | tests/test_memory.cpp | Depende de LinearAllocator.h, PoolAllocator.h, SimdConfig.h que no existen — no compilable | Pendiente: crear headers o eliminar test
