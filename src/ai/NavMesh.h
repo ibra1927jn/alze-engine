@@ -39,9 +39,17 @@ private:
     bool sharesEdge(const NavPolygon& a, const NavPolygon& b) const;
     std::vector<math::Vector2D> smoothPath(const std::vector<math::Vector2D>& raw) const;
     bool isLineWalkable(const math::Vector2D& a, const math::Vector2D& b) const;
+    void buildSpatialGrid();
+    int findPolygonGrid(const math::Vector2D& point) const;
 
     std::vector<NavPolygon> m_polygons;
     bool m_built = false;
+
+    // Spatial acceleration grid for O(1) findPolygon
+    std::vector<std::vector<uint32_t>> m_grid;
+    math::Vector2D m_gridMin;
+    float m_gridCellSize = 0.0f;
+    int m_gridW = 0, m_gridH = 0;
 };
 
 class GridNav {

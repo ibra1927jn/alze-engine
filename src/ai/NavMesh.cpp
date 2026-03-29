@@ -44,7 +44,63 @@ void NavMesh::build() {
             }
         }
     }
+    buildSpatialGrid();
     m_built = true;
+}
+
+void NavMesh::buildSpatialGrid() {
+    if (m_polygons.empty()) return;
+
+    // Compute bounds
+    math::Vector2D mn = m_polygons[0].vertices[0];
+    math::Vector2D mx = mn;
+    for (const auto& poly : m_polygons) {
+        for (const auto& v : poly.vertices) {
+            mn.x = std::min(mn.x, v.x); mn.y = std::min(mn.y, v.y);
+            mx.x = std::max(mx.x, v.x); mx.y = std::max(mx.y, v.y);
+        }
+    }
+
+    // Grid cell size based on average polygon size
+    float avgSize = 0.0f;
+    for (const auto& poly : m_polygons) {
+        math::Vector2D pmn = poly.vertices[0], pmx = poly.vertices[0];
+        for (const auto& v : poly.vertices) {
+            pmn.x = std::min(pmn.x, v.x); pmn.y = std::min(pmn.y, v.y);
+            pmx.x = std::max(pmx.x, v.x); pmx.y = std::max(pmx.y, v.y);
+        }
+        avgSize += std::max(pmx.x - pmn.x, pmx.y - pmn.y);
+    }
+    avgSize /= static_cast<float>(m_polygons.size());
+    m_gridCellSize = std::max(avgSize, 0.1f);
+
+    m_gridMin = mn;
+    m_gridW = static_cast<int>((mx.x - mn.x) / m_gridCellSize) + 2;
+    m_gridH = static_cast<int>((mx.y - mn.y) / m_gridCellSize) + 2;
+    m_grid.clear();
+    m_grid.resize(m_gridW * m_gridH);
+
+    // Insert each polygon into grid cells it overlaps
+    for (uint32_t i = 0; i < static_cast<uint32_t>(m_polygons.size()); i++) {
+        math::Vector2D pmn = m_polygons[i].vertices[0], pmx = m_polygons[i].vertices[0];
+        for (const auto& v : m_polygons[i].vertices) {
+            pmn.x = std::min(pmn.x, v.x); pmn.y = std::min(pmn.y, v.y);
+            pmx.x = std::max(pmx.x, v.x); pmx.y = std::max(pmx.y, v.y);
+        }
+        int x0 = static_cast<int>((pmn.x - m_gridMin.x) / m_gridCellSize);
+        int y0 = static_cast<int>((pmn.y - m_gridMin.y) / m_gridCellSize);
+        int x1 = static_cast<int>((pmx.x - m_gridMin.x) / m_gridCellSize);
+        int y1 = static_cast<int>((pmx.y - m_gridMin.y) / m_gridCellSize);
+        x0 = std::max(0, std::min(x0, m_gridW - 1));
+        y0 = std::max(0, std::min(y0, m_gridH - 1));
+        x1 = std::max(0, std::min(x1, m_gridW - 1));
+        y1 = std::max(0, std::min(y1, m_gridH - 1));
+        for (int gy = y0; gy <= y1; gy++) {
+            for (int gx = x0; gx <= x1; gx++) {
+                m_grid[gy * m_gridW + gx].push_back(i);
+            }
+        }
+    }
 }
 
 std::vector<math::Vector2D> NavMesh::findPath(const math::Vector2D& start, const math::Vector2D& goal) const {
@@ -116,8 +172,24 @@ void NavMesh::setBlocked(uint32_t polyIdx, bool blocked) {
 }
 
 int NavMesh::findPolygon(const math::Vector2D& point) const {
+    // Use spatial grid if available for O(1) average lookup
+    if (m_gridCellSize > 0.0f && !m_grid.empty()) {
+        return findPolygonGrid(point);
+    }
+    // Fallback to brute force O(N)
     for (uint32_t i = 0; i < m_polygons.size(); i++) {
         if (m_polygons[i].containsPoint(point)) return static_cast<int>(i);
+    }
+    return -1;
+}
+
+int NavMesh::findPolygonGrid(const math::Vector2D& point) const {
+    int gx = static_cast<int>((point.x - m_gridMin.x) / m_gridCellSize);
+    int gy = static_cast<int>((point.y - m_gridMin.y) / m_gridCellSize);
+    if (gx < 0 || gx >= m_gridW || gy < 0 || gy >= m_gridH) return -1;
+    const auto& cell = m_grid[gy * m_gridW + gx];
+    for (uint32_t idx : cell) {
+        if (m_polygons[idx].containsPoint(point)) return static_cast<int>(idx);
     }
     return -1;
 }
@@ -205,8 +277,11 @@ std::vector<math::Vector2D> GridNav::findPath(math::Vector2D start, math::Vector
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> open;
 
     auto idx = [this](int x, int y) { return y * m_width + x; };
+    // Octile distance: tighter admissible heuristic for 8-directional movement
     auto heuristic = [](int x1, int y1, int x2, int y2) -> float {
-        return std::sqrt(static_cast<float>((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
+        float dx = static_cast<float>(std::abs(x2 - x1));
+        float dy = static_cast<float>(std::abs(y2 - y1));
+        return (dx + dy) + (1.414f - 2.0f) * std::min(dx, dy);
     };
 
     gCost[idx(sx, sy)] = 0;
