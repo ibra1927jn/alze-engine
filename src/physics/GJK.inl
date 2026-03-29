@@ -92,9 +92,6 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         const math::Vector3D& vb = polytope[f.b];
         const math::Vector3D& vc = polytope[f.c];
 
-        // Proyectar el origen sobre el plano de la cara
-        math::Vector3D ab = vb - va;
-        math::Vector3D ac = vc - va;
         math::Vector3D n = f.normal;
 
         // Coordenadas baricentricas del origen proyectado sobre el triangulo
