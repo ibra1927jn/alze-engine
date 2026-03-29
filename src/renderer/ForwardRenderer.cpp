@@ -102,7 +102,7 @@ void ForwardRenderer::end() {
     if (m_settings.frustumCulling) cullInvisibleObjects();
     if (m_settings.sortObjects && m_renderQueue.size() > 1) {
         sortByMaterial();  // Primary: group by material to minimize state changes
-        // sortFrontToBack is now integrated as quaternary sort key within sortByMaterial
+        // Front-to-back is integrated as quaternary sort key within sortByMaterial
     }
 
     math::Matrix4x4 lightSpaceMatrices[2];
@@ -133,21 +133,6 @@ void ForwardRenderer::cullInvisibleObjects() {
     int culled = static_cast<int>(std::distance(it, m_renderQueue.end()));
     m_renderQueue.erase(it, m_renderQueue.end());
     m_stats.culledObjects = culled;
-}
-
-void ForwardRenderer::sortFrontToBack() {
-    std::sort(m_renderQueue.begin(), m_renderQueue.end(),
-        [this](const RenderItem3D& a, const RenderItem3D& b) -> bool {
-            if (a.mesh != b.mesh) {
-                math::Vector3D posA(a.modelMatrix.get(0,3), a.modelMatrix.get(1,3), a.modelMatrix.get(2,3));
-                math::Vector3D posB(b.modelMatrix.get(0,3), b.modelMatrix.get(1,3), b.modelMatrix.get(2,3));
-                math::Vector3D da = posA - m_viewPos;
-                math::Vector3D db = posB - m_viewPos;
-                return da.sqrMagnitude() < db.sqrMagnitude();
-            }
-            return a.material.metallic > b.material.metallic;
-        }
-    );
 }
 
 void ForwardRenderer::sortByMaterial() {

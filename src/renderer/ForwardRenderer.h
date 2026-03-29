@@ -284,7 +284,6 @@ public:
 private:
     // impl in ForwardRenderer.cpp
     void cullInvisibleObjects();
-    void sortFrontToBack();
     void sortByMaterial();  // Group by shader→material to minimize state changes
     void calcCascadeLightSpaceMatrices(math::Matrix4x4 out[2]);
     void renderShadowPass(const math::Matrix4x4 lightSpaceMatrices[2]);

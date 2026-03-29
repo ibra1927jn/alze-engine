@@ -211,10 +211,6 @@ inline const char* PBR_FRAG    = fallback::PBR_FRAG;
 inline const char* UNLIT3D_VERT = fallback::UNLIT3D_VERT;
 inline const char* UNLIT3D_FRAG = fallback::UNLIT3D_FRAG;
 
-// Aliases de compatibilidad
-inline const char* PHONG3D_VERT = fallback::PBR_VERT;
-inline const char* PHONG3D_FRAG = fallback::PBR_FRAG;
-
 /// Inicializar ShaderLibrary: intenta cargar desde assets/shaders/.
 /// Si los archivos no existen, usa los fallbacks embebidos.
 /// Llamar ANTES de compilar cualquier shader.
@@ -235,8 +231,6 @@ inline void init(const char* shaderDir = "assets/shaders/") {
     if (ShaderLoader::loadPair(shaderDir, "pbr", detail::s_pbrVert, detail::s_pbrFrag)) {
         PBR_VERT    = detail::s_pbrVert.c_str();
         PBR_FRAG    = detail::s_pbrFrag.c_str();
-        PHONG3D_VERT = detail::s_pbrVert.c_str();
-        PHONG3D_FRAG = detail::s_pbrFrag.c_str();
     }
 
     if (ShaderLoader::loadPair(shaderDir, "unlit3d", detail::s_unlit3dVert, detail::s_unlit3dFrag)) {
