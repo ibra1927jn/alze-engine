@@ -35,6 +35,8 @@ void NavMesh::build() {
     uint32_t count = static_cast<uint32_t>(m_polygons.size());
     for (uint32_t i = 0; i < count; i++) {
         m_polygons[i].neighbors.clear();
+    }
+    for (uint32_t i = 0; i < count; i++) {
         for (uint32_t j = i + 1; j < count; j++) {
             if (sharesEdge(m_polygons[i], m_polygons[j])) {
                 m_polygons[i].neighbors.push_back(j);
