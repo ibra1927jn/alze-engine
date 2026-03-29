@@ -100,18 +100,68 @@ public:
     /// Multiplicación de cuaterniones (composición de rotaciones)
     /// q1 * q2: primero aplica q2, luego q1
     inline Quaternion operator*(const Quaternion& other) const {
-        // Hamilton product — 16 multiplies + 12 adds
+#if ENGINE_SIMD_SSE2
+        // SIMD Hamilton product using shuffle + multiply + add/sub
+        // q1 = [x, y, z, w], q2 = [x, y, z, w]
+        // Result.x = w*q2.x + x*q2.w + y*q2.z - z*q2.y
+        // Result.y = w*q2.y - x*q2.z + y*q2.w + z*q2.x
+        // Result.z = w*q2.z + x*q2.y - y*q2.x + z*q2.w
+        // Result.w = w*q2.w - x*q2.x - y*q2.y - z*q2.z
+
+        // Broadcast each component of 'this'
+        __m128 xxxx = _mm_shuffle_ps(simd, simd, _MM_SHUFFLE(0,0,0,0));
+        __m128 yyyy = _mm_shuffle_ps(simd, simd, _MM_SHUFFLE(1,1,1,1));
+        __m128 zzzz = _mm_shuffle_ps(simd, simd, _MM_SHUFFLE(2,2,2,2));
+        __m128 wwww = _mm_shuffle_ps(simd, simd, _MM_SHUFFLE(3,3,3,3));
+
+        // _mm_set_ps(e3, e2, e1, e0) → positions [0]=e0, [1]=e1, [2]=e2, [3]=e3
+        // Layout: simd[0]=x, simd[1]=y, simd[2]=z, simd[3]=w
+
+        // w * [bx, by, bz, bw] — no shuffle needed
+        __m128 r0 = _mm_mul_ps(wwww, other.simd);
+
+        // x * [+bw, -bz, +by, -bx]
+        // Shuffle b to [bw, bz, by, bx] → _MM_SHUFFLE(0,1,2,3)
+        __m128 b_wzyx = _mm_shuffle_ps(other.simd, other.simd, _MM_SHUFFLE(0,1,2,3));
+        // Signs at [0,1,2,3] = [+1, -1, +1, -1] → _mm_set_ps(-1, +1, -1, +1)
+        static const __m128 sign1 = _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f);
+        __m128 r1 = _mm_mul_ps(xxxx, _mm_mul_ps(b_wzyx, sign1));
+
+        // y * [+bz, +bw, -bx, -by]
+        // Shuffle b to [bz, bw, bx, by] → _MM_SHUFFLE(1,0,3,2)
+        __m128 b_zwxy = _mm_shuffle_ps(other.simd, other.simd, _MM_SHUFFLE(1,0,3,2));
+        // Signs at [0,1,2,3] = [+1, +1, -1, -1] → _mm_set_ps(-1, -1, +1, +1)
+        static const __m128 sign2 = _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f);
+        __m128 r2 = _mm_mul_ps(yyyy, _mm_mul_ps(b_zwxy, sign2));
+
+        // z * [-by, +bx, +bw, -bz]
+        // Shuffle b to [by, bx, bw, bz] → _MM_SHUFFLE(2,3,0,1)
+        __m128 b_yxwz = _mm_shuffle_ps(other.simd, other.simd, _MM_SHUFFLE(2,3,0,1));
+        // Signs at [0,1,2,3] = [-1, +1, +1, -1] → _mm_set_ps(-1, +1, +1, -1)
+        static const __m128 sign3 = _mm_set_ps(-1.0f, 1.0f, 1.0f, -1.0f);
+        __m128 r3 = _mm_mul_ps(zzzz, _mm_mul_ps(b_yxwz, sign3));
+
+        return Quaternion(_mm_add_ps(_mm_add_ps(r0, r1), _mm_add_ps(r2, r3)));
+#else
+        // Scalar Hamilton product — 16 multiplies + 12 adds
         return Quaternion(
             w * other.x + x * other.w + y * other.z - z * other.y,
             w * other.y - x * other.z + y * other.w + z * other.x,
             w * other.z + x * other.y - y * other.x + z * other.w,
             w * other.w - x * other.x - y * other.y - z * other.z
         );
+#endif
     }
 
     /// Conjugado: invierte la rotación (para cuaterniones unitarios = inversa)
     inline Quaternion conjugate() const {
+#if ENGINE_SIMD_SSE2
+        // Negate x, y, z but keep w: multiply by [-1, -1, -1, 1]
+        static const __m128 conjugateMask = _mm_set_ps(1.0f, -1.0f, -1.0f, -1.0f);
+        return Quaternion(_mm_mul_ps(simd, conjugateMask));
+#else
         return Quaternion(-x, -y, -z, w);
+#endif
     }
 
     /// Inversa: q⁻¹ = conjugado / |q|² (para unitarios, = conjugado)
@@ -124,20 +174,37 @@ public:
 
     /// Magnitud (para cuaterniones unitarios debería ser ~1.0)
     inline float magnitude() const {
-        return std::sqrt(x*x + y*y + z*z + w*w);
+        return std::sqrt(sqrMagnitude());
     }
 
     /// Magnitud al cuadrado
     inline float sqrMagnitude() const {
+#if ENGINE_SIMD_SSE2
+        __m128 mul = _mm_mul_ps(simd, simd);
+        // Horizontal sum of all 4 components
+        __m128 shuf1 = _mm_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
+        __m128 sums = _mm_add_ps(mul, shuf1);
+        __m128 shuf2 = _mm_shuffle_ps(sums, sums, _MM_SHUFFLE(0, 1, 2, 3));
+        __m128 result = _mm_add_ss(sums, shuf2);
+        return _mm_cvtss_f32(result);
+#else
         return x*x + y*y + z*z + w*w;
+#endif
     }
 
     /// Normalizar (asegurar que es unitario)
     inline Quaternion normalized() const {
+#if ENGINE_SIMD_SSE2
+        float sqrMag = sqrMagnitude();
+        if (sqrMag < MathUtils::EPSILON * MathUtils::EPSILON) return Identity;
+        __m128 invMag = _mm_set1_ps(1.0f / std::sqrt(sqrMag));
+        return Quaternion(_mm_mul_ps(simd, invMag));
+#else
         float mag = magnitude();
         if (mag < MathUtils::EPSILON) return Identity;
         float inv = 1.0f / mag;
         return Quaternion(x * inv, y * inv, z * inv, w * inv);
+#endif
     }
 
     /// Rotate a vector by this quaternion — alias de rotate() (mantener retrocompatibilidad)
@@ -165,7 +232,16 @@ public:
 
     /// Producto escalar entre cuaterniones (útil para slerp)
     inline float dot(const Quaternion& other) const {
+#if ENGINE_SIMD_SSE2
+        __m128 mul = _mm_mul_ps(simd, other.simd);
+        __m128 shuf1 = _mm_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
+        __m128 sums = _mm_add_ps(mul, shuf1);
+        __m128 shuf2 = _mm_shuffle_ps(sums, sums, _MM_SHUFFLE(0, 1, 2, 3));
+        __m128 result = _mm_add_ss(sums, shuf2);
+        return _mm_cvtss_f32(result);
+#else
         return x * other.x + y * other.y + z * other.z + w * other.w;
+#endif
     }
 
     // ── Rotación ───────────────────────────────────────────────
