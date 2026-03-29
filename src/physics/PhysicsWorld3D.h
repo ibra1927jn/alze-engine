@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RigidBody3D.h"
-#include "CollisionSolver3D.H"
+#include "CollisionSolver3D.h"
 #include "ContactCache.h"
 #include "DynamicBVH3D.h"
 #include "Constraints3D.h"
