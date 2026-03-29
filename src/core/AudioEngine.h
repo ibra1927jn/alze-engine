@@ -128,8 +128,11 @@ public:
     bool isInitialized() const { return m_initialized; }
     int  getSoundsPlayed() const { return m_soundsPlayed.load(); }
     int  getActiveVoices() const {
+        // Requiere lock para evitar data race con audioCallback
+        SDL_LockAudioDevice(m_deviceId);
         int count = 0;
         for (const auto& v : m_voices) if (v.active) count++;
+        SDL_UnlockAudioDevice(m_deviceId);
         return count;
     }
 
