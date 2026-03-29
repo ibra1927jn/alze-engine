@@ -11,24 +11,30 @@ GJKResult GJK::intersect(const ShapeA& a, const ShapeB& b) {
     if (initialDir.sqrMagnitude() < 1e-6f) initialDir = math::Vector3D(0, 1, 0);
     
     math::Vector3D dir = initialDir.normalized();
-    math::Vector3D supportP = support(a, b, dir);
-    
-    result.simplex[0] = supportP;
-    result.simplexSize = 1;
-    dir = -supportP;
 
-    for (int i = 0; i < 64; ++i) { // max iterations
+    SupportData sd = supportFull(a, b, dir);
+    result.simplex[0] = sd.point;
+    result.supportA[0] = sd.pointA;
+    result.supportB[0] = sd.pointB;
+    result.simplexSize = 1;
+    dir = -sd.point;
+
+    for (int i = 0; i < 64; ++i) {
         if (dir.sqrMagnitude() < 1e-6f) dir = math::Vector3D(0, 1, 0);
         else dir.normalize();
-        
-        supportP = support(a, b, dir);
-        if (supportP.dot(dir) < 0.0f) {
+
+        sd = supportFull(a, b, dir);
+        if (sd.point.dot(dir) < 0.0f) {
             result.isIntersecting = false;
-            return result; // No intersection
+            return result;
         }
-        
-        result.simplex[result.simplexSize++] = supportP;
-        if (handleSimplex(result.simplex, result.simplexSize, dir)) {
+
+        result.simplex[result.simplexSize] = sd.point;
+        result.supportA[result.simplexSize] = sd.pointA;
+        result.supportB[result.simplexSize] = sd.pointB;
+        result.simplexSize++;
+
+        if (handleSimplex(result.simplex, result.supportA, result.supportB, result.simplexSize, dir)) {
             result.isIntersecting = true;
             return result;
         }
@@ -60,12 +66,10 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
     supportA.resize(4);
     supportB.resize(4);
 
-    // Recalculate individual support points from initial simplex
+    // Use exact support points tracked through GJK simplex operations
     for (int i = 0; i < 4; ++i) {
-        math::Vector3D dir = gjkResult.simplex[i].normalized();
-        if (dir.sqrMagnitude() < 1e-6f) dir = math::Vector3D(0, 1, 0);
-        supportA[i] = a.getSupport(dir);
-        supportB[i] = b.getSupport(-dir);
+        supportA[i] = gjkResult.supportA[i];
+        supportB[i] = gjkResult.supportB[i];
     }
 
     std::vector<Face> faces;

@@ -12,6 +12,8 @@ namespace physics {
 struct GJKResult {
     bool isIntersecting = false;
     math::Vector3D simplex[4];
+    math::Vector3D supportA[4];
+    math::Vector3D supportB[4];
     int simplexSize = 0;
 };
 
@@ -31,10 +33,10 @@ public:
     static EPAResult solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult);
 
 private:
-    static bool handleSimplex(math::Vector3D* simplex, int& size, math::Vector3D& dir);
-    static bool lineCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
-    static bool triangleCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
-    static bool tetrahedronCase(math::Vector3D* simplex, int& size, math::Vector3D& dir);
+    static bool handleSimplex(math::Vector3D* simplex, math::Vector3D* supA, math::Vector3D* supB, int& size, math::Vector3D& dir);
+    static bool lineCase(math::Vector3D* simplex, math::Vector3D* supA, math::Vector3D* supB, int& size, math::Vector3D& dir);
+    static bool triangleCase(math::Vector3D* simplex, math::Vector3D* supA, math::Vector3D* supB, int& size, math::Vector3D& dir);
+    static bool tetrahedronCase(math::Vector3D* simplex, math::Vector3D* supA, math::Vector3D* supB, int& size, math::Vector3D& dir);
     
     /// Soporte en el Minkowski difference (solo el punto)
     template<typename ShapeA, typename ShapeB>
