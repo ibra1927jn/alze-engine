@@ -3,7 +3,7 @@
 #include "SimdConfig.h"
 #include "MathUtils.h"
 #include <cmath>
-#include <iostream>
+#include <iosfwd>
 
 namespace engine {
 namespace math {
