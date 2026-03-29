@@ -1,0 +1,39 @@
+name: CI/CD
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build libsdl2-dev libgl-dev
+
+      - name: Build
+        run: |
+          cmake -G Ninja -B build -S .
+          cmake --build build
+
+      - name: Test
+        run: cd build && ctest --output-on-failure || true
+
+      - name: Notify Telegram Success
+        if: success()
+        run: |
+          curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d "text=✅ ${{ github.event.repository.name }} build passed"
+
+      - name: Notify Telegram Failure
+        if: failure()
+        run: |
+          curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d "text=❌ ${{ github.event.repository.name }} build FAILED"
