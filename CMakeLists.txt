@@ -25,7 +25,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
     # Cero overhead: sin excepciones ni RTTI (regla de oro en game dev)
-    add_compile_options(-fno-exceptions -fno-rtti)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions> $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
     # GCC 15 introduce -Wtemplate-body que rompe std::forward válido
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
         add_compile_options(-Wno-template-body)
