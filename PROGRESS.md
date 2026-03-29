@@ -58,11 +58,11 @@
 - ~~Fix P0: thread safety restante (FrameAllocator, Logger, Profiler)~~ | **DONE**
 - ~~Fix P1: EPA contactPoint~~ | **DONE**
 - ~~Fix P1: StateManager bounds, EventBus unsubscribe, ResourceManager locks~~ | **DONE**
-- Fix P1: subsystem dt (physics), ForwardRenderer material skip | Prioridad: alta
+- ~~Fix P1: subsystem dt (physics), ForwardRenderer material skip~~ | **DONE**
 - ~~Fix P1: texture slot collision en ForwardRenderer~~ | **DONE**
 - Tests: renderer, audio, NavMesh, Color, MathConstants, Transform2D | Prioridad: media
-- Performance: BVH raycast, island adjacency, deferred uniform cache | Prioridad: media
-- Cleanup: build duplicates (CMakeLists duplicado Engine.cpp, NavMesh en math) | Prioridad: baja
+- ~~Performance: BVH raycast, island adjacency, deferred uniform cache~~ | **DONE**
+- ~~Cleanup: build duplicates (CMakeLists duplicado Engine.cpp, NavMesh en math)~~ | **DONE**
 
 ## Bloqueado
 - Ninguno

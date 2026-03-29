@@ -62,4 +62,5 @@
 - [2026-03-29] | tests/test_physics3d.cpp:2187 | expectedScale calculada pero no usada — warning -Wunused-variable | **FIXED** Removida
 - [2026-03-29] | demo_3d.cpp:12 | SDL_MAIN_HANDLED redefinido (ya puesto por CMake target_compile_definitions) | **FIXED** Guard con #ifndef
 - [2026-03-29] | renderer/ImageDecoder.cpp:2 | #pragma once en archivo .cpp — warning "pragma once in main file" | **FIXED** Removido
-- [2026-03-29] | tests/test_memory.cpp | Depende de LinearAllocator.h, PoolAllocator.h, SimdConfig.h que no existen — no compilable | Pendiente: crear headers o eliminar test
+- [2026-03-29] | tests/test_memory.cpp | Depende de LinearAllocator.h, PoolAllocator.h, SimdConfig.h que no existen — no compilable | **FIXED** Eliminado (dead code, nunca en CMakeLists)
+- [2026-03-29] | CMakeLists.txt:28 | -fno-exceptions -fno-rtti aplicados globalmente incluyendo C files (glad/gl.c) — warning en compilacion | **FIXED** Scoped a CXX con generator expressions
