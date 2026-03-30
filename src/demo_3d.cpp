@@ -14,7 +14,6 @@
 #endif
 #include <SDL.h>
 #include <glad/gl.h>
-#include <iostream>
 #include <cmath>
 #include <vector>
 
@@ -32,6 +31,7 @@
 #include "physics/PhysicsWorld3D.h"
 #include "physics/Collider3D.h"
 #include "core/InputManager.h"
+#include "core/Logger.h"
 
 using namespace engine;
 
@@ -65,7 +65,7 @@ int main() {
     if (!glCtx) return 1;
     if (!gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress)) return 1;
 
-    std::cout << "GPU: " << glGetString(GL_RENDERER) << std::endl;
+    core::Logger::info("Demo3D", std::string("GPU: ") + reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
     SDL_GL_SetSwapInterval(1);
     glEnable(GL_MULTISAMPLE);
 
@@ -363,18 +363,18 @@ int main() {
     Uint32 lastTick = SDL_GetTicks();
     float totalTime = 0.0f;
 
-    std::cout << "\n==============================" << std::endl;
-    std::cout << "     ALZE Engine v3 AAA" << std::endl;
-    std::cout << "==============================" << std::endl;
-    std::cout << " CLICK     : Capture mouse" << std::endl;
-    std::cout << " ESCAPE    : Release mouse" << std::endl;
-    std::cout << " WASD      : Move" << std::endl;
-    std::cout << " Mouse     : Look around" << std::endl;
-    std::cout << " Space     : Up | Ctrl : Down" << std::endl;
-    std::cout << " Shift     : Sprint" << std::endl;
-    std::cout << " F         : Spawn ball" << std::endl;
-    std::cout << " R         : Reset all balls" << std::endl;
-    std::cout << "==============================\n" << std::endl;
+    core::Logger::info("Demo3D", "==============================");
+    core::Logger::info("Demo3D", "     ALZE Engine v3 AAA");
+    core::Logger::info("Demo3D", "==============================");
+    core::Logger::info("Demo3D", " CLICK     : Capture mouse");
+    core::Logger::info("Demo3D", " ESCAPE    : Release mouse");
+    core::Logger::info("Demo3D", " WASD      : Move");
+    core::Logger::info("Demo3D", " Mouse     : Look around");
+    core::Logger::info("Demo3D", " Space     : Up | Ctrl : Down");
+    core::Logger::info("Demo3D", " Shift     : Sprint");
+    core::Logger::info("Demo3D", " F         : Spawn ball");
+    core::Logger::info("Demo3D", " R         : Reset all balls");
+    core::Logger::info("Demo3D", "==============================");
 
     while (running) {
         input.prepare();
