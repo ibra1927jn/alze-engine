@@ -6,7 +6,6 @@
 #include "../core/JobSystem.h"
 #include <vector>
 #include <cmath>
-#include <mutex>
 #include <algorithm>
 #include <functional>
 

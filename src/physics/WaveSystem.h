@@ -4,7 +4,6 @@
 #include "math/Vector3D.h"
 #include <vector>
 #include <cmath>
-#include <memory>
 
 namespace engine {
 namespace physics {
