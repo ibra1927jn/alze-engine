@@ -8,7 +8,6 @@
 #include <memory>
 #include <cassert>
 #include <vector>
-#include <thread>
 #include <algorithm>
 #include "core/JobSystem.h"
 

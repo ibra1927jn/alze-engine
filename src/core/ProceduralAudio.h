@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
-#include <numeric>
 
 namespace engine {
 namespace core {
