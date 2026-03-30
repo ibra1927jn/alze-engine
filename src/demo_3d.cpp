@@ -65,7 +65,8 @@ int main() {
     if (!glCtx) return 1;
     if (!gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress)) return 1;
 
-    core::Logger::info("Demo3D", std::string("GPU: ") + reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+    const char* gpuName = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+    core::Logger::info("Demo3D", std::string("GPU: ") + (gpuName ? gpuName : "unknown"));
     SDL_GL_SetSwapInterval(1);
     glEnable(GL_MULTISAMPLE);
 
