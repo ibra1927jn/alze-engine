@@ -9,6 +9,7 @@
 #include <array>
 #include <cstdint>
 #include <mutex>
+#include <atomic>
 
 namespace engine {
 namespace core {
@@ -61,7 +62,7 @@ public:
     static void beginFrame() {
         std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger contra data race
         s_frameStart = Clock::now();
-        s_drawCalls = 0;
+        s_drawCalls.store(0, std::memory_order_relaxed);
     }
 
     /// Finalizar medición del frame
@@ -124,20 +125,25 @@ public:
 
     // ── Queries ────────────────────────────────────────────────
 
-    static const Metric& getMetric(uint32_t sectionId) {
+    static Metric getMetric(uint32_t sectionId) {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
         return s_sectionMetrics[sectionId < MAX_SECTIONS ? sectionId : 0];
     }
 
-    static const Metric& getMetric(std::string_view name) {
+    static Metric getMetric(std::string_view name) {
         return getMetric(getOrCreateId(name));
     }
 
-    static const Metric& getFrameMetric() { return s_frameMetric; }
+    static Metric getFrameMetric() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
+        return s_frameMetric;
+    }
 
     // ── Frame History (para graficar) ──────────────────────────
 
     /// Obtener historial de tiempos de frame (más reciente al final)
     static std::vector<float> getFrameHistory() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
         std::vector<float> result;
         result.reserve(s_historyCount);
         for (int i = 0; i < s_historyCount; i++) {
@@ -149,6 +155,7 @@ public:
 
     /// Obtener historial de una sección por ID
     static std::vector<float> getSectionHistory(uint32_t sectionId) {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
         if (sectionId >= MAX_SECTIONS || !s_sectionActive[sectionId]) return {};
         std::vector<float> result;
         int idx = s_sectionHistIdx[sectionId];
@@ -161,13 +168,14 @@ public:
 
     // ── Counters ───────────────────────────────────────────────
 
-    static void addDrawCall(int count = 1) { s_drawCalls += count; }
-    static int  getDrawCalls() { return s_drawCalls; }
+    static void addDrawCall(int count = 1) { s_drawCalls.fetch_add(count, std::memory_order_relaxed); }
+    static int  getDrawCalls() { return s_drawCalls.load(std::memory_order_relaxed); }
 
-    static void setMemoryUsage(size_t bytes) { s_memoryBytes = bytes; }
-    static size_t getMemoryUsage() { return s_memoryBytes; }
+    static void setMemoryUsage(size_t bytes) { s_memoryBytes.store(bytes, std::memory_order_relaxed); }
+    static size_t getMemoryUsage() { return s_memoryBytes.load(std::memory_order_relaxed); }
 
     static std::vector<std::string> getSectionNames() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
         std::vector<std::string> names;
         for (uint32_t i = 0; i < MAX_SECTIONS; i++) {
             if (s_sectionActive[i]) {
@@ -178,6 +186,7 @@ public:
     }
 
     static void resetMax() {
+        std::lock_guard<std::recursive_mutex> lock(s_mutex);
         for (uint32_t i = 0; i < MAX_SECTIONS; i++) {
             s_sectionMetrics[i].maxMs = 0;
         }
@@ -193,8 +202,8 @@ public:
         oss << "Frame: avg=" << s_frameMetric.avgMs << "ms"
             << " max=" << s_frameMetric.maxMs << "ms"
             << " frames=" << s_frameMetric.calls << "\n";
-        oss << "Draw calls: " << s_drawCalls << "\n";
-        oss << "Memory: " << (s_memoryBytes / 1024) << " KB\n";
+        oss << "Draw calls: " << s_drawCalls.load(std::memory_order_relaxed) << "\n";
+        oss << "Memory: " << (s_memoryBytes.load(std::memory_order_relaxed) / 1024) << " KB\n";
         for (uint32_t i = 0; i < MAX_SECTIONS; i++) {
             if (s_sectionActive[i]) {
                 oss << "  " << getSectionName(i) << ": "
@@ -239,8 +248,8 @@ private:
     // Frame data
     inline static Metric            s_frameMetric = {};
     inline static Clock::time_point s_frameStart;
-    inline static int               s_drawCalls = 0;
-    inline static size_t            s_memoryBytes = 0;
+    inline static std::atomic<int>    s_drawCalls{0};
+    inline static std::atomic<size_t> s_memoryBytes{0};
 
     // Frame history ring buffer
     inline static std::array<float, HISTORY_SIZE> s_frameHistory = {};
