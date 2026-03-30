@@ -8,7 +8,7 @@ namespace math {
 // ── Constructores ──────────────────────────────────────────────
 AABB::AABB() : min(Vector2D::Zero), max(Vector2D::Zero) {}
 
-AABB::AABB(const Vector2D& min, const Vector2D& max) : min(min), max(max) {}
+AABB::AABB(const Vector2D& min_, const Vector2D& max_) : min(min_), max(max_) {}
 
 AABB AABB::fromCenter(const Vector2D& center, const Vector2D& halfSize) {
     return AABB(center - halfSize, center + halfSize);
