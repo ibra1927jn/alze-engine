@@ -1,8 +1,8 @@
 #include "SSAO.h"
+#include "core/Logger.h"
 #include <glad/gl.h>
 #include <cstdlib>
 #include <cmath>
-#include <iostream>
 
 namespace engine {
 namespace renderer {
@@ -12,11 +12,11 @@ bool SSAO::init(int width, int height) {
     m_height = height / 2;
 
     if (!m_ssaoShader.compile(SSAOShaders::SSAO_VERT, SSAOShaders::SSAO_FRAG)) {
-        std::cerr << "[SSAO] Failed to compile SSAO shader" << std::endl;
+        core::Logger::error("SSAO", "Failed to compile SSAO shader");
         return false;
     }
     if (!m_blurShader.compile(SSAOShaders::SSAO_VERT, SSAOShaders::BLUR_FRAG)) {
-        std::cerr << "[SSAO] Failed to compile blur shader" << std::endl;
+        core::Logger::error("SSAO", "Failed to compile blur shader");
         return false;
     }
 
@@ -44,7 +44,7 @@ bool SSAO::init(int width, int height) {
     createFBO(m_blurFBO, m_blurTex, m_width, m_height);
     createQuad();
 
-    std::cout << "[SSAO] Initialized at " << m_width << "x" << m_height << " (half-res)" << std::endl;
+    core::Logger::info("SSAO", "Initialized at " + std::to_string(m_width) + "x" + std::to_string(m_height) + " (half-res)");
     return true;
 }
 

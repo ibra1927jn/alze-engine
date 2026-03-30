@@ -1,9 +1,9 @@
 // EnvironmentMap.cpp — Implementaciones de EnvironmentMap (IBL pipeline)
 #include "EnvironmentMap.h"
 #include "ImageDecoder.h"
+#include "core/Logger.h"
 #include <glad/gl.h>
 #include <cmath>
-#include <iostream>
 #include <cstdint>
 
 namespace engine {
@@ -33,7 +33,7 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
     glGetIntegerv(GL_VIEWPORT, prevViewport);
 
     // 1. Capture skybox → HDR cubemap
-    std::cout << "[IBL] Capturing environment cubemap..." << std::endl;
+    core::Logger::info("IBL", "Capturing environment cubemap...");
     glGenTextures(1, &m_envCubemap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_envCubemap);
     for (int i = 0; i < 6; i++)
@@ -70,7 +70,7 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
     // 2. Irradiance convolution
-    std::cout << "[IBL] Computing irradiance map..." << std::endl;
+    core::Logger::info("IBL", "Computing irradiance map...");
     glGenTextures(1, &m_irradianceMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_irradianceMap);
     for (int i = 0; i < 6; i++)
@@ -99,7 +99,7 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
     }
 
     // 3. Pre-filtered environment
-    std::cout << "[IBL] Pre-filtering environment..." << std::endl;
+    core::Logger::info("IBL", "Pre-filtering environment...");
     glGenTextures(1, &m_prefilterMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_prefilterMap);
     for (int i = 0; i < 6; i++)
@@ -134,7 +134,7 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
     }
 
     // 4. BRDF LUT
-    std::cout << "[IBL] Generating BRDF LUT..." << std::endl;
+    core::Logger::info("IBL", "Generating BRDF LUT...");
     glGenTextures(1, &m_brdfLUT);
     glBindTexture(GL_TEXTURE_2D, m_brdfLUT);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 256, 256, 0, GL_RG, GL_FLOAT, nullptr);
@@ -155,8 +155,8 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
     glDeleteRenderbuffers(1, &captureRBO);
     glDeleteFramebuffers(1, &captureFBO);
 
-    std::cout << "[IBL] Done! Env=" << envSize << " Irr=" << irrSize
-              << " PF=" << pfSize << " BRDF=256" << std::endl;
+    core::Logger::info("IBL", "Done! Env=" + std::to_string(envSize) + " Irr=" + std::to_string(irrSize)
+              + " PF=" + std::to_string(pfSize) + " BRDF=256");
     return true;
 }
 
@@ -167,10 +167,10 @@ bool EnvironmentMap::generateFromHDRI(const char* hdrPath, int envSize, int irrS
     int w, h, channels;
     float* data = stbi_loadf(hdrPath, &w, &h, &channels, 0);
     if (!data) {
-        std::cerr << "[IBL] Failed to load HDRI: " << hdrPath << std::endl;
+        core::Logger::error("IBL", std::string("Failed to load HDRI: ") + hdrPath);
         return false;
     }
-    std::cout << "[IBL] Loaded HDRI: " << hdrPath << " (" << w << "x" << h << ")" << std::endl;
+    core::Logger::info("IBL", std::string("Loaded HDRI: ") + hdrPath + " (" + std::to_string(w) + "x" + std::to_string(h) + ")");
 
     GLuint hdrTex;
     glGenTextures(1, &hdrTex);
@@ -204,7 +204,7 @@ bool EnvironmentMap::generateFromHDRI(const char* hdrPath, int envSize, int irrS
     glGetIntegerv(GL_VIEWPORT, prevViewport);
 
     // Convert equirectangular → cubemap
-    std::cout << "[IBL] Converting equirectangular -> cubemap..." << std::endl;
+    core::Logger::info("IBL", "Converting equirectangular -> cubemap...");
     glGenTextures(1, &m_envCubemap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_envCubemap);
     for (int i = 0; i < 6; i++)
@@ -242,7 +242,7 @@ bool EnvironmentMap::generateFromHDRI(const char* hdrPath, int envSize, int irrS
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     glDeleteRenderbuffers(1, &captureRBO);
     glDeleteFramebuffers(1, &captureFBO);
-    std::cout << "[IBL] HDRI pipeline complete!" << std::endl;
+    core::Logger::info("IBL", "HDRI pipeline complete!");
     return true;
 }
 
@@ -279,7 +279,7 @@ void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint captureRBO
                                              int irrSize, int pfSize)
 {
     // 2. Irradiance
-    std::cout << "[IBL] Computing irradiance map..." << std::endl;
+    core::Logger::info("IBL", "Computing irradiance map...");
     glGenTextures(1, &m_irradianceMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_irradianceMap);
     for (int i = 0; i < 6; i++)
@@ -306,7 +306,7 @@ void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint captureRBO
     }
 
     // 3. Pre-filter
-    std::cout << "[IBL] Pre-filtering environment..." << std::endl;
+    core::Logger::info("IBL", "Pre-filtering environment...");
     glGenTextures(1, &m_prefilterMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_prefilterMap);
     for (int i = 0; i < 6; i++)
@@ -340,7 +340,7 @@ void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint captureRBO
     }
 
     // 4. BRDF LUT
-    std::cout << "[IBL] Generating BRDF LUT..." << std::endl;
+    core::Logger::info("IBL", "Generating BRDF LUT...");
     glGenTextures(1, &m_brdfLUT);
     glBindTexture(GL_TEXTURE_2D, m_brdfLUT);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 256, 256, 0, GL_RG, GL_FLOAT, nullptr);

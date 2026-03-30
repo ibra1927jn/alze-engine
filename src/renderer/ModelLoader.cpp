@@ -1,7 +1,7 @@
 #include "ModelLoader.h"
 #include "ImageDecoder.h"
+#include "core/Logger.h"
 #include <glad/gl.h>
-#include <iostream>
 #include <string>
 #include <vector>
 #include <cstring>
@@ -44,8 +44,7 @@ GLuint loadGLTFTexture(const cgltf_image* image, const char* basePath) {
     }
 
     if (!data) {
-        std::cerr << "[ModelLoader] Failed to load texture: "
-                  << (image->name ? image->name : "unnamed") << std::endl;
+        core::Logger::error("ModelLoader", std::string("Failed to load texture: ") + (image->name ? image->name : "unnamed"));
         return 0;
     }
 
@@ -68,23 +67,23 @@ GLuint loadGLTFTexture(const cgltf_image* image, const char* basePath) {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, maxAniso > 16.0f ? 16.0f : maxAniso);
     glBindTexture(GL_TEXTURE_2D, 0);
     stbi_image_free(data);
-    std::cout << "[ModelLoader] Loaded texture: " << w << "x" << h << " (" << channels << "ch)" << std::endl;
+    core::Logger::info("ModelLoader", "Loaded texture: " + std::to_string(w) + "x" + std::to_string(h) + " (" + std::to_string(channels) + "ch)");
     return tex;
 }
 
 bool load(const char* filepath, LoadedModel& out) {
-    std::cout << "[ModelLoader] Loading: " << filepath << std::endl;
+    core::Logger::info("ModelLoader", std::string("Loading: ") + filepath);
 
     cgltf_options options = {};
     cgltf_data* data = nullptr;
     cgltf_result result = cgltf_parse_file(&options, filepath, &data);
     if (result != cgltf_result_success) {
-        std::cerr << "[ModelLoader] Parse failed: " << result << std::endl;
+        core::Logger::error("ModelLoader", "Parse failed: " + std::to_string(static_cast<int>(result)));
         return false;
     }
     result = cgltf_load_buffers(&options, data, filepath);
     if (result != cgltf_result_success) {
-        std::cerr << "[ModelLoader] Buffer load failed" << std::endl;
+        core::Logger::error("ModelLoader", "Buffer load failed");
         cgltf_free(data); return false;
     }
 
@@ -127,8 +126,8 @@ bool load(const char* filepath, LoadedModel& out) {
         }
         out.materials.push_back(mat);
         if (gltfMat.name)
-            std::cout << "[ModelLoader] Material: " << gltfMat.name
-                      << " (metallic=" << mat.metallic << " roughness=" << mat.roughness << ")" << std::endl;
+            core::Logger::info("ModelLoader", std::string("Material: ") + gltfMat.name
+                      + " (metallic=" + std::to_string(mat.metallic) + " roughness=" + std::to_string(mat.roughness) + ")");
     }
 
     // Load meshes
@@ -181,15 +180,15 @@ bool load(const char* filepath, LoadedModel& out) {
             if (prim.material)
                 entry.materialIndex = static_cast<int>(prim.material - data->materials);
 
-            std::cout << "[ModelLoader] Mesh: " << (gltfMesh.name ? gltfMesh.name : "unnamed")
-                      << " [" << vertCount << " verts, " << indices.size() << " indices]" << std::endl;
+            core::Logger::info("ModelLoader", std::string("Mesh: ") + (gltfMesh.name ? gltfMesh.name : "unnamed")
+                      + " [" + std::to_string(vertCount) + " verts, " + std::to_string(indices.size()) + " indices]");
             out.meshEntries.push_back(std::move(entry));
         }
     }
 
     cgltf_free(data);
-    std::cout << "[ModelLoader] Loaded! " << out.meshEntries.size() << " meshes, "
-              << out.materials.size() << " materials, " << out.textures.size() << " textures" << std::endl;
+    core::Logger::info("ModelLoader", "Loaded! " + std::to_string(out.meshEntries.size()) + " meshes, "
+              + std::to_string(out.materials.size()) + " materials, " + std::to_string(out.textures.size()) + " textures");
     return out.isValid();
 }
 
