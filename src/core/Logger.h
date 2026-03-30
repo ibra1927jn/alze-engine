@@ -90,10 +90,12 @@ public:
             default: break;
         }
 
-        // Timestamp
+        // Timestamp (localtime_r es thread-safe)
         char timeBuf[16];
         time_t now = time(nullptr);
-        strftime(timeBuf, sizeof(timeBuf), "%H:%M:%S", localtime(&now));
+        struct tm tmBuf;
+        localtime_r(&now, &tmBuf);
+        strftime(timeBuf, sizeof(timeBuf), "%H:%M:%S", &tmBuf);
 
         // Proteger escritura a consola y archivo contra data race
         std::lock_guard<std::mutex> lock(s_mutex);
