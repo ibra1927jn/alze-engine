@@ -7,6 +7,7 @@
 #include <ctime>
 #include <vector>
 #include <mutex>
+#include <atomic>
 
 namespace engine {
 namespace core {
@@ -125,7 +126,7 @@ public:
     static int getLineCount() { return s_lineCount; }
 
 private:
-    static inline Level s_minLevel = Level::INFO;
+    static inline std::atomic<Level> s_minLevel{Level::INFO};
     static inline std::ofstream s_file;
     static inline bool s_fileEnabled = false;
     static inline std::string s_filePath;
