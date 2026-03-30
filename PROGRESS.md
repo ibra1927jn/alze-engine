@@ -33,6 +33,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #16 | 100% — fixed double m_gcTimer increment bug in Play3DState::update() (GC fired at 2.5s instead of 5s), replaced ostringstream with snprintf in Engine::run() and removed <sstream> include
 - [2026-03-30] | Heartbeat maintenance pass #17 | 100% — completed math ostream→cstdio migration (Color, Vector2D/3D, Matrix3x3/4x4, Quaternion, AABB: operator<< → toString() with snprintf, removed all <iosfwd>/<ostream>), removed unused includes (SpatialHash.h from Raycast, <cstdlib> from ScreenEffects), removed dead accessors (FrameLogger::getPath, InputRecorder::getPlaybackPath)
 - [2026-03-30] | Heartbeat maintenance pass #18 | 100% — removed unused <cstdio> from 5 math headers (Vector2D/3D, Matrix3x3/4x4, Quaternion), removed unused <cstdlib> from PlayState, Play3DState, SSAO headers, added explicit <cstdio> to 5 math .cpp files that use snprintf
+- [2026-03-30] | Heartbeat maintenance pass #19 | 100% — removed 28 redundant includes across 24 headers (transitively provided by MathUtils.h/Vector3D.h/etc), extracted 3 duplicate color conversion lambdas in Editor.cpp to static methods, removed 5 more redundant includes (SpatialHash, DebugDraw, Components, AABB.cpp, Matrix3x3)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
