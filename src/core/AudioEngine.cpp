@@ -165,10 +165,12 @@ void AudioEngine::setListener3D(const math::Vector3D& position,
                                  const math::Vector3D& forward,
                                  const math::Vector3D& up)
 {
+    SDL_LockAudioDevice(m_deviceId);
     m_listenerPos3D = position;
     m_listenerFwd   = forward.normalized();
     m_listenerUp    = up.normalized();
     m_listenerRight = m_listenerFwd.cross(m_listenerUp).normalized();
+    SDL_UnlockAudioDevice(m_deviceId);
 }
 
 void AudioEngine::setGroupVolume(SoundGroup g, float vol) {

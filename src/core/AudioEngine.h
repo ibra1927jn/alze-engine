@@ -80,7 +80,11 @@ public:
     void shutdown();
     ~AudioEngine() { shutdown(); }
 
-    void setListenerPosition(const math::Vector2D& pos) { m_listenerPos2D = pos; }
+    void setListenerPosition(const math::Vector2D& pos) {
+        SDL_LockAudioDevice(m_deviceId);
+        m_listenerPos2D = pos;
+        SDL_UnlockAudioDevice(m_deviceId);
+    }
     math::Vector2D getListenerPosition2D() const { return m_listenerPos2D; }
     void setListener3D(const math::Vector3D& position,
                        const math::Vector3D& forward = math::Vector3D(0, 0, -1),
