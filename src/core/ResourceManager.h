@@ -115,6 +115,7 @@ public:
 
     template<typename Func>
     void forEachAlive(Func&& fn) {
+        std::lock_guard<std::mutex> lock(m_mutex);
         for (auto& [id, wp] : m_cache) {
             auto sp = wp.lock();
             if (sp) fn(id, sp);
