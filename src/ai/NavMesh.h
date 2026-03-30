@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <functional>
 
 namespace engine {
 namespace ai {
