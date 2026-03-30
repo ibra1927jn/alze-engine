@@ -6,7 +6,6 @@
 #include "Skybox.h"
 #include <cmath>
 #include <vector>
-#include "ImageDecoder.h"
 
 namespace engine {
 namespace renderer {
