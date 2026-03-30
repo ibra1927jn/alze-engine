@@ -151,6 +151,10 @@ private:
             case EmitterShape::CONE:
                 p.position = emitter.position;
                 break;
+
+            default:
+                p.position = emitter.position;
+                break;
         }
 
         // Velocity

@@ -125,6 +125,9 @@ public:
                 frameIndex = pos < totalFrames ? pos : (cycleLen - pos);
                 break;
             }
+
+            default:
+                break;
         }
 
         return m_sheet->getFrame(clip.startFrame + frameIndex);
