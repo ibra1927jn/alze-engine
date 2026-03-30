@@ -44,9 +44,7 @@
 #include "game/WorldScene3D.h"
 
 #include <cstdlib>
-#include <cmath>
 #include <memory>
-#include <string>
 #include <vector>
 #include <SDL.h>
 

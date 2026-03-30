@@ -4,7 +4,6 @@
 #include "../math/Vector3D.h"
 #include "../math/Matrix4x4.h"
 #include <vector>
-#include <cmath>
 
 namespace engine {
 namespace core {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <complex>
 
 namespace engine {
 namespace physics {

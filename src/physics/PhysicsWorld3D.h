@@ -14,7 +14,6 @@
 #include "math/Vector3D.h"
 #include <vector>
 #include <functional>
-#include <algorithm>
 #include "core/JobSystem.h"
 
 namespace engine {

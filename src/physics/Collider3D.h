@@ -1,8 +1,6 @@
 #pragma once
 
 #include "math/Vector3D.h"
-#include <cmath>
-#include <limits>
 #include <array>
 #include <vector> // Added for std::vector in HeightfieldCollider
 

@@ -7,7 +7,6 @@
 #include "Texture2D.h"
 #include "ImageDecoder.h"
 #include <vector>
-#include <string>
 
 namespace engine {
 namespace renderer {

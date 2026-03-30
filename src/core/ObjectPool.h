@@ -3,7 +3,6 @@
 #include <vector>
 #include <cstdint>
 #include <cassert>
-#include <type_traits>
 
 namespace engine {
 namespace core {

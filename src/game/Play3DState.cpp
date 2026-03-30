@@ -1,4 +1,5 @@
 ﻿#include "Play3DState.h"
+#include <cmath>
 
 namespace engine {
 namespace game {

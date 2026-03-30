@@ -4,8 +4,6 @@
 #include "math/MathUtils.h"
 #include <vector>
 #include <queue>
-#include <algorithm>
-#include <cmath>
 #include <cstdint>
 
 namespace engine {

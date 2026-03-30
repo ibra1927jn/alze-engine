@@ -3,7 +3,6 @@
 #include "../math/Vector3D.h"
 #include <vector>
 #include <cstdlib>
-#include <cmath>
 
 namespace engine {
 namespace game {
