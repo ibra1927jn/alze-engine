@@ -24,6 +24,7 @@ public:
         }
         std::fseek(file, 0, SEEK_END);
         long size = std::ftell(file);
+        if (size <= 0) { std::fclose(file); return ""; }
         std::fseek(file, 0, SEEK_SET);
         std::string content(static_cast<size_t>(size), '\0');
         std::fread(&content[0], 1, static_cast<size_t>(size), file);

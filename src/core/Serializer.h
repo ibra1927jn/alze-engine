@@ -138,6 +138,7 @@ public:
         if (!file) return false;
         std::fseek(file, 0, SEEK_END);
         long sz = std::ftell(file);
+        if (sz <= 0) { std::fclose(file); return false; }
         std::fseek(file, 0, SEEK_SET);
         m_data.resize(static_cast<size_t>(sz));
         std::fread(&m_data[0], 1, static_cast<size_t>(sz), file);
