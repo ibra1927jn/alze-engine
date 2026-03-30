@@ -37,6 +37,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #20 | 100% — moved 2 header-only includes to .cpp (ImageDecoder.h from ModelLoader.h, ShaderLibrary.h from ForwardRenderer.h), removed 19 duplicate includes from 15 .cpp files (SDL.h, cmath, glad/gl.h, CollisionSolver3D.h, DynamicBVH3D.h, JobSystem.h already provided by corresponding headers)
 - [2026-03-30] | Heartbeat maintenance pass #21 | 100% — removed unused <cmath> from AudioEngine.cpp and NavMesh.cpp, guarded AudioBuffer::resampleTo against division by zero (targetRate <= 0), added default cases to switch statements in SpriteBatch2D.cpp (BlendMode) and TextRenderer.cpp (TextAlign)
 - [2026-03-30] | Heartbeat maintenance pass #22 | 100% — added default cases to switch statements in ParticleSystem3D.h (EmitterShape) and SpriteAnimation.h (LoopMode), guarded division by zero in smoothstep/smootherstep/repeat (MathConstants.h, PhysicsMath.h) and sphereSubmergedFraction (radius==0)
+- [2026-03-30] | Heartbeat maintenance pass #23 | 100% — guarded division by zero in ADSR envelope (ProceduralAudio.cpp), UISystem slider/progressBar, MathUtils::remap, SpriteAnimation (fps/columns), aspect ratio calculations (Play3DState, BenchmarkScene3D). Added default initializers to uninitialized POD struct members in Physics3DSystem (SolverContact, PhysEntity), RenderSystem (RenderEntry), EventBus (5 event structs), Window (m_width/m_height), Play3DState (Collision3DEvent)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
