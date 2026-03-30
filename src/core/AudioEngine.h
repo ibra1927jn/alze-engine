@@ -101,6 +101,7 @@ public:
         return pos;
     }
     void  setMaxDistance(float d) {
+        if (d < 0.001f) d = 0.001f;
         SDL_LockAudioDevice(m_deviceId);
         m_maxDist = d;
         SDL_UnlockAudioDevice(m_deviceId);
