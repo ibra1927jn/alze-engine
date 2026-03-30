@@ -1,7 +1,6 @@
 #include "DecalRenderer.h"
 #include <glad/gl.h>
 #include <cmath>
-#include <cstdint>
 
 namespace engine {
 namespace renderer {

@@ -1,6 +1,5 @@
 #include "TextRenderer.h"
 #include <cstring>
-#include <cmath>
 #include <algorithm>
 
 namespace engine {

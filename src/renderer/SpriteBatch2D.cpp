@@ -1,8 +1,6 @@
 #include "SpriteBatch2D.h"
 #include <glad/gl.h>
-#include <cmath>
 #include <algorithm>
-#include <vector>
 #include <cstdint>
 
 namespace engine {
