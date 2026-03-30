@@ -312,7 +312,6 @@ void Play3DState::onEnter() {
         m_decalRenderer.update(dt);
 
         // â”€â”€ ResourceManager GC (every 5 seconds) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        m_gcTimer += dt;
         if (m_gcTimer > 5.0f) {
             m_texCache.collectGarbage();
             m_gcTimer = 0;
