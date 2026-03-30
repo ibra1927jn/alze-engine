@@ -24,18 +24,18 @@ SIMD: SSE2 en Vector2D/3D, Matrix3x3/4x4
 - Engine.h/cpp — Game loop fixed timestep 60Hz, delta cap 0.25s
 - Window.h/cpp — SDL2, OpenGL 3.3 core profile, resize, gamepad
 - InputManager.h/cpp — Keyboard, mouse, gamepad con deadzone
-- StateManager.h — Push/pop/change con transparencia (bug bounds check)
+- StateManager.h — Push/pop/change con transparencia
 - EventBus.h — Pub/sub type-erased con unsubscribe por ID
 - JobSystem.h — Thread pool con parallel_for (m_running atomico)
 - AudioEngine.h/cpp — 32 voces, positional 3D, crossfade, SDL_Lock protegido
-- ProceduralAudio.h/cpp — Synth ADSR, waveforms, LPF (bug vibrato param)
+- ProceduralAudio.h/cpp — Synth ADSR, waveforms, LPF
 - FrameAllocator.h — Linear allocator per-frame (mutex protegido)
 - Profiler.h — High-res timer, ring buffers (recursive_mutex protegido)
-- Logger.h — Dual output consola+archivo (no thread-safe)
-- ResourceManager.h — Weak-ptr cache, async load (partial thread-safe)
+- Logger.h — Dual output consola+archivo (mutex protegido)
+- ResourceManager.h — Weak-ptr cache, async load (mutex protegido)
 - UISystem.h — Immediate mode UI
-- Serializer.h — JSON read/write (crash con -fno-exceptions)
-- SceneSerializer.h — Scene save/load (bug parseo isStatic)
+- Serializer.h — JSON read/write (strtof, safe con -fno-exceptions)
+- SceneSerializer.h — Scene save/load
 
 ### Renderer (src/renderer/)
 - ForwardRenderer — PBR Cook-Torrance, 2-cascade CSM, IBL, 8 point + 4 spot lights
@@ -84,7 +84,7 @@ SIMD: SSE2 en Vector2D/3D, Matrix3x3/4x4
 - NavMesh (A* pathfinding)
 
 ### Tests (tests/)
-- 11 archivos, ~4,900 lineas, asserts custom (sin framework externo)
+- 13 archivos, ~6,300 lineas, asserts custom (sin framework externo)
 - test_physics3d.cpp es el mas completo (2,327 lineas, cubre 20+ subsistemas)
 
 ## Reglas del proyecto
