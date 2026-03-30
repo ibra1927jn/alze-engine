@@ -63,6 +63,16 @@ private:
     // Utilidades
     std::string entityLabel(ecs::Entity entity) const;
 
+    // Conversion de colores
+    static renderer::ShapeRenderer2D::Color toShapeCol(const math::Color& c) {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    }
+    static renderer::SpriteColor toSpriteCol(const math::Color& c) {
+        constexpr float k = 1.0f / 255.0f;
+        return { c.r * k, c.g * k, c.b * k, c.a * k };
+    }
+
     // ── Estado ──────────────────────────────────────────────────
     ecs::ECSCoordinator* m_ecs = nullptr;
     core::UISystem m_ui;

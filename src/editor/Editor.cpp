@@ -136,15 +136,6 @@ void Editor::render(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& t
 void Editor::renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
                            renderer::SpriteBatch2D& batch) {
     // Barra superior — coordenadas centradas para ShapeRenderer2D
-    auto toShapeCol = [](const math::Color& c) -> renderer::ShapeRenderer2D::Color {
-        constexpr float k = 1.0f / 255.0f;
-        return { c.r * k, c.g * k, c.b * k, c.a * k };
-    };
-    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
-        constexpr float k = 1.0f / 255.0f;
-        return { c.r * k, c.g * k, c.b * k, c.a * k };
-    };
-
     shapes.rectFill(TOOLBAR_X + TOOLBAR_W * 0.5f, TOOLBAR_Y + TOOLBAR_H * 0.5f,
                     TOOLBAR_W, TOOLBAR_H, toShapeCol(math::Color(25, 25, 40, 240)));
     shapes.line(TOOLBAR_X, TOOLBAR_H, TOOLBAR_X + TOOLBAR_W, TOOLBAR_H,
@@ -173,15 +164,6 @@ void Editor::renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRend
 void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
                                   renderer::SpriteBatch2D& batch) {
     m_ui.panel(shapes, text, "Hierarchy", HIERARCHY_X, HIERARCHY_Y, HIERARCHY_W, HIERARCHY_H);
-
-    auto toShapeCol = [](const math::Color& c) -> renderer::ShapeRenderer2D::Color {
-        constexpr float k = 1.0f / 255.0f;
-        return { c.r * k, c.g * k, c.b * k, c.a * k };
-    };
-    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
-        constexpr float k = 1.0f / 255.0f;
-        return { c.r * k, c.g * k, c.b * k, c.a * k };
-    };
 
     float startY = HIERARCHY_Y + 30.0f;
     int visibleCount = std::min((int)m_entityList.size() - m_hierarchyScroll, MAX_VISIBLE_ENTITIES);
@@ -225,11 +207,6 @@ void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::T
 void Editor::renderInspectorPanel(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
                                   renderer::SpriteBatch2D& batch) {
     m_ui.panel(shapes, text, "Inspector", INSPECTOR_X, INSPECTOR_Y, INSPECTOR_W, INSPECTOR_H);
-
-    auto toSpriteCol = [](const math::Color& c) -> renderer::SpriteColor {
-        constexpr float k = 1.0f / 255.0f;
-        return { c.r * k, c.g * k, c.b * k, c.a * k };
-    };
 
     if (m_selectedEntity == ecs::NULL_ENTITY || !m_ecs->isAlive(m_selectedEntity)) {
         m_ui.label(text, "No entity selected", INSPECTOR_X + 10.0f, INSPECTOR_Y + 35.0f,
