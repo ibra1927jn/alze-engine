@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <ostream>
+#include <cstdio>
+#include <string>
 
 namespace engine {
 namespace math {
@@ -64,10 +65,10 @@ struct Color {
     }
 
     // ── Debug ──────────────────────────────────────────────────
-    friend std::ostream& operator<<(std::ostream& os, const Color& c) {
-        os << "Color(" << (int)c.r << ", " << (int)c.g << ", "
-           << (int)c.b << ", " << (int)c.a << ")";
-        return os;
+    std::string toString() const {
+        char buf[40];
+        std::snprintf(buf, sizeof(buf), "Color(%d, %d, %d, %d)", r, g, b, a);
+        return buf;
     }
 };
 
