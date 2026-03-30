@@ -4,7 +4,6 @@
 #include <string>
 #include "core/Logger.h"
 #include "math/Matrix4x4.h"
-#include "math/Vector3D.h"
 
 namespace engine {
 namespace renderer {

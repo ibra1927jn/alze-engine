@@ -5,7 +5,6 @@
 #include "renderer/ShapeRenderer2D.h"
 #include "math/Vector2D.h"
 #include "math/Color.h"
-#include "math/MathUtils.h"
 #include <string>
 
 namespace engine {

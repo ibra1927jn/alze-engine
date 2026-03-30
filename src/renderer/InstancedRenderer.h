@@ -4,7 +4,6 @@
 #include "MeshPrimitives.h"
 #include "ShaderProgram.h"
 #include "math/Matrix4x4.h"
-#include "math/Vector3D.h"
 #include <vector>
 
 namespace engine {

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "math/Matrix4x4.h"
-#include "math/Vector3D.h"
-#include "math/MathUtils.h"
 
 namespace engine {
 namespace scene {

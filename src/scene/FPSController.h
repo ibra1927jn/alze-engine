@@ -1,8 +1,6 @@
 #pragma once
 
-#include "math/Vector3D.h"
 #include "math/Matrix4x4.h"
-#include "math/MathUtils.h"
 #include "core/InputManager.h"
 #include <SDL.h>
 

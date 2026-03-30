@@ -2,7 +2,6 @@
 
 #include <glad/gl.h>
 #include <vector>
-#include "math/MathUtils.h"
 #include "math/Vector3D.h"
 
 namespace engine {

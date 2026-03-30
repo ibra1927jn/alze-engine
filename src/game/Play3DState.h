@@ -35,8 +35,6 @@
 #include "scene/SceneGraph.h"
 #include "scene/FPSController.h"
 #include "math/Matrix4x4.h"
-#include "math/Vector3D.h"
-#include "math/MathUtils.h"
 #include "renderer/SpriteBatch2D.h"
 #include "renderer/TextRenderer.h"
 

@@ -3,7 +3,6 @@
 #include <glad/gl.h>
 #include "ShaderProgram.h"
 #include "math/Matrix4x4.h"
-#include "math/Vector3D.h"
 #include "Skybox.h"
 #include <cmath>
 #include <vector>

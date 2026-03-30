@@ -2,7 +2,6 @@
 
 #include "math/Vector2D.h"
 #include "math/AABB.h"
-#include "math/MathUtils.h"
 #include <SDL.h>
 
 namespace engine {

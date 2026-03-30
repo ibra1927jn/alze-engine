@@ -1,9 +1,7 @@
 #pragma once
 
-#include "math/Vector3D.h"
 #include "math/Quaternion.h"
 #include "math/Matrix4x4.h"
-#include "math/MathUtils.h"
 #include <vector>
 #include <string>
 #include <cstdint>

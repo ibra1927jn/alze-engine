@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glad/gl.h>
-#include "../math/Vector3D.h"
 #include "../math/Matrix4x4.h"
 #include <vector>
 

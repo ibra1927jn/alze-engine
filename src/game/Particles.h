@@ -1,7 +1,6 @@
 #pragma once
 
 #include "math/Vector2D.h"
-#include "math/MathUtils.h"
 #include "math/Color.h"
 #include <vector>
 #include <cstdlib>

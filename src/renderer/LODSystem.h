@@ -1,6 +1,5 @@
 #pragma once
 
-#include "math/Vector3D.h"
 #include "math/Matrix4x4.h"
 #include <vector>
 #include <cstdint>
