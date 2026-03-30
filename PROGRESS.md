@@ -18,6 +18,7 @@
 - [2026-03-29] | Heartbeat maintenance pass #2 | 100% — getActiveVoices data race fix, 28 Serializer tests, CLAUDE.md bugs section updated
 - [2026-03-29] | Heartbeat maintenance pass #3 | 100% — build fix (ostream includes), header include optimization (iostream→iosfwd), Texture2D RAII fix, unused cassert removal, repo cleanup (3861 junk files removed from tracking)
 - [2026-03-29] | Heartbeat maintenance pass #4 | 100% — removed dead sortFrontToBack() method, removed unused PHONG3D shader aliases, unused include cleanup
+- [2026-03-30] | Heartbeat maintenance pass #5 | 100% — security cleanup (removed test_key.txt + _del_*.txt, updated .gitignore), fixed vibratoDept→vibratoDepth typo, removed dead assignment in EnvironmentMap lookAt
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
