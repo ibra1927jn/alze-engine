@@ -90,14 +90,14 @@ public:
     }
 
     // ── Stats ────────────────────────────────────────────────────
-    static size_t getCapacity()       { return s_capacity; }
-    static size_t getUsed()           { return s_offset; }
-    static size_t getRemaining()      { return s_capacity - s_offset; }
-    static size_t getPeakUsage()      { return s_peakUsage; }
-    static int    getAllocCount()      { return s_allocCount; }       // This frame
-    static int    getTotalAllocCount() { return s_totalAllocCount; }  // Lifetime
-    static float  getUsagePercent()   { return s_capacity > 0 ? (float)s_offset / s_capacity * 100.0f : 0; }
-    static bool   isInitialized()     { return s_buffer != nullptr; }
+    static size_t getCapacity()       { std::lock_guard<std::mutex> lock(s_mutex); return s_capacity; }
+    static size_t getUsed()           { std::lock_guard<std::mutex> lock(s_mutex); return s_offset; }
+    static size_t getRemaining()      { std::lock_guard<std::mutex> lock(s_mutex); return s_capacity - s_offset; }
+    static size_t getPeakUsage()      { std::lock_guard<std::mutex> lock(s_mutex); return s_peakUsage; }
+    static int    getAllocCount()      { std::lock_guard<std::mutex> lock(s_mutex); return s_allocCount; }
+    static int    getTotalAllocCount() { std::lock_guard<std::mutex> lock(s_mutex); return s_totalAllocCount; }
+    static float  getUsagePercent()   { std::lock_guard<std::mutex> lock(s_mutex); return s_capacity > 0 ? static_cast<float>(s_offset) / s_capacity * 100.0f : 0; }
+    static bool   isInitialized()     { std::lock_guard<std::mutex> lock(s_mutex); return s_buffer != nullptr; }
 
 private:
     static inline uint8_t* s_buffer = nullptr;
