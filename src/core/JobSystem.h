@@ -138,7 +138,7 @@ private:
     std::condition_variable m_doneCv;
     std::atomic<int> m_pendingJobs{0};
 
-    int m_numWorkers = 0;
+    std::atomic<int> m_numWorkers{0};
     std::atomic<bool> m_running{false};
 };
 
