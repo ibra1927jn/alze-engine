@@ -97,10 +97,20 @@ public:
     }
 
     // ── Stats ──────────────────────────────────────────────────
-    int getCacheSize() const { return static_cast<int>(m_cache.size()); }
-    int getCacheHits() const { return m_cacheHits; }
-    int getTotalLoads() const { return m_loads; }
+    int getCacheSize() const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return static_cast<int>(m_cache.size());
+    }
+    int getCacheHits() const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_cacheHits;
+    }
+    int getTotalLoads() const {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_loads;
+    }
     float getHitRate() const {
+        std::lock_guard<std::mutex> lock(m_mutex);
         int total = m_cacheHits + m_loads;
         return total > 0 ? static_cast<float>(m_cacheHits) / total : 0.0f;
     }
