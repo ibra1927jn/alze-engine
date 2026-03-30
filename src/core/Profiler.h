@@ -209,8 +209,8 @@ public:
             s_drawCalls.load(std::memory_order_relaxed));
         out += line;
         std::snprintf(line, sizeof(line),
-            "Memory: %u KB\n",
-            s_memoryBytes.load(std::memory_order_relaxed) / 1024);
+            "Memory: %lu KB\n",
+            (unsigned long)(s_memoryBytes.load(std::memory_order_relaxed) / 1024));
         out += line;
         for (uint32_t i = 0; i < MAX_SECTIONS; i++) {
             if (s_sectionActive[i]) {
