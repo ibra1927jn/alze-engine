@@ -1,7 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
+#include <cstdio>
 #include <string>
 #include <ctime>
 #include <mutex>
@@ -40,11 +39,12 @@ public:
     /// Activar salida a archivo (además de consola)
     static void setFile(const std::string& path) {
         std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
-        if (s_file.is_open()) s_file.close();
-        s_file.open(path, std::ios::out | std::ios::trunc);
-        s_fileEnabled = s_file.is_open();
+        if (s_file) { std::fclose(s_file); s_file = nullptr; }
+        s_file = std::fopen(path.c_str(), "w");
+        s_fileEnabled = (s_file != nullptr);
         if (s_fileEnabled) {
-            s_file << "=== Engine Log Started ===" << std::endl;
+            std::fputs("=== Engine Log Started ===\n", s_file);
+            std::fflush(s_file);
             s_filePath = path;
         }
     }
@@ -52,9 +52,10 @@ public:
     /// Cerrar archivo de log
     static void closeFile() {
         std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
-        if (s_file.is_open()) {
-            s_file << "=== Engine Log Ended ===" << std::endl;
-            s_file.close();
+        if (s_file) {
+            std::fputs("=== Engine Log Ended ===\n", s_file);
+            std::fclose(s_file);
+            s_file = nullptr;
         }
         s_fileEnabled = false;
     }
@@ -62,7 +63,7 @@ public:
     /// Forzar escritura a disco
     static void flush() {
         std::lock_guard<std::mutex> lock(s_mutex); // Proteger acceso al archivo
-        if (s_file.is_open()) s_file.flush();
+        if (s_file) std::fflush(s_file);
     }
 
     /// ¿Está el archivo de log activo?
@@ -101,23 +102,16 @@ public:
         std::lock_guard<std::mutex> lock(s_mutex);
 
         // Console output (with color)
-        std::cout << colorCode
-                  << "[" << timeBuf << "] "
-                  << "[" << levelStr << "] "
-                  << "[" << tag << "] "
-                  << msg
-                  << "\033[0m"
-                  << std::endl;
+        std::fprintf(stdout, "%s[%s] [%s] [%s] %s\033[0m\n",
+                     colorCode, timeBuf, levelStr, tag.c_str(), msg.c_str());
 
         // File output (no color codes)
-        if (s_fileEnabled && s_file.is_open()) {
-            s_file << "[" << timeBuf << "] "
-                   << "[" << levelStr << "] "
-                   << "[" << tag << "] "
-                   << msg << "\n";
+        if (s_fileEnabled && s_file) {
+            std::fprintf(s_file, "[%s] [%s] [%s] %s\n",
+                         timeBuf, levelStr, tag.c_str(), msg.c_str());
             s_lineCount++;
             // Auto-flush every 100 lines
-            if (s_lineCount % 100 == 0) s_file.flush();
+            if (s_lineCount % 100 == 0) std::fflush(s_file);
         }
     }
 
@@ -136,7 +130,7 @@ public:
 
 private:
     static inline std::atomic<Level> s_minLevel{Level::INFO};
-    static inline std::ofstream s_file;
+    static inline std::FILE* s_file = nullptr;
     static inline bool s_fileEnabled = false;
     static inline std::string s_filePath;
     static inline int s_lineCount = 0;
