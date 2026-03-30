@@ -20,6 +20,7 @@
 - [2026-03-29] | Heartbeat maintenance pass #4 | 100% — removed dead sortFrontToBack() method, removed unused PHONG3D shader aliases, unused include cleanup
 - [2026-03-30] | Heartbeat maintenance pass #5 | 100% — security cleanup (removed test_key.txt + _del_*.txt, updated .gitignore), fixed vibratoDept→vibratoDepth typo, removed dead assignment in EnvironmentMap lookAt
 - [2026-03-30] | Heartbeat maintenance pass #6 | 100% — fixed -Wshadow warnings (Physics3DSystem r, PlayState alpha), migrated std::cout/std::cerr→Logger in 6 files (ModelLoader, SSAO, EnvironmentMap, ShaderProgram, ShaderLibrary, GraphicsContext)
+- [2026-03-30] | Heartbeat maintenance pass #7 | 100% — fixed -Wshadow warnings (Color.h constructor params r/g/b/a, AABB.cpp min/max ~126 warnings eliminated), migrated remaining std::cout/std::cerr→Logger in 5 renderer files (Texture2D.h, ShaderLoader.h, ShadowMap.h, PostProcess.cpp, SSAO.cpp). All headers now use Logger consistently.
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
