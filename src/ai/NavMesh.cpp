@@ -1,6 +1,5 @@
 #include "NavMesh.h"
 #include <algorithm>
-#include <cmath>
 #include <queue>
 
 namespace engine {
