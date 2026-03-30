@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include "Logger.h"
 #include "Timer.h"
-#include <sstream>
 #include <cstdio>
 
 namespace engine {
@@ -58,9 +57,9 @@ void Engine::run() {
         return;
     }
 
-    std::ostringstream oss;
-    oss << "Game Loop iniciado (Fixed Timestep: " << FIXED_DT * 1000.0f << " ms)";
-    Logger::info("Engine", oss.str());
+    char buf[80];
+    snprintf(buf, sizeof(buf), "Game Loop iniciado (Fixed Timestep: %.2f ms)", FIXED_DT * 1000.0f);
+    Logger::info("Engine", buf);
 
     // ── Timer de alta precisión ────────────────────────────────
     Timer frameTimer;
