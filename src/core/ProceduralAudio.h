@@ -47,7 +47,7 @@ struct SynthParams {
 
     float  noiseAmount = 0.0f;
     float  vibratoRate = 5.0f;
-    float  vibratoDept = 0.0f;
+    float  vibratoDepth = 0.0f;
     float  distortion  = 0.0f;
     bool   stereoWidth = true;
 };
