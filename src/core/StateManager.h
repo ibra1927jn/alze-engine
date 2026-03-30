@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <functional>
 
 namespace engine {
 namespace core {
@@ -106,11 +105,10 @@ public:
         if (m_states.empty()) return;
         // Encontrar el primer estado no-transparente desde arriba
         int firstVisible = static_cast<int>(m_states.size()) - 1;
-        for (int i = firstVisible; i > 0; i--) {
+        for (int i = firstVisible; i >= 1; i--) {
             if (!m_states[i]->isTransparent()) break;
             firstVisible = i - 1;
         }
-        // Clampar a 0 para evitar out-of-bounds si todos son transparentes
         if (firstVisible < 0) firstVisible = 0;
         // Dibujar desde el primer visible hasta arriba
         for (int i = firstVisible; i < static_cast<int>(m_states.size()); i++) {
