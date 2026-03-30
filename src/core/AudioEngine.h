@@ -85,22 +85,47 @@ public:
         m_listenerPos2D = pos;
         SDL_UnlockAudioDevice(m_deviceId);
     }
-    math::Vector2D getListenerPosition2D() const { return m_listenerPos2D; }
+    math::Vector2D getListenerPosition2D() const {
+        SDL_LockAudioDevice(m_deviceId);
+        auto pos = m_listenerPos2D;
+        SDL_UnlockAudioDevice(m_deviceId);
+        return pos;
+    }
     void setListener3D(const math::Vector3D& position,
                        const math::Vector3D& forward = math::Vector3D(0, 0, -1),
                        const math::Vector3D& up = math::Vector3D(0, 1, 0));
-    math::Vector3D getListenerPosition3D() const { return m_listenerPos3D; }
-    void  setMaxDistance(float d) { m_maxDist = d; }
-    float getMaxDistance() const  { return m_maxDist; }
+    math::Vector3D getListenerPosition3D() const {
+        SDL_LockAudioDevice(m_deviceId);
+        auto pos = m_listenerPos3D;
+        SDL_UnlockAudioDevice(m_deviceId);
+        return pos;
+    }
+    void  setMaxDistance(float d) {
+        SDL_LockAudioDevice(m_deviceId);
+        m_maxDist = d;
+        SDL_UnlockAudioDevice(m_deviceId);
+    }
+    float getMaxDistance() const {
+        SDL_LockAudioDevice(m_deviceId);
+        float d = m_maxDist;
+        SDL_UnlockAudioDevice(m_deviceId);
+        return d;
+    }
 
     void  setGroupVolume(SoundGroup g, float vol);
     float getGroupVolume(SoundGroup g) const {
         int i = static_cast<int>(g);
-        return (i >= 0 && i < static_cast<int>(SoundGroup::COUNT)) ? m_groupVolumes[i] : 1.0f;
+        SDL_LockAudioDevice(m_deviceId);
+        float vol = (i >= 0 && i < static_cast<int>(SoundGroup::COUNT)) ? m_groupVolumes[i] : 1.0f;
+        SDL_UnlockAudioDevice(m_deviceId);
+        return vol;
     }
     float getEffectiveVolume(SoundGroup g) const {
-        return m_groupVolumes[static_cast<int>(SoundGroup::MASTER)] *
-               m_groupVolumes[static_cast<int>(g)];
+        SDL_LockAudioDevice(m_deviceId);
+        float vol = m_groupVolumes[static_cast<int>(SoundGroup::MASTER)] *
+                    m_groupVolumes[static_cast<int>(g)];
+        SDL_UnlockAudioDevice(m_deviceId);
+        return vol;
     }
 
     bool loadSound(const std::string& id, const std::string& path);
@@ -122,7 +147,12 @@ public:
     void resumeMusic();
     void stopMusic();
     void setMusicVolume(int vol0to128) { setGroupVolume(SoundGroup::MUSIC, vol0to128 / 128.0f); }
-    const std::string& getCurrentMusic() const { return m_currentMusic; }
+    std::string getCurrentMusic() const {
+        SDL_LockAudioDevice(m_deviceId);
+        std::string music = m_currentMusic;
+        SDL_UnlockAudioDevice(m_deviceId);
+        return music;
+    }
 
     void setVoicePitch(int voiceId, float pitch);
     void setMaxInstances(int max) { m_maxInstances = max; }
