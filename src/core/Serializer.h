@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <fstream>
 #include <vector>
 #include <cstdlib>
 #include <cstdio>
@@ -106,10 +105,11 @@ public:
     const std::string& toString() const { return m_out; }
 
     bool saveToFile(const std::string& path) {
-        std::ofstream file(path);
-        if (!file.is_open()) return false;
-        file << m_out;
-        return file.good();
+        std::FILE* file = std::fopen(path.c_str(), "w");
+        if (!file) return false;
+        size_t written = std::fwrite(m_out.data(), 1, m_out.size(), file);
+        std::fclose(file);
+        return written == m_out.size();
     }
 
 private:
@@ -134,12 +134,14 @@ private:
 class JsonReader {
 public:
     bool loadFromFile(const std::string& path) {
-        std::ifstream file(path, std::ios::ate);
-        if (!file.is_open()) return false;
-        auto sz = file.tellg();
-        file.seekg(0);
+        std::FILE* file = std::fopen(path.c_str(), "r");
+        if (!file) return false;
+        std::fseek(file, 0, SEEK_END);
+        long sz = std::ftell(file);
+        std::fseek(file, 0, SEEK_SET);
         m_data.resize(static_cast<size_t>(sz));
-        file.read(&m_data[0], sz);
+        std::fread(&m_data[0], 1, static_cast<size_t>(sz), file);
+        std::fclose(file);
         m_pos = 0;
         return true;
     }

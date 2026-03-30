@@ -6,7 +6,7 @@
 // pueda usar los shaders embebidos como respaldo.
 
 #include <string>
-#include <fstream>
+#include <cstdio>
 #include "core/Logger.h"
 
 namespace engine {
@@ -17,15 +17,17 @@ public:
     /// Carga un archivo GLSL y retorna su contenido como string.
     /// Retorna string vacio si el archivo no se puede leer.
     static std::string loadFromFile(const char* filePath) {
-        std::ifstream file(filePath);
-        if (!file.is_open()) {
+        std::FILE* file = std::fopen(filePath, "r");
+        if (!file) {
             core::Logger::warn("ShaderLoader", std::string("No se pudo abrir: ") + filePath);
             return "";
         }
-        file.seekg(0, std::ios::end);
-        std::string content(static_cast<size_t>(file.tellg()), '\0');
-        file.seekg(0, std::ios::beg);
-        file.read(&content[0], static_cast<std::streamsize>(content.size()));
+        std::fseek(file, 0, SEEK_END);
+        long size = std::ftell(file);
+        std::fseek(file, 0, SEEK_SET);
+        std::string content(static_cast<size_t>(size), '\0');
+        std::fread(&content[0], 1, static_cast<size_t>(size), file);
+        std::fclose(file);
         return content;
     }
 
