@@ -2234,10 +2234,6 @@ void testSolidMechanics() {
     auto& constraint = sys.getBody(bId).m_constraints[0];
     auto* dConstraint = static_cast<XPBDDistanceConstraint*>(constraint.get());
     
-    std::cout << "    [Debug] Lambda: " << dConstraint->lambda << std::endl;
-    std::cout << "    [Debug] Plastic Strain: " << constraint->plasticStrain << std::endl;
-    std::cout << "    [Debug] Rest Distance: " << dConstraint->restDistance << " (Original: 1.0)" << std::endl;
-    
     check(constraint->plasticStrain > 0.0f, "Plastic strain accumulated when Stress > Yield");
     check(dConstraint->restDistance > 1.0f, "Permanent deformation: rest distance permanently increased");
     check(!constraint->broken, "Material yielded but did not fracture");
