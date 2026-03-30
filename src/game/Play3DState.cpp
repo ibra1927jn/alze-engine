@@ -168,6 +168,7 @@ void Play3DState::onEnter() {
                 case 2: rs.renderMode = 1; break; // Toon shader
                 case 3: rs.renderMode = 2; break; // Neon shader
                 case 4: rs.renderMode = 0; break; // PBR (mono PostProcess)
+                default: break;
             }
             std::string title = "ALZE Engine | Style: " + std::string(names[m_visualStyle]);
             SDL_SetWindowTitle(m_engine.getWindow().getSDLWindow(), title.c_str());
