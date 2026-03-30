@@ -42,9 +42,9 @@ namespace engine {
 namespace game {
 
 struct Collision3DEvent {
-    ecs::Entity entityA, entityB;
+    ecs::Entity entityA{}, entityB{};
     math::Vector3D contactPoint, normal;
-    float impulse;
+    float impulse = 0.0f;
 };
 
 class Play3DState : public core::IGameState {

@@ -64,13 +64,13 @@ private:
     void drawLine(math::Vector2D a, math::Vector2D b, math::Color c, int16_t z = 0);
 
     struct RenderEntry {
-        Entity entity;
+        Entity entity{};
         math::Vector2D pos;
         math::Vector2D size;
         math::Color color;
-        int16_t zOrder;
-        bool isPlayer;
-        bool isPlatform;
+        int16_t zOrder = 0;
+        bool isPlayer  = false;
+        bool isPlatform = false;
     };
 
     ECSCoordinator&            m_ecs;

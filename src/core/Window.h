@@ -47,8 +47,8 @@ public:
 private:
     SDL_Window*   m_window   = nullptr;
     bool          m_isOpen   = false;
-    int           m_width;
-    int           m_height;
+    int           m_width  = 0;
+    int           m_height = 0;
     ResizeCallback m_resizeCallback;
 };
 

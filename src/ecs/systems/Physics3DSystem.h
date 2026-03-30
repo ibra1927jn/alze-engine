@@ -59,10 +59,10 @@ public:
 private:
     // ── Contact for iterative solver ──────────────────────────
     struct SolverContact {
-        uint32_t idxA, idxB;          // Indices into m_entities
+        uint32_t idxA = 0, idxB = 0;  // Indices into m_entities
         math::Vector3D normal;
         math::Vector3D contactPoint;
-        float penetration;
+        float penetration = 0.0f;
 
         // Solver state
         math::Vector3D rA, rB;        // Contact arms
@@ -79,10 +79,10 @@ private:
 
     // ── Cache struct for physics entities ──────────────────────
     struct PhysEntity {
-        Entity e;
-        Transform3DComponent* t;
-        Physics3DComponent* p;
-        Collider3DComponent* c;
+        Entity e{};
+        Transform3DComponent* t = nullptr;
+        Physics3DComponent* p = nullptr;
+        Collider3DComponent* c = nullptr;
     };
 
     // ── Private methods (implemented in Physics3DSystem.cpp) ───

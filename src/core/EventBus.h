@@ -48,35 +48,35 @@ EventTypeId getEventTypeId() {
 
 /// Se emite cuando dos entidades colisionan
 struct CollisionEvent {
-    uint32_t entityA;
-    uint32_t entityB;
-    float    impulse;    // Fuerza del impacto
-    float    normalX;
-    float    normalY;
+    uint32_t entityA = 0;
+    uint32_t entityB = 0;
+    float    impulse  = 0.0f;    // Fuerza del impacto
+    float    normalX  = 0.0f;
+    float    normalY  = 0.0f;
 };
 
 /// Se emite cuando una entidad entra en un trigger/sensor
 struct TriggerEvent {
-    uint32_t entityA;    // Una de las entidades
-    uint32_t entityB;    // La otra entidad
+    uint32_t entityA = 0;    // Una de las entidades
+    uint32_t entityB = 0;    // La otra entidad
 };
 
 /// Se emite cuando una entidad es destruida
 struct EntityDestroyedEvent {
-    uint32_t entity;
+    uint32_t entity = 0;
 };
 
 /// Se emite cuando cambia el estado del jugador
 struct PlayerStateEvent {
-    bool onGround;
-    bool jumped;
-    float speed;
+    bool onGround = false;
+    bool jumped   = false;
+    float speed   = 0.0f;
 };
 
 /// Evento genérico con string (para debugging)
 struct DebugEvent {
     std::string message;
-    float value;
+    float value = 0.0f;
 };
 
 // ── EventBus ───────────────────────────────────────────────────
