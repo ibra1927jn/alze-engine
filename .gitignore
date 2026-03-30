@@ -22,3 +22,5 @@ build*.txt
 .env.*
 *.pem
 *.key
+test_key*
+_del_*
