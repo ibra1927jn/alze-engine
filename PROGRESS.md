@@ -31,6 +31,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #14 | 100% — removed debug prints from test_physics3d.cpp, removed unused includes (<functional> from 6 headers, <numeric> from ProceduralAudio.h, <thread> from ECSCoordinator.h)
 - [2026-03-30] | Heartbeat maintenance pass #15 | 100% — removed 14 unused includes from 13 files (moved <algorithm>/<cmath> from NavMesh.h→.cpp, removed unused <limits>/<complex>/<type_traits>/<string>/<algorithm>/<cmath> from Collider3D/QuantumSystem/ObjectPool/BenchmarkScene3D/ModelLoader/etc)
 - [2026-03-30] | Heartbeat maintenance pass #16 | 100% — fixed double m_gcTimer increment bug in Play3DState::update() (GC fired at 2.5s instead of 5s), replaced ostringstream with snprintf in Engine::run() and removed <sstream> include
+- [2026-03-30] | Heartbeat maintenance pass #17 | 100% — completed math ostream→cstdio migration (Color, Vector2D/3D, Matrix3x3/4x4, Quaternion, AABB: operator<< → toString() with snprintf, removed all <iosfwd>/<ostream>), removed unused includes (SpatialHash.h from Raycast, <cstdlib> from ScreenEffects), removed dead accessors (FrameLogger::getPath, InputRecorder::getPlaybackPath)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
