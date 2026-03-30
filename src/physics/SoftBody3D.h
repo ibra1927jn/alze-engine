@@ -137,7 +137,7 @@ struct XPBDDistanceConstraint : public XPBDConstraint {
         
         // 3. Fatigue (Cyclic damage approximation per step)
         // Palmgren-Miner rule: D = sum(n_i / N_i). Here we assume each step applies a micro-cycle
-        if (stress > fatigueLimit) {
+        if (stress > fatigueLimit && stress > 0.0f) {
             // N = (ultimate / stress)^m approx curve
             float N_cycles = std::pow(ultimateStrength / stress, fatigueSNExponent);
             if (N_cycles > 0.0f) {

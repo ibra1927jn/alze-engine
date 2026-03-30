@@ -71,6 +71,7 @@ struct PhysicsMaterial {
     /// Returns effective μ based on sliding velocity magnitude
     float stribeckFriction(float slidingSpeed) const {
         if (slidingSpeed < 1e-6f) return staticFriction;
+        if (stribeckVelocity < 1e-6f) return kineticFriction;
         float t = slidingSpeed / stribeckVelocity;
         if (t >= 1.0f) return kineticFriction;
         // Smooth interpolation: static → kinetic
