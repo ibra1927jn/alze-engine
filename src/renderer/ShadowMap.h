@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
-#include <iostream>
+#include "core/Logger.h"
 
 namespace engine {
 namespace renderer {
@@ -63,7 +63,7 @@ public:
             glReadBuffer(GL_NONE);
 
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-                std::cerr << "[ShadowMap] Cascade " << c << " FBO incomplete!" << std::endl;
+                core::Logger::error("ShadowMap", "Cascade " + std::to_string(c) + " FBO incomplete!");
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 return false;
             }

@@ -8,7 +8,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <iostream>
+#include "core/Logger.h"
 
 namespace engine {
 namespace renderer {
@@ -20,7 +20,7 @@ public:
     static std::string loadFromFile(const char* filePath) {
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            std::cerr << "[ShaderLoader] No se pudo abrir: " << filePath << std::endl;
+            core::Logger::warn("ShaderLoader", std::string("No se pudo abrir: ") + filePath);
             return "";
         }
         std::stringstream buffer;
@@ -41,11 +41,11 @@ public:
         outFrag = loadFromFile(fragPath.c_str());
 
         if (outVert.empty() || outFrag.empty()) {
-            std::cerr << "[ShaderLoader] Fallo al cargar par de shaders: " << name << std::endl;
+            core::Logger::error("ShaderLoader", std::string("Fallo al cargar par de shaders: ") + name);
             return false;
         }
 
-        std::cout << "[ShaderLoader] Cargados: " << vertPath << " + " << fragPath << std::endl;
+        core::Logger::info("ShaderLoader", "Cargados: " + vertPath + " + " + fragPath);
         return true;
     }
 };

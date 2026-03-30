@@ -1,10 +1,10 @@
 #pragma once
 
 #include <glad/gl.h>
-#include <iostream>
 #include <string>
 #include <vector>
 #include "ImageDecoder.h"
+#include "core/Logger.h"
 
 namespace engine {
 namespace renderer {
@@ -99,8 +99,7 @@ public:
         int w, h, channels;
         unsigned char* data = stbi_load(path.c_str(), &w, &h, &channels, 0);
         if (!data) {
-            std::cerr << "[Texture2D] Error cargando: " << path
-                      << " (" << stbi_failure_reason() << ")" << std::endl;
+            core::Logger::error("Texture2D", "Error cargando: " + path + " (" + stbi_failure_reason() + ")");
             return false;
         }
 
@@ -108,9 +107,7 @@ public:
         stbi_image_free(data);
 
         if (ok)
-            std::cout << "[Texture2D] Cargado: " << path
-                      << " (" << w << "x" << h << " ch=" << channels
-                      << (sRGB ? " sRGB" : " linear") << ")" << std::endl;
+            core::Logger::info("Texture2D", "Cargado: " + path + " (" + std::to_string(w) + "x" + std::to_string(h) + " ch=" + std::to_string(channels) + (sRGB ? " sRGB" : " linear") + ")");
         return ok;
     }
 

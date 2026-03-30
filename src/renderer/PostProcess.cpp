@@ -1,7 +1,7 @@
 #include "PostProcess.h"
 #include <glad/gl.h>
-#include <iostream>
 #include <cstdint>
+#include "core/Logger.h"
 
 namespace engine {
 namespace renderer {
@@ -127,7 +127,7 @@ bool PostProcess::createFBOs(int w, int h) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_hdrDepthTex, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "[PostProcess] HDR FBO failed!" << std::endl;
+        core::Logger::error("PostProcess", "HDR FBO failed!");
         return false;
     }
 
