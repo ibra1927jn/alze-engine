@@ -4,8 +4,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <sstream>
-#include <iomanip>
+#include <cstdio>
 #include <array>
 #include <cstdint>
 #include <mutex>
@@ -196,22 +195,34 @@ public:
     /// Texto completo del profiler
     static std::string generateReport() {
         std::lock_guard<std::recursive_mutex> lock(s_mutex); // Proteger lectura de datos
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(2);
-        oss << "=== PROFILER ===\n";
-        oss << "Frame: avg=" << s_frameMetric.avgMs << "ms"
-            << " max=" << s_frameMetric.maxMs << "ms"
-            << " frames=" << s_frameMetric.calls << "\n";
-        oss << "Draw calls: " << s_drawCalls.load(std::memory_order_relaxed) << "\n";
-        oss << "Memory: " << (s_memoryBytes.load(std::memory_order_relaxed) / 1024) << " KB\n";
+        char line[256];
+        std::string out;
+        out.reserve(512);
+
+        out += "=== PROFILER ===\n";
+        std::snprintf(line, sizeof(line),
+            "Frame: avg=%.2fms max=%.2fms frames=%u\n",
+            s_frameMetric.avgMs, s_frameMetric.maxMs, s_frameMetric.calls);
+        out += line;
+        std::snprintf(line, sizeof(line),
+            "Draw calls: %u\n",
+            s_drawCalls.load(std::memory_order_relaxed));
+        out += line;
+        std::snprintf(line, sizeof(line),
+            "Memory: %u KB\n",
+            s_memoryBytes.load(std::memory_order_relaxed) / 1024);
+        out += line;
         for (uint32_t i = 0; i < MAX_SECTIONS; i++) {
             if (s_sectionActive[i]) {
-                oss << "  " << getSectionName(i) << ": "
-                    << s_sectionMetrics[i].avgMs << "ms"
-                    << " (max " << s_sectionMetrics[i].maxMs << "ms)\n";
+                std::snprintf(line, sizeof(line),
+                    "  %s: %.2fms (max %.2fms)\n",
+                    getSectionName(i).c_str(),
+                    s_sectionMetrics[i].avgMs,
+                    s_sectionMetrics[i].maxMs);
+                out += line;
             }
         }
-        return oss.str();
+        return out;
     }
 
 private:
