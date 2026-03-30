@@ -1,6 +1,5 @@
 // EnvironmentMap.cpp — Implementaciones de EnvironmentMap (IBL pipeline)
 #include "EnvironmentMap.h"
-#include "ImageDecoder.h"
 #include "core/Logger.h"
 #include <glad/gl.h>
 #include <cmath>

@@ -5,7 +5,7 @@
 #include "AABB.h"
 #include "MathUtils.h"
 #include <iostream>
-#include <fstream>
+#include <cstdio>
 #include <chrono>
 
 using namespace engine::core;
