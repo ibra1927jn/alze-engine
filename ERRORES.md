@@ -67,3 +67,5 @@
 - [2026-03-29] | renderer/ImageDecoder.cpp:2 | #pragma once en archivo .cpp — warning "pragma once in main file" | **FIXED** Removido
 - [2026-03-29] | tests/test_memory.cpp | Depende de LinearAllocator.h, PoolAllocator.h, SimdConfig.h que no existen — no compilable | **FIXED** Eliminado (dead code, nunca en CMakeLists)
 - [2026-03-29] | CMakeLists.txt:28 | -fno-exceptions -fno-rtti aplicados globalmente incluyendo C files (glad/gl.c) — warning en compilacion | **FIXED** Scoped a CXX con generator expressions
+- [2026-03-30] | core/Logger.h:69-72,125 | isFileEnabled(), getFilePath(), getLineCount() leen estado compartido sin mutex — data race | **FIXED** Agregado lock_guard; getFilePath() retorna por valor
+- [2026-03-30] | core/ResourceManager.h:100-106 | getCacheSize(), getCacheHits(), getTotalLoads(), getHitRate() leen estado compartido sin mutex — data race | **FIXED** Agregado lock_guard en los 4 métodos
