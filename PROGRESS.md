@@ -28,6 +28,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #12 | 100% — removed dead HuffTable struct from ImageDecoder (broken decode() always returned -1, replaced by CanonHuff), removed unused pushDir parameter from CollisionSystem::applyWarmImpulse
 - [2026-03-30] | Heartbeat maintenance pass #13 | 100% — fixed AudioEngine data races (setGroupVolume/stopMusic/playMusic/crossfadeMusic/update missing SDL_LockAudioDevice), removed unused includes (AudioEngine.h: cmath+cstring+mutex, FrameLogger.h: sstream, SharedWorldState.h: cstring)
 - [2026-03-30] | Heartbeat maintenance pass #14 | 100% — removed debug prints from test_physics3d.cpp, removed unused includes (<functional> from 6 headers, <numeric> from ProceduralAudio.h, <thread> from ECSCoordinator.h)
+- [2026-03-30] | Heartbeat maintenance pass #15 | 100% — removed 14 unused includes from 13 files (moved <algorithm>/<cmath> from NavMesh.h→.cpp, removed unused <limits>/<complex>/<type_traits>/<string>/<algorithm>/<cmath> from Collider3D/QuantumSystem/ObjectPool/BenchmarkScene3D/ModelLoader/etc)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
