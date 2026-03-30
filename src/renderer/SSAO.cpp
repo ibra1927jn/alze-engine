@@ -109,13 +109,13 @@ void SSAO::generate(GLuint depthTexture, const math::Matrix4x4& projection) {
 
 void SSAO::generateSamples() {
     for (int i = 0; i < 32; i++) {
-        float x = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
-        float y = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
-        float z = (float)rand() / RAND_MAX;
+        float x = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f;
+        float y = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f;
+        float z = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         float len = std::sqrt(x*x + y*y + z*z);
         if (len < 0.001f) len = 1.0f;
         x /= len; y /= len; z /= len;
-        float scale = (float)i / 32.0f;
+        float scale = static_cast<float>(i) / 32.0f;
         scale = 0.1f + scale * scale * 0.9f;
         m_samples[i*3+0] = x * scale;
         m_samples[i*3+1] = y * scale;
@@ -126,8 +126,8 @@ void SSAO::generateSamples() {
 void SSAO::generateNoiseTexture() {
     float noise[4 * 4 * 3];
     for (int i = 0; i < 16; i++) {
-        noise[i*3+0] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
-        noise[i*3+1] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+        noise[i*3+0] = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f;
+        noise[i*3+1] = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f;
         noise[i*3+2] = 0.0f;
     }
     glGenTextures(1, &m_noiseTex);

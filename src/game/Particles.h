@@ -103,7 +103,7 @@ public:
 
 private:
     static float randf(float lo, float hi) {
-        return lo + static_cast<float>(rand()) / RAND_MAX * (hi - lo);
+        return lo + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (hi - lo);
     }
     static math::Color randColor() {
         const math::Color p[] = {

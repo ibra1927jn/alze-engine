@@ -181,10 +181,10 @@ namespace game {
 
         srand(42); // seed fija para reproducibilidad
         for (int i = 0; i < SPHERE_COUNT; i++) {
-            float x = (static_cast<float>(rand()) / RAND_MAX) * 50.0f - 25.0f;
-            float z = (static_cast<float>(rand()) / RAND_MAX) * 50.0f - 25.0f;
-            float r = 0.3f + (static_cast<float>(rand()) / RAND_MAX) * 0.8f;
-            float y = SPAWN_HEIGHT + (static_cast<float>(rand()) / RAND_MAX) * 20.0f;
+            float x = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 50.0f - 25.0f;
+            float z = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 50.0f - 25.0f;
+            float r = 0.3f + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 0.8f;
+            float y = SPAWN_HEIGHT + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 20.0f;
 
             auto e  = m_ecs.createEntity();
             auto& t = m_ecs.emplaceComponent<ecs::Transform3DComponent>(e, math::Vector3D(x, y, z));
@@ -193,17 +193,17 @@ namespace game {
 
             m_ecs.addComponent<ecs::MeshComponent>(e, {&m_sphereHigh, mats[i % MAT_COUNT]});
             auto& p = m_ecs.emplaceComponent<ecs::Physics3DComponent>(e, 1.5f + r);
-            p.restitution = 0.45f + (static_cast<float>(rand()) / RAND_MAX) * 0.3f;
+            p.restitution = 0.45f + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 0.3f;
             p.friction    = 0.2f;
             m_ecs.addComponent<ecs::Collider3DComponent>(e, ecs::Collider3DComponent::sphere(r));
             m_benchEntities.push_back(e);
         }
 
         for (int i = 0; i < CUBE_COUNT; i++) {
-            float x  = (static_cast<float>(rand()) / RAND_MAX) * 48.0f - 24.0f;
-            float z  = (static_cast<float>(rand()) / RAND_MAX) * 48.0f - 24.0f;
-            float sc = 0.4f + (static_cast<float>(rand()) / RAND_MAX) * 1.0f;
-            float y  = SPAWN_HEIGHT * 0.5f + (static_cast<float>(rand()) / RAND_MAX) * 10.0f;
+            float x  = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 48.0f - 24.0f;
+            float z  = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 48.0f - 24.0f;
+            float sc = 0.4f + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 1.0f;
+            float y  = SPAWN_HEIGHT * 0.5f + (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 10.0f;
 
             auto e  = m_ecs.createEntity();
             auto& t = m_ecs.emplaceComponent<ecs::Transform3DComponent>(e, math::Vector3D(x, y, z));

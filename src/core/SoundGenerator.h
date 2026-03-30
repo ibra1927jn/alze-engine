@@ -53,7 +53,7 @@ public:
             float envelope = (1.0f - progress) * (1.0f - progress);  // Cuadrático
             float sample = std::sin(2.0f * 3.14159f * 80.0f * t) * envelope;
             // Añadir un poco de ruido para textura
-            float noise = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * 0.3f;
+            float noise = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f) * 0.3f;
             buffer[i] = static_cast<int16_t>((sample + noise * envelope) * 10000);
         }
 
@@ -72,7 +72,7 @@ public:
             float progress = static_cast<float>(i) / samples;
             float envelope = (1.0f - progress);
             float tone = std::sin(2.0f * 3.14159f * freq * t) * 0.6f;
-            float noise = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * 0.4f;
+            float noise = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f) * 0.4f;
             buffer[i] = static_cast<int16_t>((tone + noise) * envelope * 6000 * intensity);
         }
 

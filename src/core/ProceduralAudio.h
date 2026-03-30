@@ -25,7 +25,7 @@ namespace Wave {
         return (t < 0.5f) ? (4.0f * t - 1.0f) : (3.0f - 4.0f * t);
     }
     inline float noise() {
-        return (static_cast<float>(rand()) / RAND_MAX) * 2.0f - 1.0f;
+        return (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f;
     }
 }
 

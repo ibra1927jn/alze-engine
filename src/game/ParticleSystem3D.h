@@ -185,7 +185,7 @@ private:
     }
 
     static float randf(float lo, float hi) {
-        return lo + static_cast<float>(rand()) / RAND_MAX * (hi - lo);
+        return lo + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (hi - lo);
     }
     static float clampf(float v, float lo, float hi) {
         return v < lo ? lo : (v > hi ? hi : v);

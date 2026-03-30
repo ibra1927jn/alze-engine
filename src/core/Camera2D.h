@@ -74,8 +74,8 @@ public:
         if (m_shakeTimer > 0) {
             m_shakeTimer -= dt;
             float factor = m_shakeTimer / m_shakeDuration;
-            float rx = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 2.0f;
-            float ry = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 2.0f;
+            float rx = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) - 0.5f) * 2.0f;
+            float ry = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) - 0.5f) * 2.0f;
             m_shakeOffset = math::Vector2D(rx, ry) * m_shakeIntensity * factor;
         }
     }
