@@ -25,12 +25,12 @@ SIMD: SSE2 en Vector2D/3D, Matrix3x3/4x4
 - Window.h/cpp — SDL2, OpenGL 3.3 core profile, resize, gamepad
 - InputManager.h/cpp — Keyboard, mouse, gamepad con deadzone
 - StateManager.h — Push/pop/change con transparencia (bug bounds check)
-- EventBus.h — Pub/sub type-erased (sin unsubscribe — dangling risk)
-- JobSystem.h — Thread pool con parallel_for (m_running no-atomico — UB)
-- AudioEngine.h/cpp — 32 voces, positional 3D, crossfade (data races)
+- EventBus.h — Pub/sub type-erased con unsubscribe por ID
+- JobSystem.h — Thread pool con parallel_for (m_running atomico)
+- AudioEngine.h/cpp — 32 voces, positional 3D, crossfade, SDL_Lock protegido
 - ProceduralAudio.h/cpp — Synth ADSR, waveforms, LPF (bug vibrato param)
-- FrameAllocator.h — Linear allocator per-frame (no thread-safe)
-- Profiler.h — High-res timer, ring buffers (no thread-safe)
+- FrameAllocator.h — Linear allocator per-frame (mutex protegido)
+- Profiler.h — High-res timer, ring buffers (recursive_mutex protegido)
 - Logger.h — Dual output consola+archivo (no thread-safe)
 - ResourceManager.h — Weak-ptr cache, async load (partial thread-safe)
 - UISystem.h — Immediate mode UI
