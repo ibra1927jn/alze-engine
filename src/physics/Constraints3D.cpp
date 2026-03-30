@@ -3,7 +3,6 @@
 #include "Constraints3D.h"
 #include <cmath>
 #include <algorithm>
-#include <memory>
 
 namespace engine {
 namespace physics {

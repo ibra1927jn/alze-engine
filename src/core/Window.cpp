@@ -1,6 +1,5 @@
 #include "Window.h"
 #include "Logger.h"
-#include <cstdio>
 
 namespace engine {
 namespace core {

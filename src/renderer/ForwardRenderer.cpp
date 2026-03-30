@@ -3,7 +3,6 @@
 #include "ShaderLibrary.h"
 #include <cstdio>
 #include <algorithm>
-#include <cmath>
 
 namespace engine {
 namespace renderer {

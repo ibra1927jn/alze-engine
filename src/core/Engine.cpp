@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include "Logger.h"
 #include "Timer.h"
-#include <cstdio>
 
 namespace engine {
 namespace core {
