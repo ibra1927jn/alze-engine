@@ -4,7 +4,6 @@
 #include "Texture2D.h"
 #include "math/Vector2D.h"
 #include <string>
-#include <cstring>
 
 namespace engine {
 namespace renderer {

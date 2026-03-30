@@ -3,7 +3,6 @@
 #include "EntityManager.h"
 #include <vector>
 #include <cassert>
-#include <cstring>
 
 namespace engine {
 namespace ecs {

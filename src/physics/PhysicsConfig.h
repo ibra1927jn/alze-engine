@@ -2,7 +2,6 @@
 
 #include "math/Vector3D.h"
 #include <cmath>
-#include <string>
 
 namespace engine {
 namespace physics {

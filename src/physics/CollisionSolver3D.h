@@ -5,7 +5,6 @@
 #include "math/Vector3D.h"
 #include <vector>
 #include <cmath>
-#include <algorithm>
 #include <cstdint>
 
 namespace engine {

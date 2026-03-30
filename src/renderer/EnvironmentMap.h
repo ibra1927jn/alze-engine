@@ -6,7 +6,6 @@
 #include "math/Vector3D.h"
 #include "Skybox.h"
 #include <cmath>
-#include <cstring>
 #include <vector>
 #include "ImageDecoder.h"
 
