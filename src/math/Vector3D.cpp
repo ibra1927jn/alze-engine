@@ -1,5 +1,6 @@
 #include "Vector3D.h"
 #include "Vector2D.h"
+#include <cstdio>
 
 namespace engine {
 namespace math {
