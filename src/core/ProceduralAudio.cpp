@@ -94,7 +94,6 @@ namespace ProceduralAudio {
         p.noiseAmount= 0.08f;
         p.waveform   = Wave::sine;
         p.envelope   = {0.005f, 0.05f, 0.4f, 0.12f};
-        LowPassFilter lpf; lpf.cutoff = 5000.0f;
         return synthesize(p);
     }
 
