@@ -205,11 +205,11 @@ public:
 
     bool readBool() {
         skipWhitespace();
-        if (m_data.substr(m_pos, 4) == "true") {
+        if (m_pos + 4 <= m_data.size() && m_data.compare(m_pos, 4, "true") == 0) {
             m_pos += 4;
             return true;
         }
-        if (m_data.substr(m_pos, 5) == "false") {
+        if (m_pos + 5 <= m_data.size() && m_data.compare(m_pos, 5, "false") == 0) {
             m_pos += 5;
             return false;
         }
