@@ -26,6 +26,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #10 | 100% — removed unused includes (Logger.h: sstream+vector, UISystem.h: functional+vector), fixed data races in Logger accessors (isFileEnabled/getFilePath/getLineCount) and ResourceManager stat methods (getCacheSize/getCacheHits/getTotalLoads/getHitRate)
 - [2026-03-30] | Heartbeat maintenance pass #11 | 100% — fixed dangling references in test_subsystems (auto& → auto for return-by-value Profiler methods), eliminated AudioEngine spawnVoice race window (double-lock → single lock), removed unused SDL.h includes from main.cpp and benchmark.cpp
 - [2026-03-30] | Heartbeat maintenance pass #12 | 100% — removed dead HuffTable struct from ImageDecoder (broken decode() always returned -1, replaced by CanonHuff), removed unused pushDir parameter from CollisionSystem::applyWarmImpulse
+- [2026-03-30] | Heartbeat maintenance pass #13 | 100% — fixed AudioEngine data races (setGroupVolume/stopMusic/playMusic/crossfadeMusic/update missing SDL_LockAudioDevice), removed unused includes (AudioEngine.h: cmath+cstring+mutex, FrameLogger.h: sstream, SharedWorldState.h: cstring)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable

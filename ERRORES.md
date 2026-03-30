@@ -71,3 +71,4 @@
 - [2026-03-30] | core/ResourceManager.h:100-106 | getCacheSize(), getCacheHits(), getTotalLoads(), getHitRate() leen estado compartido sin mutex — data race | **FIXED** Agregado lock_guard en los 4 métodos
 - [2026-03-30] | tests/test_subsystems.cpp:114,119,132 | auto& binding to Profiler::getMetric() return-by-value — dangling reference UB | **FIXED** Cambiado a auto (copy)
 - [2026-03-30] | core/AudioEngine.cpp:335-352 | spawnVoice() unlock/re-lock entre voice activation e instanceCount++ — race window | **FIXED** Movido instanceCount update dentro del lock existente
+- [2026-03-30] | core/AudioEngine.cpp:176-180,261-287,304-328 | setGroupVolume/playMusic/crossfadeMusic/stopMusic/update acceden a estado compartido (m_groupVolumes, m_musicVoice, m_currentMusic, fade vars) sin SDL_LockAudioDevice — data race con getCurrentMusic/getGroupVolume | **FIXED** Agregado SDL_LockAudioDevice en los 5 métodos
