@@ -2,7 +2,6 @@
 
 #include <glad/gl.h>
 #include "ShaderProgram.h"
-#include <cstdlib>
 
 namespace engine {
 namespace renderer {

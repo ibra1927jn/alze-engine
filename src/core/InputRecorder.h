@@ -148,7 +148,6 @@ public:
     static int getPlaybackTotal() { return static_cast<int>(s_playbackFrames.size()); }
     static int getPlaybackIndex() { return s_playbackIndex; }
     static const std::string& getRecordPath() { return s_recPath; }
-    static const std::string& getPlaybackPath() { return s_playPath; }
 
 private:
     // Recording

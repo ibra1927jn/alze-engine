@@ -89,7 +89,6 @@ public:
 
     static bool isActive() { return s_active; }
     static int getFrameCount() { return s_frameCount; }
-    static const std::string& getPath() { return s_path; }
 
 private:
     static inline std::FILE* s_file = nullptr;

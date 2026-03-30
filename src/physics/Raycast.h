@@ -3,7 +3,6 @@
 #include "math/Vector2D.h"
 #include "math/AABB.h"
 #include "math/MathUtils.h"
-#include "SpatialHash.h"
 #include "ecs/ECSCoordinator.h"
 #include "ecs/Components.h"
 #include <vector>
