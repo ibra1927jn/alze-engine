@@ -130,7 +130,7 @@ public:
         bool hover = isInside(sliderX, y, sliderW, h);
         if (hover && m_mousePressed) m_activeId = id;
 
-        if (m_activeId == id && m_mouseDown) {
+        if (m_activeId == id && m_mouseDown && sliderW > 0.0f) {
             float t = math::MathUtils::clamp(
                 (m_mouseX - sliderX) / sliderW, 0.0f, 1.0f);
             *value = min + t * (max - min);
@@ -144,7 +144,8 @@ public:
         shapes.roundedRectFill(sliderX + sliderW * 0.5f, y + 10.0f, sliderW, 8.0f, 3.0f, toShapeCol(theme.sliderBg));
 
         // Dibujar relleno
-        float t = math::MathUtils::clamp((*value - min) / (max - min), 0.0f, 1.0f);
+        float range = max - min;
+        float t = (std::fabs(range) > 1e-8f) ? math::MathUtils::clamp((*value - min) / range, 0.0f, 1.0f) : 0.0f;
         float fillW = t * sliderW;
         if (fillW > 1.0f) {
             shapes.roundedRectFill(sliderX + fillW * 0.5f, y + 10.0f, fillW, 8.0f, 3.0f, toShapeCol(theme.sliderFill));
@@ -203,7 +204,7 @@ public:
         drawText(text, label, x, y + 2.0f, theme.labelColor);
 
         shapes.roundedRectFill(barX + barW * 0.5f, y + h * 0.5f, barW, h, 3.0f, toShapeCol(theme.progressBg));
-        float t = math::MathUtils::clamp(value / max, 0.0f, 1.0f);
+        float t = (std::fabs(max) > 1e-8f) ? math::MathUtils::clamp(value / max, 0.0f, 1.0f) : 0.0f;
         float fillW = t * barW;
         if (fillW > 1.0f) {
             shapes.roundedRectFill(barX + fillW * 0.5f, y + h * 0.5f, fillW, h, 3.0f, toShapeCol(theme.progressFill));

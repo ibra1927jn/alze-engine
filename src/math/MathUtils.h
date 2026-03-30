@@ -43,7 +43,9 @@ namespace MathUtils {
 
     /// Mapea un valor de un rango a otro
     inline float remap(float value, float fromMin, float fromMax, float toMin, float toMax) {
-        float t = (value - fromMin) / (fromMax - fromMin);
+        float range = fromMax - fromMin;
+        if (std::fabs(range) < EPSILON) return toMin;
+        float t = (value - fromMin) / range;
         return lerp(toMin, toMax, t);
     }
 

@@ -8,12 +8,12 @@ float ADSR::evaluate(float t, float totalDuration) const {
     float releaseStart = totalDuration - release;
 
     if (t < attack)
-        return t / attack;
+        return (attack > 1e-8f) ? t / attack : 1.0f;
     if (t < sustainStart)
-        return 1.0f - (1.0f - sustain) * ((t - attack) / decay);
+        return (decay > 1e-8f) ? 1.0f - (1.0f - sustain) * ((t - attack) / decay) : sustain;
     if (t < releaseStart)
         return sustain;
-    float rt = (t - releaseStart) / release;
+    float rt = (release > 1e-8f) ? (t - releaseStart) / release : 1.0f;
     return sustain * (1.0f - std::min(rt, 1.0f));
 }
 

@@ -22,14 +22,15 @@ struct SpriteSheet {
     /// Get UV rect for frame at (col, row) — 0-indexed
     SpriteRect getFrame(int col, int row) const {
         if (!texture) return SpriteRect::full();
-        int fw = frameW > 0 ? frameW : texture->getWidth() / columns;
-        int fh = frameH > 0 ? frameH : texture->getHeight() / rows;
+        int fw = frameW > 0 ? frameW : (columns > 0 ? texture->getWidth() / columns : texture->getWidth());
+        int fh = frameH > 0 ? frameH : (rows > 0 ? texture->getHeight() / rows : texture->getHeight());
         return SpriteRect::fromPixels(col * fw, row * fh, fw, fh,
                                        texture->getWidth(), texture->getHeight());
     }
 
     /// Get UV rect for frame by linear index (left-to-right, top-to-bottom)
     SpriteRect getFrame(int index) const {
+        if (columns <= 0) return getFrame(0, 0);
         int col = index % columns;
         int row = index / columns;
         return getFrame(col, row);
@@ -99,6 +100,7 @@ public:
         if (it == m_clips.end()) return SpriteRect::full();
 
         const AnimationClip& clip = it->second;
+        if (clip.fps <= 0.0f) return SpriteRect::full();
         float frameDuration = 1.0f / clip.fps;
         int totalFrames = clip.frameCount;
         if (totalFrames <= 0) return SpriteRect::full();
@@ -143,8 +145,9 @@ public:
         if (m_currentClip.empty()) return 0.0f;
         auto it = m_clips.find(m_currentClip);
         if (it == m_clips.end()) return 0.0f;
+        if (it->second.fps <= 0.0f) return 0.0f;
         float totalTime = it->second.frameCount / it->second.fps;
-        return totalTime > 0 ? m_time / totalTime : 0.0f;
+        return totalTime > 0.0f ? m_time / totalTime : 0.0f;
     }
 
 private:
