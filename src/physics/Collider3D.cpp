@@ -213,7 +213,7 @@ ContactInfo obbVsSphere(const OBB3D& obb, const SphereCollider& sphere) {
     info.hasContact = true;
     info.penetration = sphere.radius - dist;
     info.contactPoint = closest;
-    info.normal = diff * (1.0f / dist);
+    info.normal = dist > 0.0001f ? diff * (1.0f / dist) : math::Vector3D(0, 1, 0);
     return info;
 }
 
