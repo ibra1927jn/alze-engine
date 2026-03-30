@@ -1,4 +1,4 @@
-﻿#include "BenchmarkScene3D.h"
+#include "BenchmarkScene3D.h"
 #include <glad/gl.h>
 
 namespace engine {

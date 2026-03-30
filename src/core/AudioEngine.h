@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 // AudioEngine.h — Motor de audio propio (sin SDL_mixer)
 // Implementación en AudioEngine.cpp
 

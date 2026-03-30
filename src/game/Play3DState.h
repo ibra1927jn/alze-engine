@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "core/StateManager.h"
 #include "core/Engine.h"

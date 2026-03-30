@@ -1,4 +1,4 @@
-﻿#include "PlayState.h"
+#include "PlayState.h"
 #include <glad/gl.h>
 
 namespace engine {

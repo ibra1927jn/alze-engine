@@ -1,4 +1,4 @@
-﻿#include "SkeletalAnimation.h"
+#include "SkeletalAnimation.h"
 #include <cmath>
 
 namespace engine {

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "ecs/ECSCoordinator.h"
 #include "ecs/Components3D.h"

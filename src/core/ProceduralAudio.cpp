@@ -1,4 +1,4 @@
-﻿#include "ProceduralAudio.h"
+#include "ProceduralAudio.h"
 
 namespace engine {
 namespace core {

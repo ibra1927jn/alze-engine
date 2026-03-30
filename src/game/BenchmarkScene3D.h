@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 // ════════════════════════════════════════════════════════════════════════
 //  BenchmarkScene3D.h  —  Escena de stress test usando SceneSetup3D +
 //                         WorldScene3D. Prueba que la separación

@@ -1,4 +1,4 @@
-﻿#include "ProceduralTextures.h"
+#include "ProceduralTextures.h"
 
 namespace engine {
 namespace renderer {

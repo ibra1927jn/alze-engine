@@ -1,4 +1,4 @@
-﻿#include "WorldScene3D.h"
+#include "WorldScene3D.h"
 #include "math/MathUtils.h"
 
 namespace engine {
