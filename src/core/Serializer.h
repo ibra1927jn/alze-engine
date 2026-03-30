@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 #include <fstream>
 #include <vector>
 #include <cstdlib>
+#include <cstdio>
 #include "Vector2D.h"
 
 namespace engine {
@@ -25,7 +25,7 @@ class JsonWriter {
 public:
     void beginObject() {
         comma();
-        m_out << "{";
+        m_out += '{';
         m_depth++;
         m_needComma = false;
     }
@@ -33,14 +33,14 @@ public:
     void endObject() {
         m_depth--;
         newline();
-        m_out << "}";
+        m_out += '}';
         m_needComma = true;
     }
 
     void beginArray(const std::string& key = "") {
         comma();
-        if (!key.empty()) m_out << "\"" << key << "\": ";
-        m_out << "[";
+        if (!key.empty()) { m_out += '"'; m_out += key; m_out += "\": "; }
+        m_out += '[';
         m_depth++;
         m_needComma = false;
     }
@@ -48,37 +48,45 @@ public:
     void endArray() {
         m_depth--;
         newline();
-        m_out << "]";
+        m_out += ']';
         m_needComma = true;
     }
 
     void key(const std::string& k) {
         comma();
-        m_out << "\"" << k << "\": ";
+        m_out += '"';
+        m_out += k;
+        m_out += "\": ";
         m_needComma = false;
     }
 
     void value(float v) {
         comma();
-        m_out << v;
+        char buf[32];
+        std::snprintf(buf, sizeof(buf), "%g", v);
+        m_out += buf;
         m_needComma = true;
     }
 
     void value(int v) {
         comma();
-        m_out << v;
+        char buf[16];
+        std::snprintf(buf, sizeof(buf), "%d", v);
+        m_out += buf;
         m_needComma = true;
     }
 
     void value(bool v) {
         comma();
-        m_out << (v ? "true" : "false");
+        m_out += (v ? "true" : "false");
         m_needComma = true;
     }
 
     void value(const std::string& v) {
         comma();
-        m_out << "\"" << v << "\"";
+        m_out += '"';
+        m_out += v;
+        m_out += '"';
         m_needComma = true;
     }
 
@@ -95,26 +103,26 @@ public:
         endObject();
     }
 
-    std::string toString() const { return m_out.str(); }
+    const std::string& toString() const { return m_out; }
 
     bool saveToFile(const std::string& path) {
         std::ofstream file(path);
         if (!file.is_open()) return false;
-        file << m_out.str();
+        file << m_out;
         return file.good();
     }
 
 private:
     void comma() {
-        if (m_needComma) m_out << ", ";
+        if (m_needComma) m_out += ", ";
     }
 
     void newline() {
-        m_out << "\n";
-        for (int i = 0; i < m_depth; i++) m_out << "  ";
+        m_out += '\n';
+        for (int i = 0; i < m_depth; i++) m_out += "  ";
     }
 
-    std::ostringstream m_out;
+    std::string m_out;
     int  m_depth     = 0;
     bool m_needComma = false;
 };
@@ -126,11 +134,12 @@ private:
 class JsonReader {
 public:
     bool loadFromFile(const std::string& path) {
-        std::ifstream file(path);
+        std::ifstream file(path, std::ios::ate);
         if (!file.is_open()) return false;
-        std::ostringstream ss;
-        ss << file.rdbuf();
-        m_data = ss.str();
+        auto sz = file.tellg();
+        file.seekg(0);
+        m_data.resize(static_cast<size_t>(sz));
+        file.read(&m_data[0], sz);
         m_pos = 0;
         return true;
     }
