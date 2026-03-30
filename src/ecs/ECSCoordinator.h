@@ -8,7 +8,6 @@
 #include <memory>
 #include <cassert>
 #include <vector>
-#include <algorithm>
 #include "core/JobSystem.h"
 
 namespace engine {

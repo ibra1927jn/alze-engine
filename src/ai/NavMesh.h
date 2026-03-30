@@ -3,7 +3,6 @@
 #include "math/Vector2D.h"
 #include "math/MathUtils.h"
 #include <vector>
-#include <queue>
 #include <cstdint>
 
 namespace engine {

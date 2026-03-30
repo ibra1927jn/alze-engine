@@ -3,7 +3,6 @@
 #include "math/Vector3D.h"
 #include <vector>
 #include <cmath>
-#include <algorithm>
 #include <memory>
 #include <array>
 
