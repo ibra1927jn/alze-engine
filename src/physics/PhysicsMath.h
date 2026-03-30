@@ -147,6 +147,7 @@ namespace PhysicsMath {
     /// Approximate submerged fraction for a sphere at given depth
     /// depth > 0 means center is above surface, < 0 means below
     inline float sphereSubmergedFraction(float radius, float depthBelowSurface) {
+        if (radius < 1e-8f) return 0.0f;
         if (depthBelowSurface <= -radius) return 0.0f;
         if (depthBelowSurface >= radius)  return 1.0f;
         // h = submerged height of sphere cap
@@ -287,13 +288,17 @@ namespace PhysicsMath {
     // ── Interpolation ───────────────────────────────────────────
 
     inline float smoothstep(float edge0, float edge1, float x) {
-        float t = (x - edge0) / (edge1 - edge0);
+        float range = edge1 - edge0;
+        if (std::abs(range) < 1e-8f) return 0.0f;
+        float t = (x - edge0) / range;
         t = t < 0.0f ? 0.0f : (t > 1.0f ? 1.0f : t);
         return t * t * (3.0f - 2.0f * t);
     }
 
     inline float smootherstep(float edge0, float edge1, float x) {
-        float t = (x - edge0) / (edge1 - edge0);
+        float range = edge1 - edge0;
+        if (std::abs(range) < 1e-8f) return 0.0f;
+        float t = (x - edge0) / range;
         t = t < 0.0f ? 0.0f : (t > 1.0f ? 1.0f : t);
         return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
     }
