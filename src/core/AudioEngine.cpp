@@ -175,8 +175,11 @@ void AudioEngine::setListener3D(const math::Vector3D& position,
 
 void AudioEngine::setGroupVolume(SoundGroup g, float vol) {
     int i = static_cast<int>(g);
-    if (i >= 0 && i < static_cast<int>(SoundGroup::COUNT))
+    if (i >= 0 && i < static_cast<int>(SoundGroup::COUNT)) {
+        SDL_LockAudioDevice(m_deviceId);
         m_groupVolumes[i] = std::max(0.0f, std::min(1.0f, vol));
+        SDL_UnlockAudioDevice(m_deviceId);
+    }
 }
 
 bool AudioEngine::loadSound(const std::string& id, const std::string& path) {
@@ -262,13 +265,16 @@ bool AudioEngine::playMusic(const std::string& id, int loops) {
     if (!m_initialized || !m_sounds.has(id)) return false;
     auto clip = m_sounds.get(id);
     if (!clip || !clip->isValid()) return false;
+    float vol = getEffectiveVolume(SoundGroup::MUSIC);
     SDL_LockAudioDevice(m_deviceId);
     if (m_musicVoice >= 0 && m_musicVoice < MIXER_VOICES)
         m_voices[m_musicVoice].active = false;
     SDL_UnlockAudioDevice(m_deviceId);
-    float vol = getEffectiveVolume(SoundGroup::MUSIC);
-    m_musicVoice = spawnVoice(clip->buffer, vol, vol, 1.0f, loops, id);
+    int voice = spawnVoice(clip->buffer, vol, vol, 1.0f, loops, id);
+    SDL_LockAudioDevice(m_deviceId);
+    m_musicVoice = voice;
     m_currentMusic = id;
+    SDL_UnlockAudioDevice(m_deviceId);
     return true;
 }
 
@@ -276,14 +282,19 @@ bool AudioEngine::crossfadeMusic(const std::string& id, int durationMs) {
     if (!m_initialized || !m_sounds.has(id)) return false;
     auto clip = m_sounds.get(id);
     if (!clip || !clip->isValid()) return false;
+    float vol = getEffectiveVolume(SoundGroup::MUSIC);
     SDL_LockAudioDevice(m_deviceId);
     if (m_musicVoice >= 0 && m_musicVoice < MIXER_VOICES)
         m_voices[m_musicVoice].active = false;
     SDL_UnlockAudioDevice(m_deviceId);
-    float vol = getEffectiveVolume(SoundGroup::MUSIC);
-    m_musicVoice = spawnVoice(clip->buffer, 0.0f, 0.0f, 1.0f, -1, id);
+    int voice = spawnVoice(clip->buffer, 0.0f, 0.0f, 1.0f, -1, id);
+    SDL_LockAudioDevice(m_deviceId);
+    m_musicVoice = voice;
     m_currentMusic = id;
-    m_fadeTarget = vol; m_fadeDuration = durationMs / 1000.0f; m_fadeTimer = 0.0f;
+    m_fadeTarget = vol;
+    m_fadeDuration = durationMs / 1000.0f;
+    m_fadeTimer = 0.0f;
+    SDL_UnlockAudioDevice(m_deviceId);
     return true;
 }
 
@@ -302,9 +313,12 @@ void AudioEngine::resumeMusic() {
 }
 
 void AudioEngine::stopMusic() {
-    stopChannel(m_musicVoice);
+    SDL_LockAudioDevice(m_deviceId);
+    if (m_musicVoice >= 0 && m_musicVoice < MIXER_VOICES)
+        m_voices[m_musicVoice].active = false;
     m_musicVoice = -1;
     m_currentMusic.clear();
+    SDL_UnlockAudioDevice(m_deviceId);
 }
 
 void AudioEngine::setVoicePitch(int voiceId, float pitch) {
@@ -316,17 +330,17 @@ void AudioEngine::setVoicePitch(int voiceId, float pitch) {
 
 void AudioEngine::update(float dt) {
     if (!m_initialized) return;
+    SDL_LockAudioDevice(m_deviceId);
     if (m_fadeDuration > 0.0f && m_musicVoice >= 0) {
         m_fadeTimer += dt;
         float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
-        SDL_LockAudioDevice(m_deviceId);
         if (m_musicVoice < MIXER_VOICES) {
             m_voices[m_musicVoice].volumeL = m_fadeTarget * t;
             m_voices[m_musicVoice].volumeR = m_fadeTarget * t;
         }
-        SDL_UnlockAudioDevice(m_deviceId);
         if (t >= 1.0f) m_fadeDuration = 0.0f;
     }
+    SDL_UnlockAudioDevice(m_deviceId);
 }
 
 int AudioEngine::spawnVoice(std::shared_ptr<AudioBuffer> buf, float volL, float volR,
