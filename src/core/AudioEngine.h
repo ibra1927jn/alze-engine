@@ -7,10 +7,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include <cmath>
-#include <cstring>
 #include <atomic>
-#include <mutex>
 #include "Logger.h"
 #include "ResourceManager.h"
 #include "math/Vector2D.h"
