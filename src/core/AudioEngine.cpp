@@ -342,14 +342,11 @@ int AudioEngine::spawnVoice(std::shared_ptr<AudioBuffer> buf, float volL, float 
         v.buffer = buf; v.position = 0.0f; v.pitchRatio = pitch;
         v.volumeL = volL; v.volumeR = volR; v.loops = loops;
         v.active = true; v.soundId = soundId;
+        m_instanceCounts[soundId]++;
     }
     SDL_UnlockAudioDevice(m_deviceId);
     if (slot >= 0) {
         m_soundsPlayed++;
-        // Proteger m_instanceCounts — tambien se accede desde audioCallback
-        SDL_LockAudioDevice(m_deviceId);
-        m_instanceCounts[soundId]++;
-        SDL_UnlockAudioDevice(m_deviceId);
     }
     return slot;
 }
