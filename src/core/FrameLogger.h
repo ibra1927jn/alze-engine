@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <string>
-#include <iomanip>
+#include <cstdio>
 #include <chrono>
 
 namespace engine {
@@ -63,24 +63,15 @@ public:
     static void logFrame(const FrameData& d) {
         if (!s_active) return;
 
-        s_file << d.frame << ","
-               << std::fixed << std::setprecision(3) << d.dt << ","
-               << std::setprecision(1) << d.fps << ","
-               << d.entityCount << ","
-               << d.broadTests << ","
-               << d.narrowTests << ","
-               << d.collisionsResolved << ","
-               << d.particleCount << ","
-               << std::setprecision(3) << d.physicsMs << ","
-               << d.collisionMs << ","
-               << d.frameMs << ","
-               << std::setprecision(1) << d.playerX << ","
-               << d.playerY << ","
-               << d.playerVx << ","
-               << d.playerVy << ","
-               << (d.playerOnGround ? 1 : 0) << ","
-               << std::setprecision(2) << d.cameraZoom
-               << "\n";
+        char line[256];
+        std::snprintf(line, sizeof(line),
+            "%d,%.3f,%.1f,%d,%d,%d,%d,%d,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%.1f,%d,%.2f\n",
+            d.frame, d.dt, d.fps, d.entityCount, d.broadTests,
+            d.narrowTests, d.collisionsResolved, d.particleCount,
+            d.physicsMs, d.collisionMs, d.frameMs,
+            d.playerX, d.playerY, d.playerVx, d.playerVy,
+            d.playerOnGround ? 1 : 0, d.cameraZoom);
+        s_file << line;
 
         s_frameCount++;
         // Flush every 60 frames (~1 second)
