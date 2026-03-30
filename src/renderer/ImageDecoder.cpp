@@ -607,14 +607,13 @@ static bool decodeHDR(const uint8_t* data, size_t len,
 static std::vector<uint8_t> readFile(const char* path) {
     FILE* f = fopen(path, "rb");
     if (!f) return {};
-    fseek(f, 0, SEEK_END);
+    if (fseek(f, 0, SEEK_END) != 0) { fclose(f); return {}; }
     long sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    std::vector<uint8_t> buf;
-    if (sz > 0) {
-        buf.resize((size_t)sz);
-        fread(buf.data(), 1, buf.size(), f);
-    }
+    if (sz <= 0) { fclose(f); return {}; }
+    if (fseek(f, 0, SEEK_SET) != 0) { fclose(f); return {}; }
+    std::vector<uint8_t> buf((size_t)sz);
+    size_t read = fread(buf.data(), 1, buf.size(), f);
+    if (read != buf.size()) { fclose(f); return {}; }
     fclose(f);
     return buf;
 }
