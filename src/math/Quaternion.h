@@ -3,7 +3,6 @@
 #include "SimdConfig.h"
 #include "Vector3D.h"
 #include "MathUtils.h"
-#include <cmath>
 #include <string>
 
 namespace engine {

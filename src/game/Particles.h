@@ -5,7 +5,6 @@
 #include "math/Color.h"
 #include <vector>
 #include <cstdlib>
-#include <cmath>
 
 namespace engine {
 namespace game {

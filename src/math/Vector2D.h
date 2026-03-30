@@ -2,7 +2,6 @@
 
 #include "SimdConfig.h"
 #include "MathUtils.h"
-#include <cmath>
 #include <string>
 
 namespace engine {

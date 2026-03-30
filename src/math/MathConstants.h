@@ -1,7 +1,6 @@
 #pragma once
 
 #include "MathUtils.h"
-#include <cmath>
 
 namespace engine {
 namespace math {

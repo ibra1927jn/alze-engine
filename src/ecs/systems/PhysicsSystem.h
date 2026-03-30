@@ -6,7 +6,6 @@
 #include "MathUtils.h"
 #include "JobSystem.h"
 #include <atomic>
-#include <cmath>
 
 namespace engine {
 namespace ecs {

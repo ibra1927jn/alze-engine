@@ -5,7 +5,6 @@
 #include "math/MathUtils.h"
 #include "core/InputManager.h"
 #include <SDL.h>
-#include <cmath>
 
 namespace engine {
 namespace scene {

@@ -6,7 +6,6 @@
 #include "ecs/ECSCoordinator.h"
 #include "ecs/Components.h"
 #include <vector>
-#include <cmath>
 
 namespace engine {
 namespace physics {
