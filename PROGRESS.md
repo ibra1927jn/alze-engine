@@ -34,6 +34,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #17 | 100% — completed math ostream→cstdio migration (Color, Vector2D/3D, Matrix3x3/4x4, Quaternion, AABB: operator<< → toString() with snprintf, removed all <iosfwd>/<ostream>), removed unused includes (SpatialHash.h from Raycast, <cstdlib> from ScreenEffects), removed dead accessors (FrameLogger::getPath, InputRecorder::getPlaybackPath)
 - [2026-03-30] | Heartbeat maintenance pass #18 | 100% — removed unused <cstdio> from 5 math headers (Vector2D/3D, Matrix3x3/4x4, Quaternion), removed unused <cstdlib> from PlayState, Play3DState, SSAO headers, added explicit <cstdio> to 5 math .cpp files that use snprintf
 - [2026-03-30] | Heartbeat maintenance pass #19 | 100% — removed 28 redundant includes across 24 headers (transitively provided by MathUtils.h/Vector3D.h/etc), extracted 3 duplicate color conversion lambdas in Editor.cpp to static methods, removed 5 more redundant includes (SpatialHash, DebugDraw, Components, AABB.cpp, Matrix3x3)
+- [2026-03-30] | Heartbeat maintenance pass #20 | 100% — moved 2 header-only includes to .cpp (ImageDecoder.h from ModelLoader.h, ShaderLibrary.h from ForwardRenderer.h), removed 19 duplicate includes from 15 .cpp files (SDL.h, cmath, glad/gl.h, CollisionSolver3D.h, DynamicBVH3D.h, JobSystem.h already provided by corresponding headers)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
