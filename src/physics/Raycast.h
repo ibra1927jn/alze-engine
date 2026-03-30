@@ -141,8 +141,8 @@ private:
         math::Vector2D local = point - center;
 
         // Normalizar a [-1, 1]
-        float nx = local.x / half.x;
-        float ny = local.y / half.y;
+        float nx = (std::abs(half.x) > 1e-8f) ? (local.x / half.x) : 0.0f;
+        float ny = (std::abs(half.y) > 1e-8f) ? (local.y / half.y) : 0.0f;
 
         // La cara con mayor componente normalizada es la cara de impacto
         if (std::abs(nx) > std::abs(ny)) {

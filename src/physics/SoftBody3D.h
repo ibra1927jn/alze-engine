@@ -81,6 +81,7 @@ struct XPBDDistanceConstraint : public XPBDConstraint {
     }
 
     void solve(std::vector<XPBDParticle>& particles, float dt) override {
+        if (dt <= 0.0f) return;
         auto& pt1 = particles[p1];
         auto& pt2 = particles[p2];
 
@@ -167,6 +168,7 @@ struct XPBDBendingConstraint : public XPBDConstraint {
     }
 
     void solve(std::vector<XPBDParticle>& particles, float dt) override {
+        if (dt <= 0.0f) return;
         auto& pt1 = particles[p1];
         auto& pt2 = particles[p2];
 
@@ -237,6 +239,7 @@ struct XPBDVolumeConstraint : public XPBDConstraint {
     }
 
     void solve(std::vector<XPBDParticle>& particles, float dt) override {
+        if (dt <= 0.0f) return;
         if (triangles.empty() || std::abs(restVolume) < 1e-8f) return;
         float currentVol = computeVolume(particles);
         float C = currentVol - restVolume * pressure;
