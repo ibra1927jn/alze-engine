@@ -1,6 +1,5 @@
 // Physics3DSystem.cpp — Implementación de todos los métodos de Physics3DSystem
 #include "Physics3DSystem.h"
-#include <cmath>
 
 namespace engine {
 namespace ecs {

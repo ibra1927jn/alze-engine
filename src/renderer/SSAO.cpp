@@ -1,8 +1,6 @@
 #include "SSAO.h"
 #include "core/Logger.h"
-#include <glad/gl.h>
 #include <cstdlib>
-#include <cmath>
 
 namespace engine {
 namespace renderer {

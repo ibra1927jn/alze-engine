@@ -1,5 +1,4 @@
 #include "ScreenEffects.h"
-#include <glad/gl.h>
 
 namespace engine {
 namespace renderer {

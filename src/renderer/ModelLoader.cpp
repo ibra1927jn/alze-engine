@@ -1,7 +1,6 @@
 #include "ModelLoader.h"
 #include "ImageDecoder.h"
 #include "core/Logger.h"
-#include <glad/gl.h>
 
 namespace engine {
 namespace renderer {

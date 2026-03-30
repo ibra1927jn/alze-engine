@@ -1,5 +1,4 @@
 #include "PostProcess.h"
-#include <glad/gl.h>
 #include <cstdint>
 #include "core/Logger.h"
 

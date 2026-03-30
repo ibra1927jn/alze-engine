@@ -1,7 +1,6 @@
 // Constraints3D.cpp — Implementación de DistanceConstraint, BallSocketConstraint,
 // HingeConstraint y ConstraintSolver3D
 #include "Constraints3D.h"
-#include <cmath>
 #include <algorithm>
 
 namespace engine {

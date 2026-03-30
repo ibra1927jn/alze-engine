@@ -1,13 +1,10 @@
 // PhysicsWorld3D.cpp — Implementación de PhysicsWorld3D::step,
 // solveSingleContact, narrowphaseTest
 #include "PhysicsWorld3D.h"
-#include "CollisionSolver3D.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include "DynamicBVH3D.h"
 #include "core/FrameAllocator.h"
-#include "core/JobSystem.h"
 
 namespace engine {
 namespace physics { // ── PhysicsWorld3D ─────────────────────────────────────────────

@@ -1,5 +1,4 @@
 #include "SpriteBatch2D.h"
-#include <glad/gl.h>
 #include <algorithm>
 #include <cstdint>
 

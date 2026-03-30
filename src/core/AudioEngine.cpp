@@ -1,5 +1,4 @@
 #include "AudioEngine.h"
-#include <SDL.h>
 #include <cstring>
 #include <algorithm>
 #include <cmath>

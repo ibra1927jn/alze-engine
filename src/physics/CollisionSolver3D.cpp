@@ -2,7 +2,6 @@
 #include "CollisionSolver3D.h"
 #include "PhysicsMaterial.h"
 #include "PhysicsMath.h"
-#include <cmath>
 #include <algorithm>
 
 namespace engine {
