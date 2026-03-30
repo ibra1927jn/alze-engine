@@ -59,7 +59,7 @@ struct PhysicsSoA {
     void gather(RigidBody3D* bodies) const;
 
     /// Apply uniform gravity to all bodies in SoA (auto-vectorizable)
-    void applyGravity(float gx, float gy, float gz, float dt) {
+    void applyGravity(float gx, float gy, float gz, float /*dt*/) {
         for (int i = 0; i < count; i++) {
             float im = invMass[i];
             if (im <= 0.0f) continue;

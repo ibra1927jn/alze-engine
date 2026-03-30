@@ -94,7 +94,7 @@ bool Editor::handleInput(const core::InputManager& input, float dt) {
 // Update
 // ════════════════════════════════════════════════════════════════
 
-void Editor::update(float dt) {
+void Editor::update(float /*dt*/) {
     if (!m_active || !m_ecs) return;
 
     // Refrescar lista de entidades vivas

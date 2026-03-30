@@ -108,7 +108,7 @@ public:
     bool useBarnesHut = true;
 
     // Global step
-    void step(float dt, std::vector<RigidBody3D>& worldBodies) {
+    void step(float /*dt*/, std::vector<RigidBody3D>& worldBodies) {
         if (worldBodies.size() < 2) return;
 
         // 1. Gather all masses

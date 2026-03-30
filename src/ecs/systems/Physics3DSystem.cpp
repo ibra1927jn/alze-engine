@@ -287,7 +287,7 @@ void Physics3DSystem::solveConstraints(float dt) {
     if (dt <= 0.0f) return;
     float invDt = 1.0f / dt;
     m_ecs.forEach<Transform3DComponent, Physics3DComponent, ConstraintComponent>(
-        [this, dt, invDt](Entity e, Transform3DComponent& tA, Physics3DComponent& pA, ConstraintComponent& con) {
+        [this, dt, invDt](Entity /*e*/, Transform3DComponent& tA, Physics3DComponent& pA, ConstraintComponent& con) {
             if (!con.enabled) return;
             if (!m_ecs.isAlive(con.targetEntity)) return;
             if (!m_ecs.hasComponent<Transform3DComponent>(con.targetEntity)) return;
@@ -311,8 +311,8 @@ void Physics3DSystem::solveConstraints(float dt) {
     );
 }
 
-void Physics3DSystem::solveDistance(Transform3DComponent& tA, Physics3DComponent& pA,
-    Transform3DComponent& tB, Physics3DComponent& pB,
+void Physics3DSystem::solveDistance(Transform3DComponent& /*tA*/, Physics3DComponent& pA,
+    Transform3DComponent& /*tB*/, Physics3DComponent& pB,
     ConstraintComponent& con, const math::Vector3D& wA, const math::Vector3D& wB, float invDt)
 {
     math::Vector3D delta = wB - wA;
@@ -332,8 +332,8 @@ void Physics3DSystem::solveDistance(Transform3DComponent& tA, Physics3DComponent
     if (!pB.isStatic) pB.velocity += P * pB.invMass;
 }
 
-void Physics3DSystem::solveBallSocket(Transform3DComponent& tA, Physics3DComponent& pA,
-    Transform3DComponent& tB, Physics3DComponent& pB,
+void Physics3DSystem::solveBallSocket(Transform3DComponent& /*tA*/, Physics3DComponent& pA,
+    Transform3DComponent& /*tB*/, Physics3DComponent& pB,
     ConstraintComponent& con, const math::Vector3D& wA, const math::Vector3D& wB, float invDt)
 {
     math::Vector3D error = wB - wA;
@@ -354,7 +354,7 @@ void Physics3DSystem::solveBallSocket(Transform3DComponent& tA, Physics3DCompone
 }
 
 void Physics3DSystem::solveHingeAngular(Transform3DComponent& tA, Physics3DComponent& pA,
-    Transform3DComponent& tB, Physics3DComponent& pB, ConstraintComponent& con)
+    Transform3DComponent& /*tB*/, Physics3DComponent& pB, ConstraintComponent& con)
 {
     math::Vector3D worldAxis = tA.transform.rotation.rotateVector(con.hingeAxis).normalized();
     math::Vector3D u, v;

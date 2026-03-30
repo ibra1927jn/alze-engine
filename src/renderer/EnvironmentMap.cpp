@@ -273,7 +273,7 @@ math::Matrix4x4 EnvironmentMap::buildView(const float raw[16]) {
     return mat;
 }
 
-void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint captureRBO,
+void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint /*captureRBO*/,
                                              float viewMatData[6][16],
                                              const math::Matrix4x4& captureProj,
                                              int irrSize, int pfSize)

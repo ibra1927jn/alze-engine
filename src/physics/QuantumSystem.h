@@ -124,7 +124,7 @@ namespace QuantumMath {
     // Returns probability density |ψ|² at position x
     // sigma: spatial width of wave packet (m)
     // k0: central wave vector (1/m)
-    inline double gaussianWavePacketProbabilityDensity(double x, double sigma, double k0) {
+    inline double gaussianWavePacketProbabilityDensity(double x, double sigma, double /*k0*/) {
         if (sigma <= 0.0) return 0.0;
         double exponent = -(x * x) / (2.0 * sigma * sigma);
         double norm = 1.0 / (sigma * std::sqrt(2.0 * QuantumConstants::PI));

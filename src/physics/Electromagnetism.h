@@ -203,7 +203,7 @@ public:
 
     // ── Simulation Step ─────────────────────────────────────────
 
-    void step(float dt, std::vector<RigidBody3D>& bodies) {
+    void step(float /*dt*/, std::vector<RigidBody3D>& bodies) {
         int n = static_cast<int>(m_charges.size());
         float softSq = softening * softening;
 

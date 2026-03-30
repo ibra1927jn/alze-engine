@@ -32,7 +32,7 @@ void InstancedRenderer::addInstance(const math::Matrix4x4& model,
     m_instanceData.push_back(inst);
 }
 
-void InstancedRenderer::render(const Mesh3D& mesh, ShaderProgram& shader) {
+void InstancedRenderer::render(const Mesh3D& mesh, ShaderProgram& /*shader*/) {
     if (m_instanceData.empty() || !m_initialized) return;
     if (!mesh.isValid()) return;
 

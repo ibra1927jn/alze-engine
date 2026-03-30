@@ -762,7 +762,7 @@ void Play3DState::onEnter() {
         );
     }
 
-    void Play3DState::renderInstancedField(const math::Matrix4x4& view, const math::Matrix4x4& proj) {
+    void Play3DState::renderInstancedField(const math::Matrix4x4& /*view*/, const math::Matrix4x4& /*proj*/) {
         // Submit 50 tiny decorative spheres via InstancedRenderer
         m_instancer.begin();
         for (int i = 0; i < 50; i++) {

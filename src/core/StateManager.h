@@ -38,7 +38,7 @@ public:
     virtual void render(float alpha) = 0;
 
     /// Procesar input
-    virtual void handleInput(float dt) {}
+    virtual void handleInput(float /*dt*/) {}
 
     /// ¿Debe actualizarse la física en este estado?
     virtual bool shouldUpdatePhysics() const { return true; }
