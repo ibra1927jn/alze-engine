@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fstream>
 #include <string>
 #include <cstdio>
 #include <chrono>
@@ -44,18 +43,18 @@ public:
 
     /// Iniciar grabación a CSV
     static void start(const std::string& path) {
-        if (s_file.is_open()) s_file.close();
-        s_file.open(path, std::ios::out | std::ios::trunc);
-        s_active = s_file.is_open();
+        if (s_file) { std::fclose(s_file); s_file = nullptr; }
+        s_file = std::fopen(path.c_str(), "w");
+        s_active = (s_file != nullptr);
         s_frameCount = 0;
         s_path = path;
 
         if (s_active) {
             // CSV header
-            s_file << "frame,dt,fps,entities,broad_tests,narrow_tests,"
-                   << "collisions,particles,physics_ms,collision_ms,frame_ms,"
-                   << "player_x,player_y,player_vx,player_vy,on_ground,zoom"
-                   << "\n";
+            std::fputs("frame,dt,fps,entities,broad_tests,narrow_tests,"
+                       "collisions,particles,physics_ms,collision_ms,frame_ms,"
+                       "player_x,player_y,player_vx,player_vy,on_ground,zoom\n",
+                       s_file);
         }
     }
 
@@ -71,18 +70,19 @@ public:
             d.physicsMs, d.collisionMs, d.frameMs,
             d.playerX, d.playerY, d.playerVx, d.playerVy,
             d.playerOnGround ? 1 : 0, d.cameraZoom);
-        s_file << line;
+        std::fputs(line, s_file);
 
         s_frameCount++;
         // Flush every 60 frames (~1 second)
-        if (s_frameCount % 60 == 0) s_file.flush();
+        if (s_frameCount % 60 == 0) std::fflush(s_file);
     }
 
     /// Detener grabación
     static void stop() {
-        if (s_file.is_open()) {
-            s_file.flush();
-            s_file.close();
+        if (s_file) {
+            std::fflush(s_file);
+            std::fclose(s_file);
+            s_file = nullptr;
         }
         s_active = false;
     }
@@ -92,7 +92,7 @@ public:
     static const std::string& getPath() { return s_path; }
 
 private:
-    static inline std::ofstream s_file;
+    static inline std::FILE* s_file = nullptr;
     static inline bool s_active = false;
     static inline int s_frameCount = 0;
     static inline std::string s_path;
