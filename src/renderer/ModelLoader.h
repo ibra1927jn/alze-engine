@@ -5,7 +5,6 @@
 #include "MeshPrimitives.h"
 #include "Material.h"
 #include "Texture2D.h"
-#include "ImageDecoder.h"
 #include <vector>
 
 namespace engine {

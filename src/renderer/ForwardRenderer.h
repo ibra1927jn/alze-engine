@@ -2,7 +2,6 @@
 
 #include <glad/gl.h>
 #include "ShaderProgram.h"
-#include "ShaderLibrary.h"
 #include "ShadowMap.h"
 #include "EnvironmentMap.h"
 #include "MeshPrimitives.h"
