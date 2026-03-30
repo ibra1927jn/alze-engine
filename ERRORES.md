@@ -69,3 +69,5 @@
 - [2026-03-29] | CMakeLists.txt:28 | -fno-exceptions -fno-rtti aplicados globalmente incluyendo C files (glad/gl.c) — warning en compilacion | **FIXED** Scoped a CXX con generator expressions
 - [2026-03-30] | core/Logger.h:69-72,125 | isFileEnabled(), getFilePath(), getLineCount() leen estado compartido sin mutex — data race | **FIXED** Agregado lock_guard; getFilePath() retorna por valor
 - [2026-03-30] | core/ResourceManager.h:100-106 | getCacheSize(), getCacheHits(), getTotalLoads(), getHitRate() leen estado compartido sin mutex — data race | **FIXED** Agregado lock_guard en los 4 métodos
+- [2026-03-30] | tests/test_subsystems.cpp:114,119,132 | auto& binding to Profiler::getMetric() return-by-value — dangling reference UB | **FIXED** Cambiado a auto (copy)
+- [2026-03-30] | core/AudioEngine.cpp:335-352 | spawnVoice() unlock/re-lock entre voice activation e instanceCount++ — race window | **FIXED** Movido instanceCount update dentro del lock existente
