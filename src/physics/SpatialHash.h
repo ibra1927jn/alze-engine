@@ -5,7 +5,6 @@
 #include "Logger.h"
 #include <vector>
 #include <cstdint>
-#include <cmath>
 #include <algorithm>
 
 namespace engine {

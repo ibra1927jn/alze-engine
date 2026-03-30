@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SDL.h>
-#include "Vector2D.h"
 #include "Color.h"
 #include "AABB.h"
 #include "Camera2D.h"

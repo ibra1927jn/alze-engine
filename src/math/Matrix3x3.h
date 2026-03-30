@@ -2,7 +2,6 @@
 
 #include "SimdConfig.h"
 #include "Vector2D.h"
-#include <cmath>
 #include <string>
 
 namespace engine {
