@@ -29,7 +29,8 @@ class FrameAllocator {
 public:
     /// Inicializar con N bytes (por defecto 2MB)
     static void init(size_t sizeBytes = 2 * 1024 * 1024) {
-        shutdown();
+        std::lock_guard<std::mutex> lock(s_mutex);
+        if (s_buffer) { std::free(s_buffer); s_buffer = nullptr; }
         s_buffer = static_cast<uint8_t*>(std::malloc(sizeBytes));
         s_capacity = sizeBytes;
         s_offset = 0;
@@ -40,6 +41,7 @@ public:
 
     /// Liberar memoria (llamar al cerrar el motor)
     static void shutdown() {
+        std::lock_guard<std::mutex> lock(s_mutex);
         if (s_buffer) {
             std::free(s_buffer);
             s_buffer = nullptr;

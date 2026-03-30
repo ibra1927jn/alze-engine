@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <atomic>
 #include <cstdint>
 
 namespace engine {
@@ -12,8 +13,8 @@ namespace ecs {
 // ── Compile-time System Type IDs (no RTTI needed) ─────────────
 namespace detail {
     inline uint32_t nextSystemTypeId() {
-        static uint32_t counter = 0;
-        return counter++;
+        static std::atomic<uint32_t> counter{0};
+        return counter.fetch_add(1, std::memory_order_relaxed);
     }
 
     template<typename T>

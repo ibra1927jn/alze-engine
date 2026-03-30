@@ -5,6 +5,7 @@
 #include "SystemManager.h"
 #include "QueryCache.h"
 #include <array>
+#include <atomic>
 #include <memory>
 #include <cassert>
 #include <vector>
@@ -16,8 +17,8 @@ namespace ecs {
 // ── Compile-time type ID (no RTTI needed) ──────────────────────
 // Cada tipo T obtiene un ID único usando un counter estático.
 inline ComponentType nextTypeId() {
-    static ComponentType counter = 0;
-    return counter++;
+    static std::atomic<ComponentType> counter{0};
+    return counter.fetch_add(1, std::memory_order_relaxed);
 }
 
 template<typename T>

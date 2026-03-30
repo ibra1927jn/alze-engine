@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <functional>
 #include <vector>
 #include <unordered_map>
@@ -33,8 +34,8 @@ namespace core {
 using EventTypeId = uint32_t;
 
 inline EventTypeId nextEventTypeId() {
-    static EventTypeId counter = 0;
-    return counter++;
+    static std::atomic<EventTypeId> counter{0};
+    return counter.fetch_add(1, std::memory_order_relaxed);
 }
 
 template<typename T>
