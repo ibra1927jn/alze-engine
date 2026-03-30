@@ -4,7 +4,6 @@
 #include "MathUtils.h"
 #include <cmath>
 #include <string>
-#include <cstdio>
 
 namespace engine {
 namespace math {

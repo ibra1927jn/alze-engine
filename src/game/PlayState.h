@@ -32,7 +32,6 @@
 #include "renderer/ProceduralTexture.h"
 #include <SDL.h>
 #include <vector>
-#include <cstdlib>
 
 namespace engine {
 namespace game {

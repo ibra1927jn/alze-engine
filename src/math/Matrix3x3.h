@@ -4,7 +4,6 @@
 #include "Vector2D.h"
 #include <cmath>
 #include <string>
-#include <cstdio>
 
 namespace engine {
 namespace math {

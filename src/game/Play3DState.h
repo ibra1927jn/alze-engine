@@ -39,7 +39,6 @@
 #include "math/MathUtils.h"
 #include "renderer/SpriteBatch2D.h"
 #include "renderer/TextRenderer.h"
-#include <cstdlib>
 
 namespace engine {
 namespace game {
