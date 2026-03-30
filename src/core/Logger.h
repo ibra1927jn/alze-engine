@@ -66,8 +66,14 @@ public:
     }
 
     /// ¿Está el archivo de log activo?
-    static bool isFileEnabled() { return s_fileEnabled; }
-    static const std::string& getFilePath() { return s_filePath; }
+    static bool isFileEnabled() {
+        std::lock_guard<std::mutex> lock(s_mutex);
+        return s_fileEnabled;
+    }
+    static std::string getFilePath() {
+        std::lock_guard<std::mutex> lock(s_mutex);
+        return s_filePath;
+    }
 
     /// Logging con nivel explícito
     static void log(Level level, const std::string& tag, const std::string& msg) {
@@ -121,7 +127,10 @@ public:
     static void error(const std::string& tag, const std::string& msg) { log(Level::ERR, tag, msg); }
 
     /// Obtener contador de líneas escritas
-    static int getLineCount() { return s_lineCount; }
+    static int getLineCount() {
+        std::lock_guard<std::mutex> lock(s_mutex);
+        return s_lineCount;
+    }
 
 private:
     static inline std::atomic<Level> s_minLevel{Level::INFO};
