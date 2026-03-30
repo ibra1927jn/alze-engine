@@ -21,6 +21,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #5 | 100% — security cleanup (removed test_key.txt + _del_*.txt, updated .gitignore), fixed vibratoDept→vibratoDepth typo, removed dead assignment in EnvironmentMap lookAt
 - [2026-03-30] | Heartbeat maintenance pass #6 | 100% — fixed -Wshadow warnings (Physics3DSystem r, PlayState alpha), migrated std::cout/std::cerr→Logger in 6 files (ModelLoader, SSAO, EnvironmentMap, ShaderProgram, ShaderLibrary, GraphicsContext)
 - [2026-03-30] | Heartbeat maintenance pass #7 | 100% — fixed -Wshadow warnings (Color.h constructor params r/g/b/a, AABB.cpp min/max ~126 warnings eliminated), migrated remaining std::cout/std::cerr→Logger in 5 renderer files (Texture2D.h, ShaderLoader.h, ShadowMap.h, PostProcess.cpp, SSAO.cpp). All headers now use Logger consistently.
+- [2026-03-30] | Heartbeat maintenance pass #8 | 100% — fixed AudioEngine listener position data race (SDL_LockAudioDevice in setListener3D/setListenerPosition), updated CLAUDE.md to reflect 5 previously-fixed thread-safety issues (EventBus unsubscribe, JobSystem atomic, FrameAllocator mutex, Profiler mutex, AudioEngine locks)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable

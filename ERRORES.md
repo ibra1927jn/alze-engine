@@ -10,6 +10,7 @@
 - [2026-03-28] | core/JobSystem.h:146 | m_running es bool no-atomico leido/escrito desde multiples threads — data race UB | **FIXED** Cambiado a std::atomic<bool>
 - [2026-03-28] | core/AudioEngine.cpp:345-353 | m_instanceCounts accedido sin lock desde main thread y audio callback — data race | **FIXED** SDL_LockAudioDevice en spawnVoice y canPlayInstance
 - [2026-03-29] | core/AudioEngine.h:130-134 | getActiveVoices() lee m_voices[].active sin lock — data race con audioCallback | **FIXED** Agregado SDL_LockAudioDevice guard
+- [2026-03-30] | core/AudioEngine.h+cpp | setListener3D/setListenerPosition escriben posicion listener sin lock — data race potencial con audio callback | **FIXED** Agregado SDL_LockAudioDevice en ambas funciones
 - [2026-03-28] | ecs/ECSCoordinator.h:329-341 | cloneEntity() copia mask de componentes pero NO copia datos a los storages — crash al acceder componentes del clon | **FIXED** Virtual cloneComponent() en storages, cloneEntity itera y copia datos
 - [2026-03-28] | core/SceneSerializer.h:186 | isStatic parsea float Y bool, consumiendo el siguiente token — corrupcion silenciosa del parseo | **FIXED** Cambiado a solo r.readBool()
 - [2026-03-28] | core/Serializer.h:195 | std::stof lanza excepcion en input invalido, pero compilamos con -fno-exceptions — terminacion del programa | **FIXED** Reemplazado con strtof + validacion manual
