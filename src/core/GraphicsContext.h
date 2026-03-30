@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <glad/gl.h>
 #include <string>
-#include <iostream>
+#include "Logger.h"
 
 namespace engine {
 namespace core {
@@ -29,31 +29,28 @@ public:
         // ── 1. Crear contexto OpenGL 3.3 Core (nuestro, manual) ──
         m_glContext = SDL_GL_CreateContext(window);
         if (!m_glContext) {
-            std::cerr << "[GraphicsContext] SDL_GL_CreateContext fallo: "
-                      << SDL_GetError() << std::endl;
+            Logger::error("GraphicsContext", std::string("SDL_GL_CreateContext fallo: ") + SDL_GetError());
             return false;
         }
 
         // Inicializar GLAD
         int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
         if (!version) {
-            std::cerr << "[GraphicsContext] GLAD fallo al cargar OpenGL" << std::endl;
+            Logger::error("GraphicsContext", "GLAD fallo al cargar OpenGL");
             SDL_GL_DeleteContext(m_glContext);
             m_glContext = nullptr;
             return false;
         }
 
-        std::cout << "[GraphicsContext] OpenGL "
-                  << GLAD_VERSION_MAJOR(version) << "."
-                  << GLAD_VERSION_MINOR(version) << " Core inicializado" << std::endl;
+        Logger::info("GraphicsContext", "OpenGL " + std::to_string(GLAD_VERSION_MAJOR(version)) + "."
+                  + std::to_string(GLAD_VERSION_MINOR(version)) + " Core inicializado");
 
         SDL_GL_SetSwapInterval(1);  // VSync
 
         // ── 2. Crear SDL_Renderer SOFTWARE para 2D (no roba nuestro GL context) ──
         m_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
         if (!m_renderer) {
-            std::cerr << "[GraphicsContext] SDL_Renderer (software) fallo: "
-                      << SDL_GetError() << std::endl;
+            Logger::warn("GraphicsContext", std::string("SDL_Renderer (software) fallo: ") + SDL_GetError());
             // No es fatal — 3D sigue funcionando
         }
 

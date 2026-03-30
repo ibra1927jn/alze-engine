@@ -2,7 +2,7 @@
 
 #include <glad/gl.h>
 #include <string>
-#include <iostream>
+#include "core/Logger.h"
 #include "math/Matrix4x4.h"
 #include "math/Vector3D.h"
 
@@ -59,7 +59,7 @@ public:
         if (!success) {
             char log[512];
             glGetProgramInfoLog(m_program, 512, nullptr, log);
-            std::cerr << "[ShaderProgram] Link error: " << log << std::endl;
+            core::Logger::error("ShaderProgram", std::string("Link error: ") + log);
             glDeleteProgram(m_program);
             m_program = 0;
         }
@@ -119,7 +119,7 @@ private:
             char log[512];
             glGetShaderInfoLog(shader, 512, nullptr, log);
             const char* kind = (type == GL_VERTEX_SHADER) ? "Vertex" : "Fragment";
-            std::cerr << "[ShaderProgram] " << kind << " compile error: " << log << std::endl;
+            core::Logger::error("ShaderProgram", std::string(kind) + " compile error: " + log);
             glDeleteShader(shader);
             return 0;
         }

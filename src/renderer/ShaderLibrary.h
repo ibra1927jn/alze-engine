@@ -239,7 +239,7 @@ inline void init(const char* shaderDir = "assets/shaders/") {
     }
 
     detail::s_initialized = true;
-    std::cout << "[ShaderLibrary] Inicializado (dir: " << shaderDir << ")" << std::endl;
+    core::Logger::info("ShaderLibrary", std::string("Inicializado (dir: ") + shaderDir + ")");
 }
 
 } // namespace ShaderLibrary
