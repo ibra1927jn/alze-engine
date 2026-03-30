@@ -285,7 +285,7 @@ void RenderSystem::renderDebug() {
     o << "Physics: " << pm.avgMs << "ms"; sensor(o.str(), math::Color(120, 200, 255)); o.str("");
     auto cm = core::Profiler::getMetric("Collision");
     o << "Collision: " << cm.avgMs << "ms"; sensor(o.str(), math::Color(120, 200, 255)); o.str("");
-    auto& fm = core::Profiler::getFrameMetric();
+    auto fm = core::Profiler::getFrameMetric();
     o << "Frame: " << fm.avgMs << "ms (max " << fm.maxMs << ")"; sensor(o.str(), math::Color(255, 200, 100)); o.str("");
 
     // Frame time graph

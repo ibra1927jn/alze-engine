@@ -373,7 +373,7 @@ namespace game {
         if (core::FrameLogger::isActive()) {
             auto pm = core::Profiler::getMetric("Physics");
             auto cm = core::Profiler::getMetric("Collision");
-            auto& fm = core::Profiler::getFrameMetric();
+            auto fm = core::Profiler::getFrameMetric();
 
             core::FrameLogger::FrameData fd;
             fd.frame = m_frameNum;
