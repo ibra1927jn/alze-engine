@@ -83,6 +83,9 @@ void InputManager::update(const SDL_Event& event) {
             m_releasedButtons[event.cbutton.button] = true;
             m_currentButtons[event.cbutton.button] = false;
             break;
+
+        default:
+            break;
     }
 }
 

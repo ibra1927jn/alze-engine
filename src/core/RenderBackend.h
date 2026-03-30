@@ -59,6 +59,9 @@ public:
                     m_drawCalls++;
                     break;
                 }
+
+                default:
+                    break;
             }
         }
     }

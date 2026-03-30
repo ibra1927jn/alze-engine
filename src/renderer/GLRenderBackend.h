@@ -131,6 +131,9 @@ public:
                     baseVertex += 4;
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 

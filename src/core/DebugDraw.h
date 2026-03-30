@@ -151,6 +151,9 @@ public:
                 case Type::TEXT:
                     renderText(renderer, pa, cmd.text, cmd.color, static_cast<int>(cmd.w));
                     break;
+
+                default:
+                    break;
             }
         }
 
