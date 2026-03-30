@@ -1,4 +1,7 @@
 #include "RenderSystem.h"
+#include "Profiler.h"
+#include "FrameLogger.h"
+#include "InputRecorder.h"
 
 namespace engine {
 namespace ecs {

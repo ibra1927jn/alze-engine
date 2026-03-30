@@ -1,5 +1,4 @@
 #include "DeferredRenderer.h"
-#include <glad/gl.h>
 
 namespace engine {
 namespace renderer {
