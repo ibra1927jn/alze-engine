@@ -73,7 +73,7 @@ private:
 
     struct LODSphereData {
         math::Vector3D position;
-        float scale;
+        float scale = 1.0f;
         renderer::Material material;
     };
 

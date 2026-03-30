@@ -180,7 +180,7 @@ private:
     math::Vector3D  m_listenerUp   {0, 1,  0};
     math::Vector3D  m_listenerRight{1, 0,  0};
     float           m_maxDist      = 50.0f;
-    float           m_groupVolumes[static_cast<int>(SoundGroup::COUNT)];
+    float           m_groupVolumes[static_cast<int>(SoundGroup::COUNT)] = {};
     Voice           m_voices[MIXER_VOICES];
     std::atomic<int> m_soundsPlayed{0};
     int             m_musicVoice   = -1;

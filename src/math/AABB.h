@@ -85,8 +85,8 @@ public:
 
     /// Resultado de un raycast contra la AABB
     struct RayHit {
-        bool  hit;        // ¿Hubo intersección?
-        float distance;   // Distancia desde el origen del rayo
+        bool  hit = false;        // ¿Hubo intersección?
+        float distance = 0.0f;   // Distancia desde el origen del rayo
         Vector2D point;   // Punto de impacto
         Vector2D normal;  // Normal de la superficie impactada
     };

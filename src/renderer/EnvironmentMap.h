@@ -162,7 +162,7 @@ void main() {
             totalWeight += NdotL;
         }
     }
-    prefilteredColor /= totalWeight;
+    if (totalWeight > 0.0) prefilteredColor /= totalWeight;
     FragColor = vec4(prefilteredColor, 1.0);
 }
 )GLSL";

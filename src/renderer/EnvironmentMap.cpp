@@ -369,10 +369,10 @@ void EnvironmentMap::computeCubemapViews(float out[6][16]) {
         auto& la = faces[f];
         float fx = la.cx-la.ex, fy = la.cy-la.ey, fz = la.cz-la.ez;
         float flen = std::sqrt(fx*fx+fy*fy+fz*fz);
-        fx/=flen; fy/=flen; fz/=flen;
+        if (flen > 1e-6f) { fx/=flen; fy/=flen; fz/=flen; }
         float sx = fy*la.uz-fz*la.uy, sy = fz*la.ux-fx*la.uz, sz = fx*la.uy-fy*la.ux;
         float slen = std::sqrt(sx*sx+sy*sy+sz*sz);
-        sx/=slen; sy/=slen; sz/=slen;
+        if (slen > 1e-6f) { sx/=slen; sy/=slen; sz/=slen; }
         float ux = sy*fz-sz*fy, uy = sz*fx-sx*fz, uz = sx*fy-sy*fx;
         out[f][0]=sx;  out[f][4]=sy;  out[f][8]=sz;   out[f][12]=-(sx*la.ex+sy*la.ey+sz*la.ez);
         out[f][1]=ux;  out[f][5]=uy;  out[f][9]=uz;   out[f][13]=-(ux*la.ex+uy*la.ey+uz*la.ez);

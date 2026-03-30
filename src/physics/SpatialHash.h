@@ -193,7 +193,7 @@ public:
 private:
     struct Entry {
         EntityId entity;
-        int cell;
+        int cell = 0;
     };
 
     int clampCell(float v) const {

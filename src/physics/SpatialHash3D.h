@@ -107,7 +107,7 @@ public:
 
 private:
     struct Entry {
-        uint64_t cellKey;
+        uint64_t cellKey = 0;
         BodyId bodyId;
     };
 
