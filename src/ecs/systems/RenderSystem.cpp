@@ -260,33 +260,32 @@ void RenderSystem::renderDebug() {
         line++;
     };
 
-    std::ostringstream o;
-    o.precision(1); o << std::fixed;
+    char buf[128];
 
     math::Color fc = m_hud.fps >= 55 ? math::Color::green() :
                      m_hud.fps >= 30 ? math::Color::yellow() : math::Color::red();
 
     sensor("=== SENSOR ===", math::Color::cyan());
-    o << "Pos: " << (int)tf.transform.position.x << "," << (int)tf.transform.position.y; sensor(o.str()); o.str("");
-    o << "Vel: " << (int)phys.velocity.x << "," << (int)phys.velocity.y; sensor(o.str(), math::Color(255, 150, 80)); o.str("");
-    o << "Speed: " << (int)phys.velocity.magnitude(); sensor(o.str(), math::Color(255, 150, 80)); o.str("");
-    o << "Ground: " << (m_debug.onGround ? "YES" : "NO"); sensor(o.str(), m_debug.onGround ? math::Color::green() : math::Color::red()); o.str("");
-    o << "Coyote: " << m_debug.coyoteTime; sensor(o.str(), m_debug.coyoteTime < m_debug.coyoteMax ? math::Color::yellow() : math::Color(100,100,100)); o.str("");
-    o << "Sleep: " << (phys.isSleeping ? "YES" : "no") << " t=" << phys.sleepTimer; sensor(o.str(), phys.isSleeping ? math::Color::red() : math::Color(100,100,100)); o.str("");
-    o << "Broad:" << m_debug.broadTests << " Narrow:" << m_debug.narrowTests << " Hits:" << m_debug.colResolved;
-    sensor(o.str(), math::Color(180, 180, 255)); o.str("");
-    o << "Entities: " << m_debug.entityCount; sensor(o.str()); o.str("");
-    o << "Particles: " << m_debug.particleCount; sensor(o.str()); o.str("");
-    o << "FPS: " << (int)m_hud.fps; sensor(o.str(), fc); o.str("");
+    std::snprintf(buf, sizeof(buf), "Pos: %d,%d", (int)tf.transform.position.x, (int)tf.transform.position.y); sensor(buf);
+    std::snprintf(buf, sizeof(buf), "Vel: %d,%d", (int)phys.velocity.x, (int)phys.velocity.y); sensor(buf, math::Color(255, 150, 80));
+    std::snprintf(buf, sizeof(buf), "Speed: %d", (int)phys.velocity.magnitude()); sensor(buf, math::Color(255, 150, 80));
+    std::snprintf(buf, sizeof(buf), "Ground: %s", m_debug.onGround ? "YES" : "NO"); sensor(buf, m_debug.onGround ? math::Color::green() : math::Color::red());
+    std::snprintf(buf, sizeof(buf), "Coyote: %.1f", m_debug.coyoteTime); sensor(buf, m_debug.coyoteTime < m_debug.coyoteMax ? math::Color::yellow() : math::Color(100,100,100));
+    std::snprintf(buf, sizeof(buf), "Sleep: %s t=%.1f", phys.isSleeping ? "YES" : "no", phys.sleepTimer); sensor(buf, phys.isSleeping ? math::Color::red() : math::Color(100,100,100));
+    std::snprintf(buf, sizeof(buf), "Broad:%d Narrow:%d Hits:%d", m_debug.broadTests, m_debug.narrowTests, m_debug.colResolved);
+    sensor(buf, math::Color(180, 180, 255));
+    std::snprintf(buf, sizeof(buf), "Entities: %d", m_debug.entityCount); sensor(buf);
+    std::snprintf(buf, sizeof(buf), "Particles: %d", m_debug.particleCount); sensor(buf);
+    std::snprintf(buf, sizeof(buf), "FPS: %d", (int)m_hud.fps); sensor(buf, fc);
 
     line++;
     sensor("=== PROFILER ===", math::Color::cyan());
     auto pm = core::Profiler::getMetric("Physics");
-    o << "Physics: " << pm.avgMs << "ms"; sensor(o.str(), math::Color(120, 200, 255)); o.str("");
+    std::snprintf(buf, sizeof(buf), "Physics: %.1fms", pm.avgMs); sensor(buf, math::Color(120, 200, 255));
     auto cm = core::Profiler::getMetric("Collision");
-    o << "Collision: " << cm.avgMs << "ms"; sensor(o.str(), math::Color(120, 200, 255)); o.str("");
+    std::snprintf(buf, sizeof(buf), "Collision: %.1fms", cm.avgMs); sensor(buf, math::Color(120, 200, 255));
     auto fm = core::Profiler::getFrameMetric();
-    o << "Frame: " << fm.avgMs << "ms (max " << fm.maxMs << ")"; sensor(o.str(), math::Color(255, 200, 100)); o.str("");
+    std::snprintf(buf, sizeof(buf), "Frame: %.1fms (max %.1f)", fm.avgMs, fm.maxMs); sensor(buf, math::Color(255, 200, 100));
 
     // Frame time graph
     auto hist = core::Profiler::getFrameHistory();
