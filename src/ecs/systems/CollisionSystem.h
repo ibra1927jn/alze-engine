@@ -29,7 +29,7 @@ public:
 
 private:
     void resolveCollision(Entity a, ColliderComponent& colA, Entity b, ColliderComponent& colB);
-    void applyWarmImpulse(Entity entity, const math::Vector2D& normal, float impulse, const math::Vector2D& pushDir);
+    void applyWarmImpulse(Entity entity, const math::Vector2D& normal, float impulse);
     float resolveVelocityWithFriction(Entity entity, const math::Vector2D& normal, Entity other);
 
     ECSCoordinator& m_ecs;

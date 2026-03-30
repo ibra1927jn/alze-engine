@@ -112,8 +112,8 @@ void CollisionSystem::resolveCollision(Entity a, ColliderComponent& colA, Entity
 
     if (hadWarm) {
         float warmFactor = 0.8f;
-        applyWarmImpulse(a, normal, cached.normalImpulse * warmFactor, pushDir);
-        applyWarmImpulse(b, -normal, cached.normalImpulse * warmFactor, normal);
+        applyWarmImpulse(a, normal, cached.normalImpulse * warmFactor);
+        applyWarmImpulse(b, -normal, cached.normalImpulse * warmFactor);
     }
 
     if (colA.isStatic) {
@@ -142,8 +142,7 @@ void CollisionSystem::resolveCollision(Entity a, ColliderComponent& colA, Entity
     }
 }
 
-void CollisionSystem::applyWarmImpulse(Entity entity, const math::Vector2D& normal, float impulse, const math::Vector2D& pushDir) {
-    (void)pushDir;
+void CollisionSystem::applyWarmImpulse(Entity entity, const math::Vector2D& normal, float impulse) {
     if (!m_ecs.hasComponent<PhysicsComponent>(entity)) return;
     auto& phys = m_ecs.getComponent<PhysicsComponent>(entity);
     if (phys.invMass == 0.0f) return;
