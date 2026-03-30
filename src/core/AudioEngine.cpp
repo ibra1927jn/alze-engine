@@ -217,13 +217,21 @@ int AudioEngine::playSoundAt(const std::string& id, const math::Vector2D& worldP
     auto clip = m_sounds.get(id);
     if (!clip || !clip->isValid()) return -1;
 
-    math::Vector2D delta = worldPos - m_listenerPos2D;
+    // Snapshot listener state under lock to avoid data race with setListenerPosition/setMaxDistance
+    math::Vector2D listenerPos;
+    float maxDist;
+    SDL_LockAudioDevice(m_deviceId);
+    listenerPos = m_listenerPos2D;
+    maxDist = m_maxDist;
+    SDL_UnlockAudioDevice(m_deviceId);
+
+    math::Vector2D delta = worldPos - listenerPos;
     float dist = delta.magnitude();
-    if (dist > m_maxDist) return -1;
-    float atten = 1.0f - dist / m_maxDist; atten *= atten;
+    if (dist > maxDist) return -1;
+    float atten = 1.0f - dist / maxDist; atten *= atten;
     float vol = getEffectiveVolume(group) * atten;
     if (vol <= 0.001f) return -1;
-    float pan = delta.x / m_maxDist;
+    float pan = delta.x / maxDist;
     return spawnVoice(clip->buffer, vol * std::min(1.0f, 1.0f - pan),
                                     vol * std::min(1.0f, 1.0f + pan), 1.0f, loops, id);
 }
@@ -236,13 +244,23 @@ int AudioEngine::playSoundAt3D(const std::string& id, const math::Vector3D& worl
     auto clip = m_sounds.get(id);
     if (!clip || !clip->isValid()) return -1;
 
-    math::Vector3D delta = worldPos - m_listenerPos3D;
+    // Snapshot listener state under lock to avoid data race with setListener3D/setMaxDistance
+    math::Vector3D listenerPos;
+    math::Vector3D listenerRight;
+    float maxDist;
+    SDL_LockAudioDevice(m_deviceId);
+    listenerPos = m_listenerPos3D;
+    listenerRight = m_listenerRight;
+    maxDist = m_maxDist;
+    SDL_UnlockAudioDevice(m_deviceId);
+
+    math::Vector3D delta = worldPos - listenerPos;
     float dist = delta.magnitude();
-    if (dist > m_maxDist) return -1;
-    float atten = 1.0f - dist / m_maxDist; atten *= atten;
+    if (dist > maxDist) return -1;
+    float atten = 1.0f - dist / maxDist; atten *= atten;
     float vol = getEffectiveVolume(group) * atten;
     if (vol <= 0.001f) return -1;
-    float pan = (dist > 0.001f) ? delta.normalized().dot(m_listenerRight) : 0.0f;
+    float pan = (dist > 0.001f) ? delta.normalized().dot(listenerRight) : 0.0f;
     return spawnVoice(clip->buffer, vol * std::min(1.0f, 1.0f - pan),
                                     vol * std::min(1.0f, 1.0f + pan), 1.0f, loops, id);
 }
