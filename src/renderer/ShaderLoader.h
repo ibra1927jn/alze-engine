@@ -7,7 +7,6 @@
 
 #include <string>
 #include <fstream>
-#include <sstream>
 #include "core/Logger.h"
 
 namespace engine {
@@ -23,9 +22,11 @@ public:
             core::Logger::warn("ShaderLoader", std::string("No se pudo abrir: ") + filePath);
             return "";
         }
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
+        file.seekg(0, std::ios::end);
+        std::string content(static_cast<size_t>(file.tellg()), '\0');
+        file.seekg(0, std::ios::beg);
+        file.read(&content[0], static_cast<std::streamsize>(content.size()));
+        return content;
     }
 
     /// Carga un par vertex+fragment desde la carpeta base.

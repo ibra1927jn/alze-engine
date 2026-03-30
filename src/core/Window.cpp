@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Logger.h"
-#include <sstream>
+#include <cstdio>
 
 namespace engine {
 namespace core {
@@ -38,9 +38,9 @@ Window::Window(const std::string& title, int width, int height)
     }
 
     m_isOpen = true;
-    std::ostringstream oss;
-    oss << "Ventana creada: " << width << "x" << height;
-    Logger::info("Window", oss.str());
+    char buf[64];
+    std::snprintf(buf, sizeof(buf), "Ventana creada: %dx%d", width, height);
+    Logger::info("Window", buf);
 }
 
 Window::~Window() {
@@ -69,9 +69,9 @@ void Window::handleResize(const SDL_Event& event) {
         m_width = event.window.data1;
         m_height = event.window.data2;
 
-        std::ostringstream oss;
-        oss << "Ventana redimensionada: " << m_width << "x" << m_height;
-        Logger::debug("Window", oss.str());
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "Ventana redimensionada: %dx%d", m_width, m_height);
+        Logger::debug("Window", buf);
 
         if (m_resizeCallback) {
             m_resizeCallback(m_width, m_height);
