@@ -111,12 +111,12 @@ void testProfiler() {
 
     Profiler::endFrame();
 
-    auto& metric = Profiler::getMetric("TestSection");
+    auto metric = Profiler::getMetric("TestSection");
     TEST("LastMs > 0", metric.lastMs > 0.0f);
     TEST("AvgMs > 0", metric.avgMs > 0.0f);
     TEST("Calls = 1", metric.calls == 1);
 
-    auto& frameMet = Profiler::getFrameMetric();
+    auto frameMet = Profiler::getFrameMetric();
     TEST("Frame lastMs > 0", frameMet.lastMs > 0.0f);
 
     // Multiple frames
@@ -129,7 +129,7 @@ void testProfiler() {
         Profiler::endFrame();
     }
 
-    auto& loopMetric = Profiler::getMetric("Loop");
+    auto loopMetric = Profiler::getMetric("Loop");
     TEST("Loop calls = 10", loopMetric.calls == 10);
 
     // Frame history
