@@ -87,6 +87,7 @@ void SpriteBatch2D::end() {
         case BlendMode::ALPHA:    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); break;
         case BlendMode::ADDITIVE: glBlendFunc(GL_SRC_ALPHA, GL_ONE); break;
         case BlendMode::MULTIPLY: glBlendFunc(GL_DST_COLOR, GL_ZERO); break;
+        default:                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); break;
     }
 
     m_shader.use();

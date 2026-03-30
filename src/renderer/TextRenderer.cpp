@@ -42,6 +42,7 @@ void TextRenderer::drawAligned(SpriteBatch2D& batch, const std::string& text,
         case TextAlign::LEFT:   offsetX = 0.0f; break;
         case TextAlign::CENTER: offsetX = -textW * 0.5f; break;
         case TextAlign::RIGHT:  offsetX = -textW; break;
+        default:                offsetX = 0.0f; break;
     }
     draw(batch, text, x + offsetX, y, scale, color, depth);
 }
