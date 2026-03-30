@@ -9,7 +9,6 @@
 #include "game/PlayState.h"
 #include "game/PauseState.h"
 #include "game/SharedWorldState.h"
-#include <SDL.h>
 #include <cstdlib>
 #include <ctime>
 

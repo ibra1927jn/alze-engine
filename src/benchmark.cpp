@@ -9,7 +9,6 @@
 //
 // Este ejecutable es 100% independiente del juego principal.
 // Usa solo SceneSetup3D + WorldScene3D (sin PlayState, sin SDL_mixer).
-#include <SDL.h>
 #include <cstdlib>
 #include <ctime>
 
