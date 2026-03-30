@@ -26,7 +26,7 @@ void DistanceConstraint::preStep(std::vector<RigidBody3D>& bodies, float dt) {
     float totalInvMass = invMassSum + angA + angB;
     m_effectiveMass = totalInvMass > 1e-8f ? 1.0f / totalInvMass : 0.0f;
     float error = dist - restLength;
-    float invDt = 1.0f / dt;
+    float invDt = (dt > 1e-8f) ? 1.0f / dt : 0.0f;
     m_bias = -0.2f * invDt * error * stiffness;
     if (m_impulse != 0.0f) {
         math::Vector3D P = m_n * m_impulse;
@@ -60,7 +60,7 @@ void BallSocketConstraint::preStep(std::vector<RigidBody3D>& bodies, float dt) {
     math::Vector3D wA = A.position + A.getOrientation().rotateVector(localAnchorA);
     math::Vector3D wB = B.position + B.getOrientation().rotateVector(localAnchorB);
     math::Vector3D error = wB - wA;
-    float invDt = 1.0f / dt;
+    float invDt = (dt > 1e-8f) ? 1.0f / dt : 0.0f;
     math::Vector3D rA = wA - A.position;
     math::Vector3D rB = wB - B.position;
     const math::Vector3D axes[3] = { {1,0,0}, {0,1,0}, {0,0,1} };
@@ -126,7 +126,7 @@ void HingeConstraint::preStep(std::vector<RigidBody3D>& bodies, float dt) {
 
     float errU = worldAxisB.dot(u);
     float errV = worldAxisB.dot(v);
-    float invDt = 1.0f / dt;
+    float invDt = (dt > 1e-8f) ? 1.0f / dt : 0.0f;
     for (int i = 0; i < 2; i++) {
         math::Vector3D axis = (i == 0) ? u : v;
         float err = (i == 0) ? errU : errV;
