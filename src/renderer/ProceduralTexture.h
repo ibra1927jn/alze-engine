@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glad/gl.h>
-#include "ShaderProgram.h"
 #include <cmath>
 #include <cstdint>
 #include <vector>
