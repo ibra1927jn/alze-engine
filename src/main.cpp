@@ -2,7 +2,6 @@
 #include "core/StateManager.h"
 #include "core/EventBus.h"
 #include "core/AudioEngine.h"
-#include "core/Profiler.h"
 #include "core/JobSystem.h"
 #include "ecs/ECSCoordinator.h"
 #include "ecs/Components.h"

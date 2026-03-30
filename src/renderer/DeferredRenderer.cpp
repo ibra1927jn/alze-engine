@@ -1,5 +1,4 @@
 #include "DeferredRenderer.h"
-#include "MeshPrimitives.h"
 #include <glad/gl.h>
 
 namespace engine {
