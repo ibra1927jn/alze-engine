@@ -1,5 +1,4 @@
 #include "Matrix4x4.h"
-#include <ostream>
 
 namespace engine {
 namespace math {
@@ -84,18 +83,16 @@ Matrix4x4 Matrix4x4::inverse() const {
 }
 
 // ── Debug ──────────────────────────────────────────────────────
-std::ostream& operator<<(std::ostream& os, const Matrix4x4& mat) {
-    os << "Matrix4x4(\n";
+std::string Matrix4x4::toString() const {
+    char buf[512];
+    int n = 0;
+    n += std::snprintf(buf + n, sizeof(buf) - n, "Matrix4x4(\n");
     for (int r = 0; r < 4; r++) {
-        os << "  [";
-        for (int c = 0; c < 4; c++) {
-            os << mat.get(r, c);
-            if (c < 3) os << ", ";
-        }
-        os << "]\n";
+        n += std::snprintf(buf + n, sizeof(buf) - n, "  [%g, %g, %g, %g]\n",
+            get(r, 0), get(r, 1), get(r, 2), get(r, 3));
     }
-    os << ")";
-    return os;
+    std::snprintf(buf + n, sizeof(buf) - n, ")");
+    return buf;
 }
 
 } // namespace math

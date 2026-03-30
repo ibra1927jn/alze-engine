@@ -118,7 +118,7 @@ public:
     bool operator!=(const AABB& other) const;
 
     // ── Debug ──────────────────────────────────────────────────
-    friend std::ostream& operator<<(std::ostream& os, const AABB& aabb);
+    std::string toString() const;
 };
 
 } // namespace math

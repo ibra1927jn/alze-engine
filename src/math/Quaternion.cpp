@@ -1,6 +1,5 @@
 #include "Quaternion.h"
 #include "Matrix4x4.h"
-#include <ostream>
 
 namespace engine {
 namespace math {
@@ -88,8 +87,10 @@ Matrix4x4 Matrix4x4::fromQuaternion(const Quaternion& q) {
 }
 
 // ── Debug ──────────────────────────────────────────────────────
-std::ostream& operator<<(std::ostream& os, const Quaternion& q) {
-    return os << "Quaternion(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
+std::string Quaternion::toString() const {
+    char buf[80];
+    std::snprintf(buf, sizeof(buf), "Quaternion(%g, %g, %g, %g)", x, y, z, w);
+    return buf;
 }
 
 } // namespace math

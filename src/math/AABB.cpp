@@ -1,6 +1,5 @@
 #include "AABB.h"
 #include "MathUtils.h"
-#include <ostream>
 
 namespace engine {
 namespace math {
@@ -191,10 +190,12 @@ bool AABB::operator!=(const AABB& other) const {
 }
 
 // ── Debug ──────────────────────────────────────────────────────
-std::ostream& operator<<(std::ostream& os, const AABB& aabb) {
-    os << "AABB(min=" << aabb.min << ", max=" << aabb.max
-       << ", size=" << aabb.size() << ")";
-    return os;
+std::string AABB::toString() const {
+    char buf[128];
+    Vector2D sz = size();
+    std::snprintf(buf, sizeof(buf), "AABB(min=(%g, %g), max=(%g, %g), size=(%g, %g))",
+        min.x, min.y, max.x, max.y, sz.x, sz.y);
+    return buf;
 }
 
 } // namespace math

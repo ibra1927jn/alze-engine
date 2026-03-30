@@ -1,6 +1,5 @@
 #include "Vector3D.h"
 #include "Vector2D.h"
-#include <ostream>
 
 namespace engine {
 namespace math {
@@ -24,8 +23,10 @@ Vector3D::Vector3D(const Vector2D& v2, float z_)
 #endif
 
 // ── Debug ──────────────────────────────────────────────────────
-std::ostream& operator<<(std::ostream& os, const Vector3D& v) {
-    return os << "Vector3D(" << v.x << ", " << v.y << ", " << v.z << ")";
+std::string Vector3D::toString() const {
+    char buf[80];
+    std::snprintf(buf, sizeof(buf), "Vector3D(%g, %g, %g)", x, y, z);
+    return buf;
 }
 
 } // namespace math

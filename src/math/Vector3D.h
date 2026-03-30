@@ -3,7 +3,8 @@
 #include "SimdConfig.h"
 #include "MathUtils.h"
 #include <cmath>
-#include <iosfwd>
+#include <string>
+#include <cstdio>
 
 namespace engine {
 namespace math {
@@ -386,7 +387,7 @@ public:
     }
 
     // ── Debug ──────────────────────────────────────────────────
-    friend std::ostream& operator<<(std::ostream& os, const Vector3D& v);
+    std::string toString() const;
 };
 
 } // namespace math

@@ -4,7 +4,8 @@
 #include "Vector3D.h"
 #include "MathUtils.h"
 #include <cmath>
-#include <iosfwd>
+#include <string>
+#include <cstdio>
 
 namespace engine {
 namespace math {
@@ -391,7 +392,7 @@ public:
     }
 
     // ── Debug ──────────────────────────────────────────────────
-    friend std::ostream& operator<<(std::ostream& os, const Matrix4x4& mat);
+    std::string toString() const;
 };
 
 } // namespace math
