@@ -27,7 +27,8 @@ public:
         if (size <= 0) { std::fclose(file); return ""; }
         std::fseek(file, 0, SEEK_SET);
         std::string content(static_cast<size_t>(size), '\0');
-        std::fread(&content[0], 1, static_cast<size_t>(size), file);
+        size_t read = std::fread(&content[0], 1, static_cast<size_t>(size), file);
+        content.resize(read);
         std::fclose(file);
         return content;
     }
