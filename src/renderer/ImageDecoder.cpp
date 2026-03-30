@@ -708,6 +708,7 @@ unsigned char* stbi_load_from_memory(const unsigned char* buf, int bufLen,
     // BMP
     else if (len >= 2 && data[0] == 'B' && data[1] == 'M') {
         ok = img_detail::decodeBMP(data, len, outW, outH, outCh, req_ch, pixels);
+        if (!ok) snprintf(g_last_error, sizeof(g_last_error), "BMP decode failed (in-memory)");
     }
     else {
         snprintf(g_last_error, sizeof(g_last_error), "Unknown in-memory image format");
