@@ -122,7 +122,7 @@ namespace game {
         int   w    = m_engine.getGraphics().getWidth();
         int   h    = m_engine.getGraphics().getHeight();
         auto  view = m_camera.getViewMatrix();
-        auto  proj = m_camera.getProjectionMatrix(static_cast<float>(w) / h);
+        auto  proj = m_camera.getProjectionMatrix(h > 0 ? static_cast<float>(w) / h : 1.0f);
         auto  vp   = proj * view;
 
         // ── HDR FBO ───────────────────────────────────────────────

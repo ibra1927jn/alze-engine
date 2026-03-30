@@ -107,7 +107,7 @@ void Play3DState::onEnter() {
 
         // â”€â”€ Motion blur VP tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         auto view0 = m_camera.getViewMatrix();
-        auto proj0 = m_camera.getProjectionMatrix(static_cast<float>(w) / h);
+        auto proj0 = m_camera.getProjectionMatrix(h > 0 ? static_cast<float>(w) / h : 1.0f);
         m_prevVP = proj0 * view0;
 
         SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -374,7 +374,7 @@ void Play3DState::onEnter() {
         int w = m_engine.getGraphics().getWidth();
         int h = m_engine.getGraphics().getHeight();
         auto view = m_camera.getViewMatrix();
-        auto proj = m_camera.getProjectionMatrix(static_cast<float>(w) / h);
+        auto proj = m_camera.getProjectionMatrix(h > 0 ? static_cast<float>(w) / h : 1.0f);
         auto vp = proj * view;
 
         // â•â• HDR FBO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
