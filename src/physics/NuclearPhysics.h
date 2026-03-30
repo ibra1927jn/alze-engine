@@ -30,13 +30,13 @@ namespace NuclearConstants {
 
 struct Nuclide {
     std::string name;
-    int Z;           // Protons (atomic number)
-    int A;           // Mass number (protons + neutrons)
+    int Z = 0;       // Protons (atomic number)
+    int A = 0;       // Mass number (protons + neutrons)
     int N() const { return A - Z; } // Neutrons
 
-    double atomicMass;     // In AMU
-    double halfLife;       // Seconds (0 = stable)
-    double bindingEnergy;  // MeV/nucleon
+    double atomicMass    = 0.0;  // In AMU
+    double halfLife      = 0.0;  // Seconds (0 = stable)
+    double bindingEnergy = 0.0;  // MeV/nucleon
 
     enum DecayMode : uint8_t {
         STABLE, ALPHA, BETA_MINUS, BETA_PLUS, GAMMA,

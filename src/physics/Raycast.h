@@ -14,7 +14,7 @@ struct RayHit {
     ecs::Entity entity;
     math::Vector2D point;      // Punto de impacto en mundo
     math::Vector2D normal;     // Normal de la superficie AABB impactada
-    float distance;            // Distancia desde el origen del rayo
+    float distance = 0.0f;     // Distancia desde el origen del rayo
 };
 
 /// Raycast — Lanzar rayos contra el mundo físico.

@@ -103,9 +103,9 @@ namespace MHDMath {
 // ═══════════════════════════════════════════════════════════════
 
 struct ConductingFluidProperties {
-    float electricalConductivity; // S/m
-    float density;                // kg/m³
-    float thermalPressure;        // Pa
+    float electricalConductivity = 0.0f; // S/m
+    float density               = 0.0f; // kg/m³
+    float thermalPressure       = 0.0f; // Pa
 
     static ConductingFluidProperties SolarPlasma() {
         return {1e6f, 1.4e-4f, 3.45e4f};  // Solar corona
