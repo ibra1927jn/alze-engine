@@ -77,52 +77,7 @@ struct BitReader {
     bool     done() const { return pos >= len && bits == 0; }
 };
 
-// Huffman tree (lookup table, max 15-bit codes)
-struct HuffTable {
-    static const int MAX_BITS = 15;
-    static const int MAX_CODES = 288;
-
-    int  counts[MAX_BITS+1];
-    int  symbols[MAX_CODES];
-
-    bool build(const int* lengths, int n) {
-        memset(counts, 0, sizeof(counts));
-        for (int i = 0; i < n; i++)
-            if (lengths[i]) counts[lengths[i]]++;
-
-        int code = 0;
-        int nexts[MAX_BITS+1] = {};
-        for (int i = 1; i <= MAX_BITS; i++) {
-            nexts[i] = code;
-            code = (code + counts[i]) << 1;
-        }
-        for (int i = 0; i < n; i++) {
-            int len = lengths[i];
-            if (len) symbols[nexts[len]++] = i;
-        }
-        return true;
-    }
-
-    // Decode one symbol from BitReader (bit-by-bit for simplicity)
-    int decode(BitReader& br) const {
-        int code = 0, len = 0;
-        int lo = 0; // offset into symbols[] for current length
-        for (int i = 1; i <= MAX_BITS; i++) {
-            code = (code << 1) | (int)br.read(1);
-            if (code < (lo + counts[i]) - (lo - 0)) {
-                // Check against range for this length
-                // We need to find the range: [start_i, start_i + counts[i])
-                // We'll use the nexts-based approach
-                (void)len; // suppress warning
-            }
-        }
-        // Fallback: slow canonical decode
-        (void)code;
-        return -1; // should not reach here in correct impl
-    }
-};
-
-// Proper canonical Huffman decode
+// Canonical Huffman decode
 struct CanonHuff {
     static const int MAX_BITS = 15;
     uint16_t count[MAX_BITS+2];
