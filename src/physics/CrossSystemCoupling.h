@@ -153,7 +153,8 @@ public:
             // ΔT = Q / (m·c)
             // Using water specific heat ≈ 4186 J/(kg·K)
             float specificHeat = 4186.0f;
-            p.temperature -= heatPerParticle_J / (p.mass * specificHeat);
+            if (p.mass > 0.0f)
+                p.temperature -= heatPerParticle_J / (p.mass * specificHeat);
         }
     }
 
@@ -177,7 +178,8 @@ public:
             // Impulse decays with 1/r² (inverse square)
             float impulse = energyJ / (4.0f * 3.14159f * distSq);
             math::Vector3D dir = diff * (1.0f / dist);
-            p.velocity += dir * (impulse / p.mass * 0.001f); // Scale factor for stability
+            if (p.mass > 0.0f)
+                p.velocity += dir * (impulse / p.mass * 0.001f); // Scale factor for stability
         }
     }
 };
