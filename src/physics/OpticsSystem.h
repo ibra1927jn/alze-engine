@@ -56,6 +56,7 @@ namespace RefractionMath {
     inline math::Vector3D snellsLaw(float n1, float n2,
                                      const math::Vector3D& incidentDir,
                                      const math::Vector3D& surfaceNormal) {
+        if (n2 == 0.0f) return math::Vector3D::Zero;
         float cosI = -incidentDir.dot(surfaceNormal);
         float sinT2 = (n1 / n2) * (n1 / n2) * (1.0f - cosI * cosI);
 
@@ -73,21 +74,25 @@ namespace RefractionMath {
     /// Returns R ∈ [0,1]. Transmittance T = 1 - R.
     /// n1, n2: indices of refraction, cosTheta: cos of angle of incidence
     inline float fresnelReflectance(float n1, float n2, float cosTheta) {
+        if (n2 == 0.0f) return 1.0f;
         float sinT2 = (n1 / n2) * (n1 / n2) * (1.0f - cosTheta * cosTheta);
         if (sinT2 > 1.0f) return 1.0f; // TIR
 
         float cosT = std::sqrt(1.0f - sinT2);
 
         // Fresnel s-polarization (transverse electric)
-        float Rs = (n1 * cosTheta - n2 * cosT) / (n1 * cosTheta + n2 * cosT);
+        float denomS = n1 * cosTheta + n2 * cosT;
+        float Rs = (denomS != 0.0f) ? (n1 * cosTheta - n2 * cosT) / denomS : 0.0f;
         // Fresnel p-polarization (transverse magnetic)
-        float Rp = (n2 * cosTheta - n1 * cosT) / (n2 * cosTheta + n1 * cosT);
+        float denomP = n2 * cosTheta + n1 * cosT;
+        float Rp = (denomP != 0.0f) ? (n2 * cosTheta - n1 * cosT) / denomP : 0.0f;
 
         return 0.5f * (Rs * Rs + Rp * Rp);
     }
 
     /// Schlick approximation for Fresnel reflectance (faster)
     inline float schlickApproximation(float n1, float n2, float cosTheta) {
+        if (n1 + n2 == 0.0f) return 0.0f;
         float r0 = (n1 - n2) / (n1 + n2);
         r0 = r0 * r0;
         return r0 + (1.0f - r0) * std::pow(1.0f - cosTheta, 5.0f);
@@ -95,6 +100,7 @@ namespace RefractionMath {
 
     /// Test total internal reflection
     inline bool totalInternalReflection(float n1, float n2, float cosTheta) {
+        if (n2 == 0.0f) return true;
         float sinT2 = (n1 / n2) * (n1 / n2) * (1.0f - cosTheta * cosTheta);
         return sinT2 > 1.0f;
     }
