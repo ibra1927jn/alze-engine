@@ -150,9 +150,9 @@ public:
     const T* end() const { return m_data + m_size; }
 
 private:
-    T* m_data;
-    size_t m_capacity;
-    size_t m_size;
+    T* m_data = nullptr;
+    size_t m_capacity = 0;
+    size_t m_size = 0;
 };
 
 } // namespace core

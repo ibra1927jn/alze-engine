@@ -78,7 +78,7 @@ struct RenderStats {
 
 // ── Frustum Planes ─────────────────────────────────────────────
 struct FrustumPlane {
-    float a, b, c, d;  // ax + by + cz + d = 0
+    float a = 0.0f, b = 0.0f, c = 0.0f, d = 0.0f;  // ax + by + cz + d = 0
 
     float distanceToPoint(const math::Vector3D& p) const {
         return a * p.x + b * p.y + c * p.z + d;

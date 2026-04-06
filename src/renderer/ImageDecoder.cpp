@@ -291,6 +291,9 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
     if (interlace != 0)                  return fail("Interlaced PNG not supported");
     if (bitDepth != 8 && bitDepth != 4 && bitDepth != 2 && bitDepth != 1)
         return fail("Only 1/2/4/8 bpp supported");
+    if (width <= 0 || height <= 0)       return fail("Invalid PNG dimensions");
+    if (width > 32768 || height > 32768) return fail("PNG dimensions too large");
+    if ((uint64_t)width * height > (uint64_t)1 << 30) return fail("PNG pixel count overflow");
 
     outW = width; outH = height;
 
@@ -435,6 +438,8 @@ static bool decodeBMP(const uint8_t* data, size_t len,
     uint32_t compress = u32le(data + 30);
     if (compress != 0 && compress != 3) return false; // only uncompressed
     if (bpp != 24 && bpp != 32) return false;
+    if (w > 32768 || h > 32768) return false;
+    if ((uint64_t)w * h > (uint64_t)1 << 30) return false;
 
     int srcCh = bpp / 8; // 3 or 4
     outCh = (reqCh != 0) ? reqCh : 3;
@@ -489,6 +494,8 @@ static bool decodeHDR(const uint8_t* data, size_t len,
     int iw = 0, ih = 0;
     sscanf(resBuf, "-Y %d +X %d", &ih, &iw);
     if (iw <= 0 || ih <= 0) return false;
+    if (iw > 32768 || ih > 32768) return false;
+    if ((uint64_t)iw * ih > (uint64_t)1 << 30) return false;
     w = iw; h = ih; channels = 3;
 
     pixels.resize((size_t)w * h * 3);

@@ -48,13 +48,11 @@ public:
     static constexpr uint32_t SECTION_CUSTOM_0  = 7;
 
     struct Metric {
-        float lastMs;
-        float avgMs;
-        float maxMs;
-        float totalMs;
-        int   calls;
-
-        Metric() : lastMs(0), avgMs(0), maxMs(0), totalMs(0), calls(0) {}
+        float lastMs = 0.0f;
+        float avgMs = 0.0f;
+        float maxMs = 0.0f;
+        float totalMs = 0.0f;
+        int   calls = 0;
     };
 
     /// Iniciar medición del frame

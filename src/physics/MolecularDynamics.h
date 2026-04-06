@@ -33,8 +33,8 @@ namespace MDConstants {
 // ═══════════════════════════════════════════════════════════════
 
 struct LennardJonesParams {
-    double epsilon;  // Well depth (J)
-    double sigma;    // Distance at V=0 (m)
+    double epsilon = 0.0;  // Well depth (J)
+    double sigma = 0.0;    // Distance at V=0 (m)
 
     // Equilibrium distance: r_min = 2^(1/6) · σ
     double equilibriumDistance() const { return sigma * 1.122462048309373; }
@@ -101,9 +101,9 @@ namespace LJMath {
 // ═══════════════════════════════════════════════════════════════
 
 struct MorseParams {
-    double D;    // Dissociation energy (J)
-    double a;    // Width parameter (1/m)
-    double r0;   // Equilibrium bond length (m)
+    double D = 0.0;    // Dissociation energy (J)
+    double a = 0.0;    // Width parameter (1/m)
+    double r0 = 0.0;   // Equilibrium bond length (m)
 
     static MorseParams HydrogenBond() {
         return {7.4e-19, 1.94e10, 0.74 * MDConstants::ANGSTROM}; // H-H

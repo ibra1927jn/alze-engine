@@ -228,10 +228,10 @@ private:
         return m_queryResult;
     }
 
-    float m_cellSize;
-    float m_invCellSize;
-    int   m_gridDim;
-    int   m_gridCells;
+    float m_cellSize = 0.0f;
+    float m_invCellSize = 0.0f;
+    int   m_gridDim = 0;
+    int   m_gridCells = 0;
     int   m_entityCount = 0;
     int   m_outOfBoundsCount = 0;
     bool  m_gridBuilt = false;

@@ -201,7 +201,7 @@ private:
 
     std::vector<Particle3D> m_pool;
     std::vector<int> m_nextFree;
-    int m_maxParticles;
+    int m_maxParticles = 0;
     int m_firstFree = 0;
     int m_activeCount = 0;
     float m_emitAccum = 0.0f;

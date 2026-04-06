@@ -72,8 +72,8 @@ struct XPBDConstraint {
 // ═══════════════════════════════════════════════════════════════
 
 struct XPBDDistanceConstraint : public XPBDConstraint {
-    int p1, p2;
-    float restDistance;
+    int p1 = 0, p2 = 0;
+    float restDistance = 0.0f;
 
     XPBDDistanceConstraint(int _p1, int _p2, float _restDist, float _compliance = 0.0f)
         : p1(_p1), p2(_p2), restDistance(_restDist) {
@@ -159,8 +159,8 @@ struct XPBDDistanceConstraint : public XPBDConstraint {
 // ═══════════════════════════════════════════════════════════════
 
 struct XPBDBendingConstraint : public XPBDConstraint {
-    int p1, p2;
-    float restDistance;
+    int p1 = 0, p2 = 0;
+    float restDistance = 0.0f;
 
     XPBDBendingConstraint(int _p1, int _p2, float _restDist, float _compliance = 0.0f)
         : p1(_p1), p2(_p2), restDistance(_restDist) {

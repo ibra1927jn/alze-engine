@@ -253,9 +253,9 @@ private:
     int cellY(float y) const { return std::max(0, std::min(m_gridDim - 1, (int)(y * m_invCellSize))); }
     int cellIndex(int x, int y) const { return y * m_gridDim + x; }
 
-    float m_cellSize;
-    float m_invCellSize;
-    int   m_gridDim;
+    float m_cellSize = 0.0f;
+    float m_invCellSize = 0.0f;
+    int   m_gridDim = 0;
     std::vector<std::vector<uint32_t>> m_cells;
     std::vector<int> m_usedCells;
 };

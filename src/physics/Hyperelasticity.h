@@ -24,7 +24,7 @@ namespace HyperelasticMath {
     // I₃ = λ₁²λ₂²λ₃² = J²  (J = det(F) = volume ratio)
 
     struct PrincipalStretches {
-        float lambda1, lambda2, lambda3;
+        float lambda1 = 0.0f, lambda2 = 0.0f, lambda3 = 0.0f;
 
         float I1() const { return lambda1*lambda1 + lambda2*lambda2 + lambda3*lambda3; }
         float I2() const {
@@ -40,8 +40,8 @@ namespace HyperelasticMath {
     // Good for rubber up to ~100% strain
 
     struct NeoHookeanParams {
-        float mu;      // Shear modulus (Pa)
-        float lambda;  // First Lamé parameter (Pa)
+        float mu = 0.0f;      // Shear modulus (Pa)
+        float lambda = 0.0f;  // First Lamé parameter (Pa)
 
         /// From Young's modulus E and Poisson ratio ν
         static NeoHookeanParams fromEngineering(float E, float nu) {
@@ -79,8 +79,8 @@ namespace HyperelasticMath {
     // C₁₀, C₀₁: material constants (Pa)
 
     struct MooneyRivlinParams {
-        float C10;  // Pa
-        float C01;  // Pa
+        float C10 = 0.0f;  // Pa
+        float C01 = 0.0f;  // Pa
 
         // For incompressible materials: μ = 2(C10 + C01)
         float shearModulus() const { return 2.0f * (C10 + C01); }
@@ -108,8 +108,8 @@ namespace HyperelasticMath {
     // Most general; excellent fit for all rubber-like materials
 
     struct OgdenTerm {
-        float mu;     // Modulus (Pa)
-        float alpha;  // Exponent (dimensionless)
+        float mu = 0.0f;     // Modulus (Pa)
+        float alpha = 0.0f;  // Exponent (dimensionless)
     };
 
     /// Strain energy for Ogden (multi-term)

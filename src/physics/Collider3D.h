@@ -83,7 +83,7 @@ struct AABB3D : public Collider3D {
 
 struct SphereCollider : public Collider3D {
     math::Vector3D center;
-    float radius;
+    float radius = 0.0f;
     SphereCollider() : radius(0.5f) { type = Shape::SPHERE; }
     SphereCollider(const math::Vector3D& c, float r) : center(c), radius(r) { type = Shape::SPHERE; }
     bool overlaps(const SphereCollider& other) const {
@@ -98,7 +98,7 @@ struct SphereCollider : public Collider3D {
 
 struct CapsuleCollider : public Collider3D {
     math::Vector3D center;
-    float height, radius;
+    float height = 0.0f, radius = 0.0f;
     math::Vector3D axis;
     CapsuleCollider() : height(2.0f), radius(0.5f), axis(0, 1, 0) { type = Shape::CAPSULE; }
     CapsuleCollider(const math::Vector3D& c, float h, float r,

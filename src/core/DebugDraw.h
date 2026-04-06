@@ -168,7 +168,7 @@ private:
     struct Command {
         Type type;
         math::Vector2D a, b;
-        float w, h;
+        float w = 0.0f, h = 0.0f;
         math::Color color;
         std::string text;
     };

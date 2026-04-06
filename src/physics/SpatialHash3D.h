@@ -123,8 +123,8 @@ private:
         return h;
     }
 
-    float m_cellSize;
-    float m_invCellSize;
+    float m_cellSize = 0.0f;
+    float m_invCellSize = 0.0f;
     std::vector<Entry> m_entries;
     std::vector<std::pair<BodyId, BodyId>> m_pairResult;
 };
