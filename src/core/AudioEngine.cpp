@@ -67,7 +67,7 @@ bool load(const std::string& path, AudioBuffer& out) {
     } else if (bitsPerSample == 8) {
         out.samples.resize(pcmSize);
         for (size_t i = 0; i < pcmSize; i++)
-            out.samples[i] = (static_cast<int16_t>(pcmData[i]) - 128) * 256;
+            out.samples[i] = static_cast<int16_t>((static_cast<int>(pcmData[i]) - 128) * 256);
     } else {
         Logger::warn("WAVLoader", "bitsPerSample=" + std::to_string(bitsPerSample) + " no soportado: " + path);
         return false;
