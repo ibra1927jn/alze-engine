@@ -53,8 +53,8 @@ public:
     static Uint64 now() { return SDL_GetPerformanceCounter(); }
 
 private:
-    Uint64 m_start;
-    Uint64 m_frequency;
+    Uint64 m_start = 0;
+    Uint64 m_frequency = 0;
 };
 
 } // namespace core
