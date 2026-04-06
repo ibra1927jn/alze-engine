@@ -120,7 +120,7 @@ bool EnvironmentMap::generate(const SkyParams& sky, int envSize, int irrSize, in
         glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipW, mipW);
         glViewport(0, 0, mipW, mipW);
-        float roughness = static_cast<float>(mip) / static_cast<float>(maxMipLevels - 1);
+        float roughness = (maxMipLevels > 1) ? static_cast<float>(mip) / static_cast<float>(maxMipLevels - 1) : 0.0f;
         m_prefilterShader.setFloat("uRoughness", roughness);
         for (int i = 0; i < 6; i++) {
             math::Matrix4x4 view = buildView(viewMatData[i]);
@@ -326,7 +326,7 @@ void EnvironmentMap::generateIBLFromCubemap(GLuint captureFBO, GLuint /*captureR
         glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipW, mipW);
         glViewport(0, 0, mipW, mipW);
-        float roughness = static_cast<float>(mip) / static_cast<float>(maxMipLevels - 1);
+        float roughness = (maxMipLevels > 1) ? static_cast<float>(mip) / static_cast<float>(maxMipLevels - 1) : 0.0f;
         m_prefilterShader.setFloat("uRoughness", roughness);
         for (int i = 0; i < 6; i++) {
             math::Matrix4x4 view = buildView(viewMatData[i]);
