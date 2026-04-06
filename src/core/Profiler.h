@@ -53,6 +53,8 @@ public:
         float maxMs = 0.0f;
         float totalMs = 0.0f;
         int   calls = 0;
+
+        Metric() : lastMs(0), avgMs(0), maxMs(0), totalMs(0), calls(0) {}
     };
 
     /// Iniciar medición del frame
