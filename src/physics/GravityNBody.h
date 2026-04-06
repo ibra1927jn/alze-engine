@@ -154,7 +154,8 @@ public:
                     math::Vector3D diff = gBodies[j].position - gBodies[i].position;
                     float distSqr = diff.sqrMagnitude();
                     float dist = std::sqrt(distSqr + softening * softening);
-                    
+                    if (dist < 1e-10f) continue;
+
                     float fMag = G * gBodies[i].mass * gBodies[j].mass / (dist * dist);
                     math::Vector3D force = diff * (fMag / dist); // diff/dist is direction
                     
@@ -181,6 +182,7 @@ private:
         if (distSqr < 1e-10f && node->isLeaf) return;
 
         float dist = std::sqrt(distSqr + softening * softening);
+        if (dist < 1e-10f) return;
         float s = node->getSize();
 
         if (node->isLeaf || (s / dist < theta)) {
