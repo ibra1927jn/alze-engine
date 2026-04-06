@@ -73,7 +73,7 @@ private:
         SDL_SetRenderDrawColor(m_renderer, c.r, c.g, c.b, c.a);
     }
 
-    SDL_Renderer* m_renderer;
+    SDL_Renderer* m_renderer = nullptr;
     int m_drawCalls = 0;
 };
 

@@ -74,7 +74,7 @@ private:
     };
 
     ECSCoordinator&            m_ecs;
-    SDL_Renderer*              m_renderer;
+    SDL_Renderer*              m_renderer = nullptr;
     core::RenderQueue          m_queue;
     core::RenderQueue          m_hudQueue;
     core::RenderBackend        m_backend;
