@@ -23,7 +23,7 @@ struct Particle3D {
         velocity = velocity * (1.0f - 0.5f * dt); // drag
         position = position + velocity * dt;
         life -= dt;
-        alpha = life / maxLife; // fade out
+        alpha = (maxLife > 0.0f) ? (life / maxLife) : 0.0f; // fade out
         if (life <= 0.0f) active = false;
     }
 };
