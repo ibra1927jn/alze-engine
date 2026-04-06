@@ -16,6 +16,7 @@ void PhysicsWorld3D::step(float dt) {
     }
     core::FrameAllocator::reset();
 
+    if (subSteps <= 0) subSteps = 1;
     const float subDt = dt / static_cast<float>(subSteps);
     
     for (int step = 0; step < subSteps; step++) {
