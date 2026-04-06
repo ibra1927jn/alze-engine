@@ -97,6 +97,7 @@ private:
                                const math::Vector3D& rA, const math::Vector3D& rB,
                                const math::Vector3D& dir) const;
     void narrowphaseAndSolve(float dt);
+    void solveContacts();
     void solveConstraints(float dt);
     void solveDistance(Transform3DComponent& tA, Physics3DComponent& pA,
                        Transform3DComponent& tB, Physics3DComponent& pB,

@@ -231,6 +231,10 @@ void Physics3DSystem::narrowphaseAndSolve(float dt) {
         m_contacts.push_back(sc);
     }
 
+    solveContacts();
+}
+
+void Physics3DSystem::solveContacts() {
     // Warm-start
     for (auto& c : m_contacts) {
         if (c.normalImpulse == 0.0f && c.tangentImpulse1 == 0.0f && c.tangentImpulse2 == 0.0f) continue;
