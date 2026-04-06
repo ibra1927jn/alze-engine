@@ -44,6 +44,7 @@
 - [2026-04-06] | Heartbeat maintenance pass #27 | 100% — guarded div-by-zero in CompressibleFlow blast (ambientPressure/ambientDensity), OpticsSystem refraction (n2==0, Fresnel denominators), MolecularDynamics velocity-Verlet (mass<=0), WaveSystem wavenumber (mediumSpeed<=0); added default initializers to Timer m_start/m_frequency
 - [2026-04-06] | Heartbeat maintenance pass #28 | 100% — fixed integer overflow in AudioEngine 8-bit WAV conversion, explicit float cast in FrameAllocator::getUsagePercent, null-pointer guard in Editor::handleInput (m_ecs), div-by-zero guards in PhysicsWorld3D CCD (subVelocity, invMassSum), ProceduralAudio synth (duration==0), RigidBody3D inertia (zero dimensions/radius)
 - [2026-04-06] | Heartbeat maintenance pass #29 | 100% — fixed OOB access in Play3DState HUD styleNames (4 entries for 5 styles), guarded div-by-zero in PhysicsWorld3D subSteps==0 and ForwardRenderer zero-scale matrix, added default initializer to Collider3D::type, guarded AudioEngine resampleTo sampleRate<=0
+- [2026-04-06] | Heartbeat maintenance pass #30 | 100% — guarded div-by-zero in CCDSystem conservativeAdvancement (dt==0), added upper-bounds checks to particle free-list pools (ParticleSystem3D.h, Particles.h) to prevent OOB access, renamed shadowing variable 'abs' to 'absVal' in InputManager::applyDeadzone
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
