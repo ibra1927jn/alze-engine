@@ -187,7 +187,9 @@ private:
                 if (!p.isActive) continue;
                 if ((p.position - vol.position).sqrMagnitude() >= rSq) continue;
                 // Exothermic (heat<0 in convention) → temperature increases
-                p.temperature -= heatPerParticle_J / (p.mass * m_config.specificHeatCapacity);
+                float denom = p.mass * m_config.specificHeatCapacity;
+                if (denom > 0.0f)
+                    p.temperature -= heatPerParticle_J / denom;
             }
         }
     }
