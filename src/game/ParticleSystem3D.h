@@ -127,7 +127,7 @@ public:
 
 private:
     void emit(const ParticleEmitter3D& emitter) {
-        if (m_firstFree < 0) return;
+        if (m_firstFree < 0 || m_firstFree >= m_maxParticles) return;
 
         int idx = m_firstFree;
         m_firstFree = m_nextFree[idx];

@@ -56,7 +56,7 @@ public:
     }
 
     Particle* spawn() {
-        if (m_firstFree < 0) return nullptr;
+        if (m_firstFree < 0 || m_firstFree >= static_cast<int>(m_pool.size())) return nullptr;
         int idx = m_firstFree;
         m_firstFree = m_nextFree[idx];
         return &m_pool[idx];
