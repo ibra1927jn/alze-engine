@@ -235,7 +235,7 @@ int AudioEngine::playSoundAt(const std::string& id, const math::Vector2D& worldP
 
     math::Vector2D delta = worldPos - listenerPos;
     float dist = delta.magnitude();
-    if (dist > maxDist) return -1;
+    if (maxDist <= 0.0f || dist > maxDist) return -1;
     float atten = 1.0f - dist / maxDist; atten *= atten;
     float vol = getEffectiveVolume(group) * atten;
     if (vol <= 0.001f) return -1;
@@ -264,7 +264,7 @@ int AudioEngine::playSoundAt3D(const std::string& id, const math::Vector3D& worl
 
     math::Vector3D delta = worldPos - listenerPos;
     float dist = delta.magnitude();
-    if (dist > maxDist) return -1;
+    if (maxDist <= 0.0f || dist > maxDist) return -1;
     float atten = 1.0f - dist / maxDist; atten *= atten;
     float vol = getEffectiveVolume(group) * atten;
     if (vol <= 0.001f) return -1;
