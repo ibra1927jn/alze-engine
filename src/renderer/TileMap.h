@@ -70,7 +70,7 @@ public:
     void render(SpriteBatch2D& batch, float cameraX, float cameraY,
                 float viewW, float viewH, float depth = 0.0f) const
     {
-        if (!m_tileset || m_tilesPerRow <= 0) return;
+        if (!m_tileset || m_tilesPerRow <= 0 || m_tilesPerCol <= 0 || m_tileSize <= 0) return;
 
         float ts = static_cast<float>(m_tileSize);
 

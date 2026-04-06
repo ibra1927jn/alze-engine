@@ -201,6 +201,7 @@ inline void createCube(Mesh3D& mesh) {
 
 /// Crear un plano XZ unitario en Y=0 con subdivisiones
 inline void createPlane(Mesh3D& mesh, int subdivisions = 1) {
+    if (subdivisions <= 0) subdivisions = 1;
     std::vector<float> verts;
     std::vector<uint32_t> indices;
 
