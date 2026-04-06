@@ -133,9 +133,9 @@ void closestPointsSegmentSegment(
 // ── Contact info ─────────────────────────────────────────────────
 struct ContactInfo {
     bool     hasContact = false;
-    math::Vector3D normal;
+    math::Vector3D normal{0,0,0};
     float    penetration = 0;
-    math::Vector3D contactPoint;
+    math::Vector3D contactPoint{0,0,0};
 };
 
 // ── OBB ──────────────────────────────────────────────────────────
