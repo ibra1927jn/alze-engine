@@ -471,14 +471,13 @@ void Play3DState::onEnter() {
                 pp.filmGrain = 0.015f;
                 pp.chromaticAberration = 0.0005f;
                 break;
-            case 2: // Monochrome
-                pp.colorSaturation = 0.0f;  // Zero saturation = B/W
-                pp.colorContrast = 1.35f;   // High contrast B/W
-                pp.vignetteStrength = 0.3f;
-                pp.filmGrain = 0.02f;
-                pp.bloomIntensity = 0.1f;
+            case 2: // Toon Cel-Shade (renderMode handles shading)
+                pp.colorSaturation = 1.3f;
+                pp.colorContrast = 1.3f;
+                pp.bloomIntensity = 0.12f;
+                pp.vignetteStrength = 0.1f;
                 break;
-            case 3: // Neon Vibrant
+            case 3: // Neon Holographic
                 pp.exposure = 1.5f;
                 pp.colorSaturation = 1.8f;
                 pp.colorContrast = 1.25f;
@@ -486,6 +485,13 @@ void Play3DState::onEnter() {
                 pp.bloomThreshold = 0.6f;
                 pp.vignetteStrength = 0.15f;
                 pp.chromaticAberration = 0.001f;
+                break;
+            case 4: // Monochrome
+                pp.colorSaturation = 0.0f;  // Zero saturation = B/W
+                pp.colorContrast = 1.35f;   // High contrast B/W
+                pp.vignetteStrength = 0.3f;
+                pp.filmGrain = 0.02f;
+                pp.bloomIntensity = 0.1f;
                 break;
             default: break; // 0 = PBR Realistic (already set)
         }
