@@ -2,7 +2,7 @@
 
 #include "math/Vector3D.h"
 #include <array>
-#include <vector> // Added for std::vector in HeightfieldCollider
+#include <vector>
 
 namespace engine {
 namespace physics {

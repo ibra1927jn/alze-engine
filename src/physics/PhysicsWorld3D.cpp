@@ -1,5 +1,4 @@
-// PhysicsWorld3D.cpp — Implementación de PhysicsWorld3D::step,
-// solveSingleContact, narrowphaseTest
+// PhysicsWorld3D.cpp — Implementación de PhysicsWorld3D
 #include "PhysicsWorld3D.h"
 #include <algorithm>
 #include <cmath>
