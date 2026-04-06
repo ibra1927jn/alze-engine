@@ -154,6 +154,7 @@ public:
     int getOutOfBoundsCount() const { return m_outOfBoundsCount; }
 
     void setCellSize(float size) {
+        if (size < 1e-8f) size = 1e-8f;
         m_cellSize = size;
         m_invCellSize = 1.0f / size;
     }
