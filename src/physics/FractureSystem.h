@@ -172,7 +172,7 @@ public:
     /// Apply force to fracture body — updates internal stress and damage
     void applyForce(int fractureBodyIdx, const math::Vector3D& force,
                     float crossSectionArea, const math::Vector3D& direction) {
-        if (fractureBodyIdx < 0 || fractureBodyIdx >= (int)m_bodies.size()) return;
+        if (fractureBodyIdx < 0 || fractureBodyIdx >= static_cast<int>(m_bodies.size())) return;
         auto& fb = m_bodies[fractureBodyIdx];
 
         fb.stress = FractureMath::fromForce(force, crossSectionArea, direction);

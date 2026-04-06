@@ -155,7 +155,7 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         float minDist = 1e30f;
         closestFace = -1;
 
-        for (int i = 0; i < (int)faces.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(faces.size()); ++i) {
             if (faces[i].dist < minDist) {
                 minDist = faces[i].dist;
                 closestFace = i;
@@ -179,11 +179,11 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         // Remove faces visible from new point, collect horizon edges
         edges.clear();
         int writeIdx = 0;
-        for (int i = 0; i < (int)faces.size(); i++) {
+        for (int i = 0; i < static_cast<int>(faces.size()); i++) {
             if (faces[i].normal.dot(sd.point - polytope[faces[i].a]) > 0) {
                 // Face visible — collect edges and mark for removal
                 auto addEdge = [&](int e1, int e2) {
-                    for (int j = 0; j < (int)edges.size(); j++) {
+                    for (int j = 0; j < static_cast<int>(edges.size()); j++) {
                         if (edges[j].first == e2 && edges[j].second == e1) {
                             edges[j] = edges.back();
                             edges.pop_back();
@@ -203,7 +203,7 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         }
         faces.resize(writeIdx);
 
-        int pIdx = (int)polytope.size();
+        int pIdx = static_cast<int>(polytope.size());
         polytope.push_back(sd.point);
         supportA.push_back(sd.pointA);
         supportB.push_back(sd.pointB);
@@ -213,7 +213,7 @@ EPAResult GJK::solveEPA(const ShapeA& a, const ShapeB& b, GJKResult& gjkResult) 
         }
     }
 
-    if (closestFace != -1 && closestFace < (int)faces.size()) {
+    if (closestFace != -1 && closestFace < static_cast<int>(faces.size())) {
         result.success = true;
         result.normal = faces[closestFace].normal;
         result.penetration = faces[closestFace].dist;
