@@ -414,6 +414,7 @@ void AudioEngine::audioCallback(void* userdata, Uint8* stream, int len) {
         if (bufFrames == 0) { v.active = false; continue; }
 
         for (int i = 0; i < numFrames; i++) {
+            if (v.position < 0.0f) v.position = 0.0f;
             int   srcA = static_cast<int>(v.position);
             float frac = v.position - srcA;
             int   srcB = srcA + 1;
