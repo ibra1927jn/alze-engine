@@ -233,7 +233,7 @@ void ForwardRenderer::setNormalMatrix(const math::Matrix4x4& model) {
     bool uniformScale = (std::abs(sx2 - avgS2) < avgS2 * 0.05f) &&
                         (std::abs(sy2 - avgS2) < avgS2 * 0.05f) &&
                         (std::abs(sz2 - avgS2) < avgS2 * 0.05f);
-    if (uniformScale) {
+    if (uniformScale && sx2 > 1e-10f) {
         float invS = 1.0f / std::sqrt(sx2);
         nm[0] = model.get(0,0)*invS; nm[1] = model.get(0,1)*invS; nm[2] = model.get(0,2)*invS;
         nm[3] = model.get(1,0)*invS; nm[4] = model.get(1,1)*invS; nm[5] = model.get(1,2)*invS;
