@@ -39,6 +39,7 @@
 - [2026-03-30] | Heartbeat maintenance pass #22 | 100% — added default cases to switch statements in ParticleSystem3D.h (EmitterShape) and SpriteAnimation.h (LoopMode), guarded division by zero in smoothstep/smootherstep/repeat (MathConstants.h, PhysicsMath.h) and sphereSubmergedFraction (radius==0)
 - [2026-03-30] | Heartbeat maintenance pass #23 | 100% — guarded division by zero in ADSR envelope (ProceduralAudio.cpp), UISystem slider/progressBar, MathUtils::remap, SpriteAnimation (fps/columns), aspect ratio calculations (Play3DState, BenchmarkScene3D). Added default initializers to uninitialized POD struct members in Physics3DSystem (SolverContact, PhysEntity), RenderSystem (RenderEntry), EventBus (5 event structs), Window (m_width/m_height), Play3DState (Collision3DEvent)
 - [2026-03-30] | Heartbeat maintenance pass #24 | 100% — added default initializers to uninitialized struct members (RayHit::distance, ConductingFluidProperties 3 floats, Nuclide Z/A/atomicMass/halfLife/bindingEnergy), guarded div-by-zero in SoftBody3D fatigue (stress==0) and PhysicsMaterial::stribeckFriction (stribeckVelocity==0)
+- [2026-04-06] | Heartbeat maintenance pass #25 | 100% — guarded div-by-zero in EnvironmentMap prefilter roughness (maxMipLevels==1) and RenderSystem particle rendering (maxLife==0), added default nullptr initializers to SDL_Renderer* members in RenderBackend.h and RenderSystem.h
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
