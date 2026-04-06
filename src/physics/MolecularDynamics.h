@@ -172,7 +172,7 @@ public:
 
         // 1. Half-step velocity: v(t+dt/2) = v(t) + F(t)/(2m) · dt
         for (int i = 0; i < n; i++) {
-            if (!m_atoms[i].isActive) continue;
+            if (!m_atoms[i].isActive || m_atoms[i].mass <= 0.0) continue;
             float halfDtOverM = static_cast<float>(0.5 * dt / m_atoms[i].mass);
             m_atoms[i].velocity += m_atoms[i].force * halfDtOverM;
             m_atoms[i].position += m_atoms[i].velocity * static_cast<float>(dt);
@@ -183,7 +183,7 @@ public:
 
         // 3. Complete velocity: v(t+dt) = v(t+dt/2) + F(t+dt)/(2m) · dt
         for (int i = 0; i < n; i++) {
-            if (!m_atoms[i].isActive) continue;
+            if (!m_atoms[i].isActive || m_atoms[i].mass <= 0.0) continue;
             float halfDtOverM = static_cast<float>(0.5 * dt / m_atoms[i].mass);
             m_atoms[i].velocity += m_atoms[i].force * halfDtOverM;
         }
