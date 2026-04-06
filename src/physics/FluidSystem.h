@@ -377,6 +377,7 @@ private:
     // ── 2. Compute Density & Pressure ───────────────────────────
     void computeDensityPressure() {
         float h = smoothingRadius;
+        if (h <= 0.0f) return;
         int n = static_cast<int>(m_particles.size());
 
         auto compute = [&](int start, int end) {
@@ -406,6 +407,7 @@ private:
     // ── 3. Compute Forces ───────────────────────────────────────
     void computeForces() {
         float h = smoothingRadius;
+        if (h <= 0.0f) return;
         int n = static_cast<int>(m_particles.size());
 
         auto compute = [&](int start, int end) {
