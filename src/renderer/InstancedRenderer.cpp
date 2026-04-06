@@ -48,13 +48,13 @@ void InstancedRenderer::render(const Mesh3D& mesh, ShaderProgram& /*shader*/) {
         GLuint loc = 3 + i;
         glEnableVertexAttribArray(loc);
         glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData),
-                              (void*)(i * 4 * sizeof(float)));
+                              reinterpret_cast<void*>(i * 4 * sizeof(float)));
         glVertexAttribDivisor(loc, 1);
     }
 
     glEnableVertexAttribArray(7);
     glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData),
-                          (void*)(16 * sizeof(float)));
+                          reinterpret_cast<void*>(16 * sizeof(float)));
     glVertexAttribDivisor(7, 1);
 
     glDrawElementsInstanced(GL_TRIANGLES, mesh.getIndexCount(),
