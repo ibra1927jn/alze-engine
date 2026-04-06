@@ -19,7 +19,7 @@ namespace core {
 ///
 class DebugDraw3D {
 public:
-    struct Color3 { float r, g, b, a; };
+    struct Color3 { float r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f; };
 
     static constexpr Color3 RED     = {1.0f, 0.2f, 0.2f, 1.0f};
     static constexpr Color3 GREEN   = {0.2f, 1.0f, 0.2f, 1.0f};

@@ -166,7 +166,7 @@ private:
     enum class Type { LINE, RECT_FILL, RECT_OUTLINE, TEXT };
 
     struct Command {
-        Type type;
+        Type type = Type::LINE;
         math::Vector2D a, b;
         float w = 0.0f, h = 0.0f;
         math::Color color;

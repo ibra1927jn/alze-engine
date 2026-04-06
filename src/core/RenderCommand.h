@@ -21,7 +21,7 @@ struct RenderCommand {
         LINE
     };
 
-    Type type;
+    Type type = Type::RECT_FILL;
     math::Vector2D pos;     // Centro (para rects) o punto A (para líneas)
     math::Vector2D posB;    // Punto B (solo para líneas)
     float width = 0, height = 0;
