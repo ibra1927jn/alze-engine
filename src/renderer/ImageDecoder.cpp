@@ -168,8 +168,10 @@ static bool inflateBlock(BitReader& br, CanonHuff& lit, CanonHuff& dist,
 
             if ((int)out.size() < d) return false;
             size_t base = out.size() - (size_t)d;
-            for (int i = 0; i < len; i++)
-                out.push_back(out[base + (i % d)]);
+            for (int i = 0; i < len; i++) {
+                uint8_t val = out[base + (i % d)];
+                out.push_back(val);
+            }
         }
     }
     return true;
