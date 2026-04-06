@@ -9,8 +9,15 @@ namespace core {
 
 namespace WAVLoader {
 
-uint16_t readU16LE(const uint8_t* p) { return p[0] | (p[1] << 8); }
-uint32_t readU32LE(const uint8_t* p) { return p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24); }
+uint16_t readU16LE(const uint8_t* p) {
+    return static_cast<uint16_t>(p[0] | (p[1] << 8));
+}
+uint32_t readU32LE(const uint8_t* p) {
+    return static_cast<uint32_t>(p[0])
+         | (static_cast<uint32_t>(p[1]) << 8)
+         | (static_cast<uint32_t>(p[2]) << 16)
+         | (static_cast<uint32_t>(p[3]) << 24);
+}
 
 bool load(const std::string& path, AudioBuffer& out) {
     SDL_RWops* rw = SDL_RWFromFile(path.c_str(), "rb");
@@ -40,7 +47,7 @@ bool load(const std::string& path, AudioBuffer& out) {
         memcpy(id, p, 4);
         uint32_t chunkSize = readU32LE(p + 4);
         p += 8;
-        if (strcmp(id, "fmt ") == 0 && chunkSize >= 16) {
+        if (strcmp(id, "fmt ") == 0 && chunkSize >= 16 && p + 16 <= end) {
             audioFormat   = readU16LE(p);
             numChannels   = readU16LE(p + 2);
             sampleRate    = readU32LE(p + 4);
@@ -49,7 +56,9 @@ bool load(const std::string& path, AudioBuffer& out) {
             pcmData = p;
             pcmSize = std::min(static_cast<size_t>(chunkSize), static_cast<size_t>(end - p));
         }
-        p += (chunkSize + 1) & ~1u;
+        size_t advance = (chunkSize + 1) & ~static_cast<size_t>(1);
+        if (advance > static_cast<size_t>(end - p)) break;
+        p += advance;
     }
 
     if (!pcmData || audioFormat != 1 || numChannels == 0 || sampleRate == 0) {
