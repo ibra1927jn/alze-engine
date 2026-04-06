@@ -56,8 +56,8 @@ Keyframe AnimChannel::sample(float time) const {
 
     for (size_t i = 0; i < keyframes.size() - 1; i++) {
         if (time >= keyframes[i].time && time < keyframes[i + 1].time) {
-            float t = (time - keyframes[i].time) /
-                      (keyframes[i + 1].time - keyframes[i].time);
+            float span = keyframes[i + 1].time - keyframes[i].time;
+            float t = (span > 1e-8f) ? (time - keyframes[i].time) / span : 0.0f;
             Keyframe result;
             result.time     = time;
             result.position = math::Vector3D::lerp(keyframes[i].position, keyframes[i + 1].position, t);
