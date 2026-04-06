@@ -86,8 +86,10 @@ void DecalRenderer::render(const math::Matrix4x4& view, const math::Matrix4x4& p
         if (!m_decals[i].active) continue;
         const Decal& d = m_decals[i];
         float alpha = 1.0f;
-        if (d.age > d.fadeStart)
-            alpha = 1.0f - (d.age - d.fadeStart) / (d.lifetime - d.fadeStart);
+        if (d.age > d.fadeStart) {
+            float fadeDuration = d.lifetime - d.fadeStart;
+            alpha = (fadeDuration > 1e-6f) ? 1.0f - (d.age - d.fadeStart) / fadeDuration : 0.0f;
+        }
         math::Matrix4x4 model = buildDecalMatrix(d.position, d.normal, d.size, d.rotation);
         m_shader.setMat4("uModel", model);
         m_shader.setFloat("uAlpha", alpha);
