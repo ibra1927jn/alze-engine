@@ -7,6 +7,8 @@ namespace renderer {
 namespace ModelLoader {
 
 const float* getBufferFloat(const cgltf_accessor* accessor, cgltf_size index) {
+    if (!accessor || !accessor->buffer_view || !accessor->buffer_view->buffer ||
+        !accessor->buffer_view->buffer->data) return nullptr;
     const uint8_t* base = static_cast<const uint8_t*>(accessor->buffer_view->buffer->data);
     base += accessor->buffer_view->offset + accessor->offset;
     base += index * accessor->stride;
@@ -14,6 +16,8 @@ const float* getBufferFloat(const cgltf_accessor* accessor, cgltf_size index) {
 }
 
 uint32_t getIndex(const cgltf_accessor* accessor, cgltf_size index) {
+    if (!accessor || !accessor->buffer_view || !accessor->buffer_view->buffer ||
+        !accessor->buffer_view->buffer->data) return 0;
     const uint8_t* base = static_cast<const uint8_t*>(accessor->buffer_view->buffer->data);
     base += accessor->buffer_view->offset + accessor->offset;
     if (accessor->component_type == cgltf_component_type_r_16u)
@@ -29,7 +33,7 @@ GLuint loadGLTFTexture(const cgltf_image* image, const char* basePath) {
     int w, h, channels;
     unsigned char* data = nullptr;
 
-    if (image->buffer_view) {
+    if (image->buffer_view && image->buffer_view->buffer && image->buffer_view->buffer->data) {
         const uint8_t* bufData = static_cast<const uint8_t*>(image->buffer_view->buffer->data);
         bufData += image->buffer_view->offset;
         int bufLen = static_cast<int>(image->buffer_view->size);
