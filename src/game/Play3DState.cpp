@@ -515,7 +515,7 @@ void Play3DState::onEnter() {
             // Top-left: stats
             int fps = static_cast<int>(m_engine.getFPS());
             int entities = m_ecs.getActiveEntityCount();
-            const char* styleNames[] = {"PBR", "Cinematic", "Mono", "Neon"};
+            const char* styleNames[] = {"PBR", "Cinematic", "Toon", "Neon", "Mono"};
             std::string stats = "FPS: " + std::to_string(fps)
                 + "  Entities: " + std::to_string(entities)
                 + "  Style: " + styleNames[m_visualStyle];
