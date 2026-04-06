@@ -86,7 +86,7 @@ bool load(const std::string& path, AudioBuffer& out) {
 // ── AudioBuffer ──────────────────────────────────────────────────
 
 void AudioBuffer::resampleTo(int targetRate) {
-    if (sampleRate == targetRate || targetRate <= 0) return;
+    if (sampleRate <= 0 || sampleRate == targetRate || targetRate <= 0) return;
     float ratio = static_cast<float>(sampleRate) / targetRate;
     int outFrames = static_cast<int>(numFrames() / ratio);
     std::vector<int16_t> out(outFrames * numChannels);
