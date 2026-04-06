@@ -294,7 +294,7 @@ void PhysicsWorld3D::step(float dt) {
                     Ray3D ccdRay(body.position, body.velocity / velMag);
                     int rayHitIdx = -1;
                     RayHit3D hit = raycast(ccdRay, rayHitIdx);
-                    if (hit.hit && rayHitIdx != i && hit.distance < subVelocity + radius) {
+                    if (hit.hit && rayHitIdx != i && hit.distance < subVelocity + radius && subVelocity > 1e-8f) {
                         float safeDist = std::max(0.0f, hit.distance - radius - 0.005f);
                         float toi = safeDist / subVelocity;
                         if (toi < minToi) {
@@ -315,7 +315,9 @@ void PhysicsWorld3D::step(float dt) {
                         if (vn < 0.0f) {
                             float restitution = std::max(body.material.restitution, other.material.restitution);
                             float j = -(1.0f + restitution) * vn;
-                            j /= (body.getInvMass() + other.getInvMass());
+                            float invMassSum = body.getInvMass() + other.getInvMass();
+                            if (invMassSum < 1e-12f) continue;
+                            j /= invMassSum;
                             math::Vector3D impulse = hitNormal * j;
                             body.velocity += impulse * body.getInvMass();
                             if (other.isDynamic()) {
