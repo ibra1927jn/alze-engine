@@ -182,10 +182,10 @@ float InputManager::applyDeadzone(float value) const {
     if (value > -m_deadzone && value < m_deadzone) return 0.0f;
     // Remap del rango [deadzone, 1] a [0, 1]
     float sign = value > 0.0f ? 1.0f : -1.0f;
-    float abs = value > 0.0f ? value : -value;
+    float absVal = value > 0.0f ? value : -value;
     float range = 1.0f - m_deadzone;
     if (range <= 0.0f) return sign;
-    return sign * (abs - m_deadzone) / range;
+    return sign * (absVal - m_deadzone) / range;
 }
 
 void InputManager::tryOpenGamepad() {
