@@ -26,13 +26,14 @@ void RigidBody3D::setBoxInertia(float w, float h, float d) {
     float mass = getMass(); if (mass <= 0) return;
     float k = mass / 12.0f;
     float Ix = k * (h*h + d*d), Iy = k * (w*w + d*d), Iz = k * (w*w + h*h);
-    m_invInertia = math::Vector3D(1.0f/Ix, 1.0f/Iy, 1.0f/Iz);
+    m_invInertia = math::Vector3D(Ix > 1e-12f ? 1.0f/Ix : 0.0f, Iy > 1e-12f ? 1.0f/Iy : 0.0f, Iz > 1e-12f ? 1.0f/Iz : 0.0f);
 }
 
 void RigidBody3D::setSphereInertia(float radius) {
     float mass = getMass(); if (mass <= 0) return;
     float I = 0.4f * mass * radius * radius;
-    m_invInertia = math::Vector3D(1.0f/I, 1.0f/I, 1.0f/I);
+    float invI = I > 1e-12f ? 1.0f/I : 0.0f;
+    m_invInertia = math::Vector3D(invI, invI, invI);
 }
 
 void RigidBody3D::setCapsuleInertia(float h, float r) {
