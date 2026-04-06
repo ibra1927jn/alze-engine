@@ -34,7 +34,7 @@ public:
         }
 
         // Inicializar GLAD
-        int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
+        int version = gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress));
         if (!version) {
             Logger::error("GraphicsContext", "GLAD fallo al cargar OpenGL");
             SDL_GL_DeleteContext(m_glContext);

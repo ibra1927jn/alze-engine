@@ -111,7 +111,7 @@ void testStress5000() {
     std::cout << "  [INFO] Avg Collision: " << avgCollision << "ms" << std::endl;
     std::cout << "  [INFO] Avg Frame:     " << avgFrame << "ms" << std::endl;
     std::cout << "  [INFO] Max Frame:     " << maxFrameMs << "ms" << std::endl;
-    std::cout << "  [INFO] Equiv FPS:     " << (int)equivFPS << std::endl;
+    std::cout << "  [INFO] Equiv FPS:     " << static_cast<int>(equivFPS) << std::endl;
     std::cout << "  [INFO] Broad:  " << collision->getBroadPhaseTests()
               << "  Narrow: " << collision->getNarrowPhaseTests()
               << "  Resolved: " << collision->getCollisionsResolved() << std::endl;

@@ -82,7 +82,7 @@ bool Editor::handleInput(const core::InputManager& input, float dt) {
         m_hierarchyScroll = std::max(0, m_hierarchyScroll - 1);
     }
     if (input.isKeyPressed(SDL_SCANCODE_MINUS)) {
-        int maxScroll = std::max(0, (int)m_entityList.size() - MAX_VISIBLE_ENTITIES);
+        int maxScroll = std::max(0, static_cast<int>(m_entityList.size()) - MAX_VISIBLE_ENTITIES);
         m_hierarchyScroll = std::min(maxScroll, m_hierarchyScroll + 1);
     }
 
@@ -145,7 +145,7 @@ void Editor::renderToolbar(renderer::ShapeRenderer2D& shapes, renderer::TextRend
 
     // Info de entidades
     char buf[64];
-    snprintf(buf, sizeof(buf), "Entities: %d", (int)m_entityList.size());
+    snprintf(buf, sizeof(buf), "Entities: %d", static_cast<int>(m_entityList.size()));
     text.draw(batch, buf, 200.0f, 8.0f, 1.0f, toSpriteCol(math::Color(160, 170, 190)));
 
     // Indicador de entidad seleccionada
@@ -166,11 +166,11 @@ void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::T
     m_ui.panel(shapes, text, "Hierarchy", HIERARCHY_X, HIERARCHY_Y, HIERARCHY_W, HIERARCHY_H);
 
     float startY = HIERARCHY_Y + 30.0f;
-    int visibleCount = std::min((int)m_entityList.size() - m_hierarchyScroll, MAX_VISIBLE_ENTITIES);
+    int visibleCount = std::min(static_cast<int>(m_entityList.size()) - m_hierarchyScroll, MAX_VISIBLE_ENTITIES);
 
     for (int i = 0; i < visibleCount; ++i) {
         int idx = i + m_hierarchyScroll;
-        if (idx >= (int)m_entityList.size()) break;
+        if (idx >= static_cast<int>(m_entityList.size())) break;
 
         ecs::Entity entity = m_entityList[idx];
         float y = startY + i * ENTRY_HEIGHT;
@@ -193,10 +193,10 @@ void Editor::renderHierarchyPanel(renderer::ShapeRenderer2D& shapes, renderer::T
     }
 
     // Indicador de scroll si hay mas entidades
-    if ((int)m_entityList.size() > MAX_VISIBLE_ENTITIES) {
+    if (static_cast<int>(m_entityList.size()) > MAX_VISIBLE_ENTITIES) {
         char scrollInfo[32];
         snprintf(scrollInfo, sizeof(scrollInfo), "[+/-] %d/%d",
-                 m_hierarchyScroll + 1, (int)m_entityList.size());
+                 m_hierarchyScroll + 1, static_cast<int>(m_entityList.size()));
         text.draw(batch, scrollInfo, HIERARCHY_X + 10.0f, HIERARCHY_Y + HIERARCHY_H - 20.0f,
                   1.0f, toSpriteCol(math::Color(120, 130, 150)));
     }
