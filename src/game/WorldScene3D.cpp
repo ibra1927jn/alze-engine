@@ -43,7 +43,7 @@ ecs::Entity createHelmet(ecs::ECSCoordinator& ecs, renderer::LoadedModel& model,
         t.dirty = true;
 
         const renderer::Material& mat =
-            (entry.materialIndex >= 0 && entry.materialIndex < (int)model.materials.size())
+            (entry.materialIndex >= 0 && entry.materialIndex < static_cast<int>(model.materials.size()))
                 ? model.materials[entry.materialIndex]
                 : renderer::Material::chrome();
 
