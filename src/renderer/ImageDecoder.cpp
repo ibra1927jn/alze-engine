@@ -35,11 +35,11 @@
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 namespace img_detail {
 
-inline uint16_t u16be(const uint8_t* p) { return (uint16_t)(p[0]<<8)|p[1]; }
-inline uint32_t u32be(const uint8_t* p) { return ((uint32_t)p[0]<<24)|((uint32_t)p[1]<<16)|((uint32_t)p[2]<<8)|p[3]; }
-inline uint16_t u16le(const uint8_t* p) { return (uint16_t)(p[1]<<8)|p[0]; }
-inline uint32_t u32le(const uint8_t* p) { return ((uint32_t)p[3]<<24)|((uint32_t)p[2]<<16)|((uint32_t)p[1]<<8)|p[0]; }
-inline int32_t  s32le(const uint8_t* p) { return (int32_t)u32le(p); }
+inline uint16_t u16be(const uint8_t* p) { return static_cast<uint16_t>(p[0]<<8)|p[1]; }
+inline uint32_t u32be(const uint8_t* p) { return (static_cast<uint32_t>(p[0])<<24)|(static_cast<uint32_t>(p[1])<<16)|(static_cast<uint32_t>(p[2])<<8)|p[3]; }
+inline uint16_t u16le(const uint8_t* p) { return static_cast<uint16_t>(p[1]<<8)|p[0]; }
+inline uint32_t u32le(const uint8_t* p) { return (static_cast<uint32_t>(p[3])<<24)|(static_cast<uint32_t>(p[2])<<16)|(static_cast<uint32_t>(p[1])<<8)|p[0]; }
+inline int32_t  s32le(const uint8_t* p) { return static_cast<int32_t>(u32le(p)); }
 
 // Paeth predictor (PNG spec)
 inline uint8_t paeth(int a, int b, int c) {
@@ -47,9 +47,9 @@ inline uint8_t paeth(int a, int b, int c) {
     int pa = std::abs(p - a);
     int pb = std::abs(p - b);
     int pc = std::abs(p - c);
-    if (pa <= pb && pa <= pc) return (uint8_t)a;
-    if (pb <= pc)             return (uint8_t)b;
-    return (uint8_t)c;
+    if (pa <= pb && pa <= pc) return static_cast<uint8_t>(a);
+    if (pb <= pc)             return static_cast<uint8_t>(b);
+    return static_cast<uint8_t>(c);
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -66,7 +66,7 @@ struct BitReader {
 
     void refill() {
         while (bits <= 24 && pos < len) {
-            buf  |= (uint32_t)data[pos++] << bits;
+            buf  |= static_cast<uint32_t>(data[pos++]) << bits;
             bits += 8;
         }
     }
@@ -92,7 +92,7 @@ struct CanonHuff {
         uint16_t next[MAX_BITS+2];
         next[0] = 0;
         for (int i = 1; i <= MAX_BITS; i++) {
-            next[i] = (uint16_t)total;
+            next[i] = static_cast<uint16_t>(total);
             total += count[i];
         }
 
@@ -101,10 +101,10 @@ struct CanonHuff {
         for (int i = 0; i < n; i++) {
             int len = lengths[i];
             if (len > 0)
-                tmp[next[len]++] = (uint16_t)i;
+                tmp[next[len]++] = static_cast<uint16_t>(i);
         }
         memcpy(symbol, tmp, total * sizeof(uint16_t));
-        count[MAX_BITS+1] = (uint16_t)total;
+        count[MAX_BITS+1] = static_cast<uint16_t>(total);
         return true;
     }
 
@@ -113,7 +113,7 @@ struct CanonHuff {
         int first = 0;
         int idx   = 0;
         for (int i = 1; i <= MAX_BITS; i++) {
-            code  = (code << 1) | (int)br.read(1);
+            code  = (code << 1) | static_cast<int>(br.read(1));
             int count_i = count[i];
             int diff = code - first;
             if (diff < count_i)
@@ -155,19 +155,19 @@ static bool inflateBlock(BitReader& br, CanonHuff& lit, CanonHuff& dist,
         if (sym < 0) return false;
         if (sym == 256) break; // end of block
         if (sym < 256) {
-            out.push_back((uint8_t)sym);
+            out.push_back(static_cast<uint8_t>(sym));
         } else {
             // Length-distance pair
             int lenIdx = sym - 257;
             if (lenIdx >= 29) return false;
-            int len = LEN_BASE[lenIdx] + (int)br.read(LEN_EXTRA[lenIdx]);
+            int len = LEN_BASE[lenIdx] + static_cast<int>(br.read(LEN_EXTRA[lenIdx]));
 
             int dSym = dist.decode(br);
             if (dSym < 0 || dSym >= 30) return false;
-            int d = DIST_BASE[dSym] + (int)br.read(DIST_EXTRA[dSym]);
+            int d = DIST_BASE[dSym] + static_cast<int>(br.read(DIST_EXTRA[dSym]));
 
-            if ((int)out.size() < d) return false;
-            size_t base = out.size() - (size_t)d;
+            if (static_cast<int>(out.size()) < d) return false;
+            size_t base = out.size() - static_cast<size_t>(d);
             for (int i = 0; i < len; i++) {
                 uint8_t val = out[base + (i % d)];
                 out.push_back(val);
@@ -182,7 +182,7 @@ static bool inflate(const uint8_t* data, size_t len, std::vector<uint8_t>& out) 
     if (len < 2) return false;
     // Skip zlib header (CMF + FLG)
     uint8_t cmf = data[0], flg = data[1];
-    (void)flg;
+    static_cast<void>(flg);
     if ((cmf & 0x0F) != 8) return false; // not deflate
     size_t offset = 2;
     if (cmf & 0x20) offset += 4; // dict â€” rare
@@ -200,8 +200,8 @@ static bool inflate(const uint8_t* data, size_t len, std::vector<uint8_t>& out) 
             // Stored block
             br.consume(br.bits & 7); // byte-align
             if (br.pos + 4 > br.len) return false;
-            uint16_t blen  = (uint16_t)br.data[br.pos] | ((uint16_t)br.data[br.pos+1] << 8);
-            uint16_t bnlen = (uint16_t)br.data[br.pos+2] | ((uint16_t)br.data[br.pos+3] << 8);
+            uint16_t blen  = static_cast<uint16_t>(br.data[br.pos]) | (static_cast<uint16_t>(br.data[br.pos+1]) << 8);
+            uint16_t bnlen = static_cast<uint16_t>(br.data[br.pos+2]) | (static_cast<uint16_t>(br.data[br.pos+3]) << 8);
             br.pos += 4;
             if ((blen ^ bnlen) != 0xFFFF) return false;
             if (br.pos + blen > br.len) return false;
@@ -215,14 +215,14 @@ static bool inflate(const uint8_t* data, size_t len, std::vector<uint8_t>& out) 
             if (!inflateBlock(br, litH, distH, out)) return false;
         } else if (btype == 2) {
             // Dynamic Huffman
-            int hlit  = (int)br.read(5) + 257;
-            int hdist = (int)br.read(5) + 1;
-            int hclen = (int)br.read(4) + 4;
+            int hlit  = static_cast<int>(br.read(5)) + 257;
+            int hdist = static_cast<int>(br.read(5)) + 1;
+            int hclen = static_cast<int>(br.read(4)) + 4;
 
             static const int CLORDER[19] = {16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15};
             int clens[19] = {};
             for (int i = 0; i < hclen; i++)
-                clens[CLORDER[i]] = (int)br.read(3);
+                clens[CLORDER[i]] = static_cast<int>(br.read(3));
 
             CanonHuff clH;
             clH.build(clens, 19);
@@ -233,9 +233,9 @@ static bool inflate(const uint8_t* data, size_t len, std::vector<uint8_t>& out) 
                 int sym = clH.decode(br);
                 if (sym < 0) return false;
                 if (sym < 16) { allLens[i++] = sym; }
-                else if (sym == 16) { int rep = (int)br.read(2) + 3; int prev_sym = i > 0 ? allLens[i-1] : 0; for (int j=0; j<rep; j++) allLens[i++] = prev_sym; }
-                else if (sym == 17) { int rep = (int)br.read(3) + 3; for (int j=0; j<rep; j++) allLens[i++] = 0; }
-                else                { int rep = (int)br.read(7) + 11;for (int j=0; j<rep; j++) allLens[i++] = 0; }
+                else if (sym == 16) { int rep = static_cast<int>(br.read(2)) + 3; int prev_sym = i > 0 ? allLens[i-1] : 0; for (int j=0; j<rep; j++) allLens[i++] = prev_sym; }
+                else if (sym == 17) { int rep = static_cast<int>(br.read(3)) + 3; for (int j=0; j<rep; j++) allLens[i++] = 0; }
+                else                { int rep = static_cast<int>(br.read(7)) + 11;for (int j=0; j<rep; j++) allLens[i++] = 0; }
             }
 
             CanonHuff litH, distH;
@@ -280,8 +280,8 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
     char      ihdrTag[5] = {};       memcpy(ihdrTag, p, 4); p += 4;
     if (strcmp(ihdrTag, "IHDR") != 0 || ihdrLen < 13) return fail("No IHDR");
 
-    int width      = (int)u32be(p); p += 4;
-    int height     = (int)u32be(p); p += 4;
+    int width      = static_cast<int>(u32be(p)); p += 4;
+    int height     = static_cast<int>(u32be(p)); p += 4;
     int bitDepth   = *p++;
     int colorType  = *p++;       // 0=Gray,2=RGB,3=Palette,4=GrayA,6=RGBA
     int compress   = *p++;       // 0=deflate
@@ -295,7 +295,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
         return fail("Only 1/2/4/8 bpp supported");
     if (width <= 0 || height <= 0)       return fail("Invalid PNG dimensions");
     if (width > 32768 || height > 32768) return fail("PNG dimensions too large");
-    if ((uint64_t)width * height > (uint64_t)1 << 30) return fail("PNG pixel count overflow");
+    if (static_cast<uint64_t>(width) * height > static_cast<uint64_t>(1) << 30) return fail("PNG pixel count overflow");
 
     outW = width; outH = height;
 
@@ -326,7 +326,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
         if (strcmp(tag, "IDAT") == 0) {
             idat.insert(idat.end(), chunkData, chunkData + chunkLen);
         } else if (strcmp(tag, "PLTE") == 0 && colorType == 3) {
-            memcpy(palette, chunkData, std::min((uint32_t)768, chunkLen));
+            memcpy(palette, chunkData, std::min(static_cast<uint32_t>(768), chunkLen));
             hasPalette = true;
         } else if (strcmp(tag, "IEND") == 0) {
             break;
@@ -337,7 +337,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
 
     // Inflate compressed IDAT
     std::vector<uint8_t> raw;
-    raw.reserve((size_t)width * height * (srcChannels + 1));
+    raw.reserve(static_cast<size_t>(width) * height * (srcChannels + 1));
     if (!inflate(idat.data(), idat.size(), raw))
         return fail("PNG inflate failed");
 
@@ -348,7 +348,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
         : (width * srcChannels);
     int rowBytes = stride + 1; // +1 for filter byte
 
-    if ((int)raw.size() < height * rowBytes)
+    if (static_cast<int>(raw.size()) < height * rowBytes)
         return fail("Insufficient decompressed data");
 
     std::vector<uint8_t> filtered(height * stride);
@@ -369,7 +369,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
                 case 0: dst[x] = s;                              break;
                 case 1: dst[x] = s + a;                          break;
                 case 2: dst[x] = s + b;                          break;
-                case 3: dst[x] = s + (uint8_t)((a + b) / 2);    break;
+                case 3: dst[x] = s + static_cast<uint8_t>((a + b) / 2);    break;
                 case 4: dst[x] = s + paeth(a, b, c);             break;
                 default: return fail("Unknown PNG filter type");
             }
@@ -379,7 +379,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
 
     // Expand palette / unpack sub-byte depths / convert to output channels
     int outCh = outChannels;
-    pixels.resize((size_t)width * height * outCh);
+    pixels.resize(static_cast<size_t>(width) * height * outCh);
 
     auto getGray = [&](int x, int y) -> uint8_t {
         if (bitDepth == 8) return filtered[y * stride + x];
@@ -390,7 +390,7 @@ static bool decodePNG_internal(const uint8_t* file, size_t fileLen,
         int bitIdx  = (pix_per_byte - 1 - (x % pix_per_byte)) * bits_per_px;
         uint8_t raw_val = (filtered[y * stride + byteIdx] >> bitIdx) & ((1 << bits_per_px) - 1);
         // Scale to 0..255
-        return (uint8_t)((raw_val * 255) / ((1 << bits_per_px) - 1));
+        return static_cast<uint8_t>((raw_val * 255) / ((1 << bits_per_px) - 1));
     };
 
     for (int y = 0; y < height; y++) {
@@ -441,17 +441,17 @@ static bool decodeBMP(const uint8_t* data, size_t len,
     if (compress != 0 && compress != 3) return false; // only uncompressed
     if (bpp != 24 && bpp != 32) return false;
     if (w > 32768 || h > 32768) return false;
-    if ((uint64_t)w * h > (uint64_t)1 << 30) return false;
+    if (static_cast<uint64_t>(w) * h > static_cast<uint64_t>(1) << 30) return false;
 
     int srcCh = bpp / 8; // 3 or 4
     outCh = (reqCh != 0) ? reqCh : 3;
-    pixels.resize((size_t)w * h * outCh);
+    pixels.resize(static_cast<size_t>(w) * h * outCh);
 
     int rowBytes = (w * srcCh + 3) & ~3; // 4-byte aligned rows
 
     for (int y = 0; y < h; y++) {
         int srcY = bottomUp ? (h - 1 - y) : y;
-        const uint8_t* row = data + dataOffset + (size_t)srcY * rowBytes;
+        const uint8_t* row = data + dataOffset + static_cast<size_t>(srcY) * rowBytes;
         for (int x = 0; x < w; x++) {
             const uint8_t* px = row + x * srcCh;
             // BMP stores BGR(A)
@@ -490,17 +490,17 @@ static bool decodeHDR(const uint8_t* data, size_t len,
     // Parse resolution: "-Y H +X W\n"
     char resBuf[64] = {};
     size_t rp = 0;
-    while (rp < 63 && pos < len && data[pos] != '\n') resBuf[rp++] = (char)data[pos++];
+    while (rp < 63 && pos < len && data[pos] != '\n') resBuf[rp++] = static_cast<char>(data[pos++]);
     if (pos < len) pos++; // skip \n
 
     int iw = 0, ih = 0;
     sscanf(resBuf, "-Y %d +X %d", &ih, &iw);
     if (iw <= 0 || ih <= 0) return false;
     if (iw > 32768 || ih > 32768) return false;
-    if ((uint64_t)iw * ih > (uint64_t)1 << 30) return false;
+    if (static_cast<uint64_t>(iw) * ih > static_cast<uint64_t>(1) << 30) return false;
     w = iw; h = ih; channels = 3;
 
-    pixels.resize((size_t)w * h * 3);
+    pixels.resize(static_cast<size_t>(w) * h * 3);
 
     // RLE scanline decoding
     for (int y = 0; y < h; y++) {
@@ -554,7 +554,7 @@ static bool decodeHDR(const uint8_t* data, size_t len,
                 if (pos + 4 > len) return false;
                 r0 = data[pos]; g0 = data[pos+1]; b0 = data[pos+2]; e0 = data[pos+3];
                 pos += 4;
-                float scale = (e0 != 0) ? std::ldexp(1.0f, (int)e0 - 128 - 8) : 0.0f;
+                float scale = (e0 != 0) ? std::ldexp(1.0f, static_cast<int>(e0) - 128 - 8) : 0.0f;
                 int baseIdx = (y * w + x) * 3;
                 pixels[baseIdx]   = r0 * scale;
                 pixels[baseIdx+1] = g0 * scale;
@@ -575,7 +575,7 @@ static std::vector<uint8_t> readFile(const char* path) {
     long sz = ftell(f);
     if (sz <= 0) { fclose(f); return {}; }
     if (fseek(f, 0, SEEK_SET) != 0) { fclose(f); return {}; }
-    std::vector<uint8_t> buf((size_t)sz);
+    std::vector<uint8_t> buf(static_cast<size_t>(sz));
     size_t read = fread(buf.data(), 1, buf.size(), f);
     if (read != buf.size()) { fclose(f); return {}; }
     fclose(f);
@@ -598,8 +598,8 @@ static void flipVertically(uint8_t* data, int w, int h, int ch) {
     int rowBytes = w * ch;
     std::vector<uint8_t> tmp(rowBytes);
     for (int y = 0; y < h / 2; y++) {
-        uint8_t* top = data + (size_t)y       * rowBytes;
-        uint8_t* bot = data + (size_t)(h-1-y) * rowBytes;
+        uint8_t* top = data + static_cast<size_t>(y)       * rowBytes;
+        uint8_t* bot = data + static_cast<size_t>(h-1-y) * rowBytes;
         memcpy(tmp.data(), top, rowBytes);
         memcpy(top, bot, rowBytes);
         memcpy(bot, tmp.data(), rowBytes);
@@ -648,7 +648,7 @@ unsigned char* stbi_load(const char* path, int* w, int* h, int* ch, int req_ch) 
     if (h) *h = outH;
     if (ch) *ch = outCh;
 
-    uint8_t* result = (uint8_t*)malloc(pixels.size());
+    uint8_t* result = reinterpret_cast<uint8_t*>(malloc(pixels.size()));
     if (!result) return nullptr;
     memcpy(result, pixels.data(), pixels.size());
 
@@ -676,7 +676,7 @@ float* stbi_loadf(const char* path, int* w, int* h, int* ch, int /*req_ch*/) {
     if (h) *h = outH;
     if (ch) *ch = outCh;
 
-    float* result = (float*)malloc(pixels.size() * sizeof(float));
+    float* result = reinterpret_cast<float*>(malloc(pixels.size() * sizeof(float)));
     if (!result) return nullptr;
     memcpy(result, pixels.data(), pixels.size() * sizeof(float));
 
@@ -684,8 +684,8 @@ float* stbi_loadf(const char* path, int* w, int* h, int* ch, int /*req_ch*/) {
         int rowFloats = outW * outCh;
         std::vector<float> tmp(rowFloats);
         for (int y = 0; y < outH / 2; y++) {
-            float* top = result + (size_t)y         * rowFloats;
-            float* bot = result + (size_t)(outH-1-y)* rowFloats;
+            float* top = result + static_cast<size_t>(y)         * rowFloats;
+            float* bot = result + static_cast<size_t>(outH-1-y)* rowFloats;
             memcpy(tmp.data(), top, rowFloats * sizeof(float));
             memcpy(top, bot, rowFloats * sizeof(float));
             memcpy(bot, tmp.data(), rowFloats * sizeof(float));
@@ -730,7 +730,7 @@ unsigned char* stbi_load_from_memory(const unsigned char* buf, int bufLen,
     if (h) *h = outH;
     if (ch) *ch = outCh;
 
-    uint8_t* result = (uint8_t*)malloc(pixels.size());
+    uint8_t* result = reinterpret_cast<uint8_t*>(malloc(pixels.size()));
     if (!result) return nullptr;
     memcpy(result, pixels.data(), pixels.size());
     if (g_flip_vertically) flipVertically(result, outW, outH, outCh);
@@ -750,7 +750,7 @@ float* stbi_loadf_from_memory(const unsigned char* buf, int bufLen,
     if (w) *w = outW;
     if (h) *h = outH;
     if (ch) *ch = outCh;
-    float* result = (float*)malloc(pixels.size() * sizeof(float));
+    float* result = reinterpret_cast<float*>(malloc(pixels.size() * sizeof(float)));
     if (!result) return nullptr;
     memcpy(result, pixels.data(), pixels.size() * sizeof(float));
     return result;
