@@ -144,13 +144,14 @@ public:
     /// y(x,t) = Σ A_i * sin(2π*f_i*t - k_i*x + φ_i)
     float sampleAmplitudeAt(const math::Vector3D& targetPosition) const {
         float totalAmplitude = 0.0f;
+        if (mediumSpeed <= 0.0f) return 0.0f;
 
         for (const auto& s : m_sources) {
             if (s.amplitude <= 0.0f) continue;
-            
+
             float dist = (s.position - targetPosition).magnitude();
             float A = WaveMath::sphericalAttenuation(s.amplitude, dist);
-            
+
             // Wavenumber k = 2*pi/lambda = 2*pi*f/c
             float k = (WaveConstants::TWO_PI * s.frequency) / mediumSpeed;
             float angularFreq = WaveConstants::TWO_PI * s.frequency;
