@@ -11,7 +11,7 @@ namespace physics {
 
 /// RayHit — Resultado de un raycast exitoso.
 struct RayHit {
-    ecs::Entity entity;
+    ecs::Entity entity = ecs::NULL_ENTITY;
     math::Vector2D point;      // Punto de impacto en mundo
     math::Vector2D normal;     // Normal de la superficie AABB impactada
     float distance = 0.0f;     // Distancia desde el origen del rayo

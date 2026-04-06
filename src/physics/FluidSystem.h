@@ -300,7 +300,7 @@ private:
     engine::core::JobSystem* m_jobs = nullptr;
 
     // Spatial hash for neighbor search
-    struct NeighborEntry { int index; float distSq; };
+    struct NeighborEntry { int index = 0; float distSq = 0.0f; };
     std::vector<std::vector<int>> m_grid;
     math::Vector3D m_gridMin;
     int m_gridDimX = 0, m_gridDimY = 0, m_gridDimZ = 0;

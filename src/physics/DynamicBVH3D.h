@@ -108,7 +108,7 @@ void DynamicBVH3D::raycast(const Ray3D& ray, T callback) const {
         std::abs(ray.direction.z) > 1e-8f ? 1.0f / ray.direction.z : 1e8f
     );
 
-    struct StackEntry { int nodeId; float tMin; };
+    struct StackEntry { int nodeId = 0; float tMin = 0.0f; };
     StackEntry stack[256];
     int top = 0;
     stack[top++] = {m_root, 0.0f};

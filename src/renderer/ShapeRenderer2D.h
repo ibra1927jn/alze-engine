@@ -231,8 +231,8 @@ public:
     int getDrawCalls() const { return static_cast<int>(m_batches.size()); }
 
 private:
-    struct Vertex { float x, y, r, g, b, a; };
-    struct Batch { GLenum mode; int first; int count; };
+    struct Vertex { float x = 0, y = 0, r = 0, g = 0, b = 0, a = 0; };
+    struct Batch { GLenum mode = 0; int first = 0; int count = 0; };
 
     bool m_initialized = false;
     GLuint m_vao = 0, m_vbo = 0;
