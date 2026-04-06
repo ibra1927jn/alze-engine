@@ -29,7 +29,7 @@ bool Editor::handleInput(const core::InputManager& input, float dt) {
         toggle();
     }
 
-    if (!m_active) return false;
+    if (!m_active || !m_ecs) return false;
 
     // Actualizar estado del mouse para UISystem
     auto mousePos = input.getMousePosition();
