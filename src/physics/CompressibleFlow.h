@@ -148,6 +148,7 @@ namespace BlastWave {
     inline float blastOverpressure(float energy_J, float distance_m,
                                     float ambientPressure = CompressibleConstants::P_ATM) {
         if (distance_m <= 0.01f) distance_m = 0.01f;
+        if (ambientPressure <= 0.0f) return 0.0f;
         float scaledDist = distance_m / std::pow(energy_J / ambientPressure, 1.0f / 3.0f);
         // Kingery-Bulmash approximation (simplified)
         float peakOverpressure = ambientPressure * 808.0f *
@@ -158,6 +159,7 @@ namespace BlastWave {
     /// Blast wave velocity (from Rankine-Hugoniot)
     inline float blastWaveVelocity(float overpressure, float ambientPressure,
                                     float ambientDensity, float gamma = 1.4f) {
+        if (ambientPressure <= 0.0f || ambientDensity <= 0.0f) return 0.0f;
         float pressureRatio = 1.0f + overpressure / ambientPressure;
         float c0 = std::sqrt(gamma * ambientPressure / ambientDensity);
         return c0 * std::sqrt(1.0f + (gamma + 1.0f) / (2.0f * gamma) * (pressureRatio - 1.0f));
