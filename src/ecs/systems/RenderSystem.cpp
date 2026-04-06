@@ -194,10 +194,10 @@ void RenderSystem::renderHUD() {
                      m_hud.fps >= 30 ? math::Color::yellow() : math::Color::red();
     float fW = math::MathUtils::clamp(m_hud.fps / 60.0f, 0, 1) * 190;
     m_hudQueue.pushRect({60 + fW * 0.5f, 18}, fW, 8, fc.withAlpha(200));
-    core::DebugDraw::drawText({12, 12}, "FPS:" + std::to_string((int)m_hud.fps), fc);
+    core::DebugDraw::drawText({12, 12}, "FPS:" + std::to_string(static_cast<int>(m_hud.fps)), fc);
 
     // Particle bar
-    float pW = math::MathUtils::clamp(m_hud.particleCount / (float)m_hud.maxParticles, 0, 1) * 190;
+    float pW = math::MathUtils::clamp(m_hud.particleCount / static_cast<float>(m_hud.maxParticles), 0, 1) * 190;
     m_hudQueue.pushRect({60 + pW * 0.5f, 32}, pW, 8, math::Color(80, 220, 120, 200));
     core::DebugDraw::drawText({12, 26}, "PTL:" + std::to_string(m_hud.particleCount), math::Color(80, 220, 120));
 
@@ -269,9 +269,9 @@ void RenderSystem::renderDebug() {
                      m_hud.fps >= 30 ? math::Color::yellow() : math::Color::red();
 
     sensor("=== SENSOR ===", math::Color::cyan());
-    std::snprintf(buf, sizeof(buf), "Pos: %d,%d", (int)tf.transform.position.x, (int)tf.transform.position.y); sensor(buf);
-    std::snprintf(buf, sizeof(buf), "Vel: %d,%d", (int)phys.velocity.x, (int)phys.velocity.y); sensor(buf, math::Color(255, 150, 80));
-    std::snprintf(buf, sizeof(buf), "Speed: %d", (int)phys.velocity.magnitude()); sensor(buf, math::Color(255, 150, 80));
+    std::snprintf(buf, sizeof(buf), "Pos: %d,%d", static_cast<int>(tf.transform.position.x), static_cast<int>(tf.transform.position.y)); sensor(buf);
+    std::snprintf(buf, sizeof(buf), "Vel: %d,%d", static_cast<int>(phys.velocity.x), static_cast<int>(phys.velocity.y)); sensor(buf, math::Color(255, 150, 80));
+    std::snprintf(buf, sizeof(buf), "Speed: %d", static_cast<int>(phys.velocity.magnitude())); sensor(buf, math::Color(255, 150, 80));
     std::snprintf(buf, sizeof(buf), "Ground: %s", m_debug.onGround ? "YES" : "NO"); sensor(buf, m_debug.onGround ? math::Color::green() : math::Color::red());
     std::snprintf(buf, sizeof(buf), "Coyote: %.1f", m_debug.coyoteTime); sensor(buf, m_debug.coyoteTime < m_debug.coyoteMax ? math::Color::yellow() : math::Color(100,100,100));
     std::snprintf(buf, sizeof(buf), "Sleep: %s t=%.1f", phys.isSleeping ? "YES" : "no", phys.sleepTimer); sensor(buf, phys.isSleeping ? math::Color::red() : math::Color(100,100,100));
@@ -279,7 +279,7 @@ void RenderSystem::renderDebug() {
     sensor(buf, math::Color(180, 180, 255));
     std::snprintf(buf, sizeof(buf), "Entities: %d", m_debug.entityCount); sensor(buf);
     std::snprintf(buf, sizeof(buf), "Particles: %d", m_debug.particleCount); sensor(buf);
-    std::snprintf(buf, sizeof(buf), "FPS: %d", (int)m_hud.fps); sensor(buf, fc);
+    std::snprintf(buf, sizeof(buf), "FPS: %d", static_cast<int>(m_hud.fps)); sensor(buf, fc);
 
     line++;
     sensor("=== PROFILER ===", math::Color::cyan());

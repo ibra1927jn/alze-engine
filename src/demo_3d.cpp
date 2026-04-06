@@ -468,7 +468,7 @@ int main() {
         sceneGraph.updateTransforms();
 
         math::Matrix4x4 view = fps.getViewMatrix();
-        math::Matrix4x4 proj = fps.getProjectionMatrix((float)W / H);
+        math::Matrix4x4 proj = fps.getProjectionMatrix(static_cast<float>(W) / H);
 
         fwd.begin(view, proj);
         sceneGraph.submitToRenderer(fwd);
@@ -489,7 +489,7 @@ int main() {
             snprintf(title, sizeof(title),
                 "ALZE v3 | FPS: %d | Draw: %d | Culled: %d | Tris: %dk | Bodies: %d | Contacts: %d | %s",
                 fc, stats.drawCalls, stats.culledObjects,
-                stats.totalTriangles / 1000, (int)ballBodyIds.size(),
+                stats.totalTriangles / 1000, static_cast<int>(ballBodyIds.size()),
                 physWorld.getContactCount(),
                 mouseCaptured ? "CAPTURED" : "Click to capture");
             SDL_SetWindowTitle(window, title);

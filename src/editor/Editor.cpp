@@ -110,7 +110,7 @@ void Editor::update(float /*dt*/) {
     }
 
     // Clampear scroll
-    int maxScroll = std::max(0, (int)m_entityList.size() - MAX_VISIBLE_ENTITIES);
+    int maxScroll = std::max(0, static_cast<int>(m_entityList.size()) - MAX_VISIBLE_ENTITIES);
     m_hierarchyScroll = std::min(m_hierarchyScroll, maxScroll);
 }
 

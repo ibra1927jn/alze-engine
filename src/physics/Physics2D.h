@@ -222,7 +222,7 @@ public:
         for (int y = y0; y <= y1; ++y) {
             for (int x = x0; x <= x1; ++x) {
                 int idx = cellIndex(x, y);
-                if (idx < 0 || idx >= (int)m_cells.size()) continue;
+                if (idx < 0 || idx >= static_cast<int>(m_cells.size())) continue;
                 if (m_cells[idx].empty()) m_usedCells.push_back(idx);
                 m_cells[idx].push_back(id);
             }
@@ -249,8 +249,8 @@ public:
     }
 
 private:
-    int cellX(float x) const { return std::max(0, std::min(m_gridDim - 1, (int)(x * m_invCellSize))); }
-    int cellY(float y) const { return std::max(0, std::min(m_gridDim - 1, (int)(y * m_invCellSize))); }
+    int cellX(float x) const { return std::max(0, std::min(m_gridDim - 1, static_cast<int>(x * m_invCellSize))); }
+    int cellY(float y) const { return std::max(0, std::min(m_gridDim - 1, static_cast<int>(y * m_invCellSize))); }
     int cellIndex(int x, int y) const { return y * m_gridDim + x; }
 
     float m_cellSize = 0.0f;
@@ -306,7 +306,7 @@ public:
 
         // 2. Broadphase
         m_broadphase.clear();
-        for (uint32_t i = 0; i < (uint32_t)m_bodies.size(); ++i) {
+        for (uint32_t i = 0; i < static_cast<uint32_t>(m_bodies.size()); ++i) {
             if (!m_bodies[i].active) continue;
             m_broadphase.insert(i, m_bodies[i].bounds());
         }

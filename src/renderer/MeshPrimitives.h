@@ -110,7 +110,7 @@ public:
             glEnableVertexAttribArray(loc);
             glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE,
                                   16 * sizeof(float),
-                                  (void*)(i * 4 * sizeof(float)));
+                                  reinterpret_cast<void*>(i * 4 * sizeof(float)));
             glVertexAttribDivisor(loc, 1); // 1 = per instance
         }
 
