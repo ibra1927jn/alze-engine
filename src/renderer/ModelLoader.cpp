@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 #include "ImageDecoder.h"
 #include "core/Logger.h"
+#include <cstring>
 
 namespace engine {
 namespace renderer {
@@ -9,6 +10,7 @@ namespace ModelLoader {
 const float* getBufferFloat(const cgltf_accessor* accessor, cgltf_size index) {
     if (!accessor || !accessor->buffer_view || !accessor->buffer_view->buffer ||
         !accessor->buffer_view->buffer->data) return nullptr;
+    if (accessor->stride == 0 || index >= accessor->count) return nullptr;
     const uint8_t* base = static_cast<const uint8_t*>(accessor->buffer_view->buffer->data);
     base += accessor->buffer_view->offset + accessor->offset;
     base += index * accessor->stride;
@@ -18,12 +20,15 @@ const float* getBufferFloat(const cgltf_accessor* accessor, cgltf_size index) {
 uint32_t getIndex(const cgltf_accessor* accessor, cgltf_size index) {
     if (!accessor || !accessor->buffer_view || !accessor->buffer_view->buffer ||
         !accessor->buffer_view->buffer->data) return 0;
+    if (index >= accessor->count) return 0;
     const uint8_t* base = static_cast<const uint8_t*>(accessor->buffer_view->buffer->data);
     base += accessor->buffer_view->offset + accessor->offset;
-    if (accessor->component_type == cgltf_component_type_r_16u)
-        return *(reinterpret_cast<const uint16_t*>(base + index * 2));
-    if (accessor->component_type == cgltf_component_type_r_32u)
-        return *(reinterpret_cast<const uint32_t*>(base + index * 4));
+    if (accessor->component_type == cgltf_component_type_r_16u) {
+        uint16_t val; std::memcpy(&val, base + index * 2, sizeof(val)); return val;
+    }
+    if (accessor->component_type == cgltf_component_type_r_32u) {
+        uint32_t val; std::memcpy(&val, base + index * 4, sizeof(val)); return val;
+    }
     if (accessor->component_type == cgltf_component_type_r_8u)
         return *(base + index);
     return 0;
