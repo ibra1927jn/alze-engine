@@ -111,7 +111,8 @@ struct XPBDDistanceConstraint : public XPBDConstraint {
     
     void applySolidMechanics(float dt) override {
         if (broken || dt <= 0.0f) return;
-        
+        if (crossSectionArea <= 0.0f) return;
+
         // F = lambda / dt^2
         float force = std::abs(lambda) / (dt * dt);
         float stress = force / crossSectionArea; // Pa
@@ -127,7 +128,7 @@ struct XPBDDistanceConstraint : public XPBDConstraint {
             // How much stress exceeded yield
             float excessStress = stress - yieldStrength;
             // delta Strain = sigma / E
-            float deltaStrain = excessStress / elasticModulus;
+            float deltaStrain = (elasticModulus > 0.0f) ? excessStress / elasticModulus : 0.0f;
             plasticStrain += deltaStrain;
             
             // Adjust restDistance (permanent stretch)
@@ -197,12 +198,13 @@ struct XPBDBendingConstraint : public XPBDConstraint {
     
     void applySolidMechanics(float dt) override {
         if (broken || dt <= 0.0f) return;
+        if (crossSectionArea <= 0.0f) return;
         float force = std::abs(lambda) / (dt * dt);
         float stress = force / crossSectionArea;
         if (stress > ultimateStrength) { broken = true; return; }
         if (stress > yieldStrength) {
             float excessStress = stress - yieldStrength;
-            float deltaStrain = excessStress / elasticModulus;
+            float deltaStrain = (elasticModulus > 0.0f) ? excessStress / elasticModulus : 0.0f;
             plasticStrain += deltaStrain;
             restDistance = restDistance * (1.0f + deltaStrain); 
         }
