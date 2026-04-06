@@ -41,7 +41,7 @@ namespace ProceduralAudio {
         for (int i = 0; i < numFrames; i++) {
             float t = static_cast<float>(i) / PA_SAMPLE_RATE;
 
-            float freqRatio = (p.freqEnd != p.freqStart) ? (t / p.duration) : 0.0f;
+            float freqRatio = (p.freqEnd != p.freqStart && p.duration > 1e-8f) ? (t / p.duration) : 0.0f;
             float freq      = p.freqStart + (p.freqEnd - p.freqStart) * freqRatio;
 
             if (p.vibratoDepth > 0.0f) {
