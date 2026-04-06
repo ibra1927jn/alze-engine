@@ -154,14 +154,17 @@ bool load(const char* filepath, LoadedModel& out) {
             std::vector<float> vertices(vertCount * 8);
             for (cgltf_size v = 0; v < vertCount; v++) {
                 const float* pos = getBufferFloat(posAccessor, v);
-                vertices[v*8+0]=pos[0]; vertices[v*8+1]=pos[1]; vertices[v*8+2]=pos[2];
+                if (!pos) { vertices[v*8+0]=0; vertices[v*8+1]=0; vertices[v*8+2]=0; }
+                else { vertices[v*8+0]=pos[0]; vertices[v*8+1]=pos[1]; vertices[v*8+2]=pos[2]; }
                 if (normAccessor) {
                     const float* norm = getBufferFloat(normAccessor, v);
-                    vertices[v*8+3]=norm[0]; vertices[v*8+4]=norm[1]; vertices[v*8+5]=norm[2];
+                    if (norm) { vertices[v*8+3]=norm[0]; vertices[v*8+4]=norm[1]; vertices[v*8+5]=norm[2]; }
+                    else { vertices[v*8+3]=0; vertices[v*8+4]=1; vertices[v*8+5]=0; }
                 } else { vertices[v*8+3]=0; vertices[v*8+4]=1; vertices[v*8+5]=0; }
                 if (uvAccessor) {
                     const float* uv = getBufferFloat(uvAccessor, v);
-                    vertices[v*8+6]=uv[0]; vertices[v*8+7]=uv[1];
+                    if (uv) { vertices[v*8+6]=uv[0]; vertices[v*8+7]=uv[1]; }
+                    else { vertices[v*8+6]=0; vertices[v*8+7]=0; }
                 } else { vertices[v*8+6]=0; vertices[v*8+7]=0; }
             }
 
