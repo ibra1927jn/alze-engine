@@ -37,6 +37,7 @@ public:
     /// strength: bump intensity (0.1 = subtle, 1.0 = strong)
     static ProceduralTexture normalMap(int size = 256, float scale = 8.0f, float strength = 0.3f) {
         ProceduralTexture tex;
+        if (size <= 0) return tex;
         std::vector<uint8_t> data(size * size * 4);
 
         for (int y = 0; y < size; y++) {
@@ -78,6 +79,7 @@ public:
     static ProceduralTexture roughnessMap(int size = 256, float scale = 4.0f,
                                           float baseRoughness = 0.5f, float variation = 0.3f) {
         ProceduralTexture tex;
+        if (size <= 0) return tex;
         std::vector<uint8_t> data(size * size);
 
         for (int y = 0; y < size; y++) {
@@ -104,6 +106,7 @@ public:
                                          uint8_t bgR = 180, uint8_t bgG = 175, uint8_t bgB = 170,
                                          uint8_t lineR = 80, uint8_t lineG = 75, uint8_t lineB = 72) {
         ProceduralTexture tex;
+        if (size <= 0) return tex;
         std::vector<uint8_t> data(size * size * 4);
 
         for (int y = 0; y < size; y++) {
@@ -141,6 +144,7 @@ public:
     /// Generate a subtle AO map (baked ambient occlusion from noise)
     static ProceduralTexture aoMap(int size = 256, float scale = 3.0f) {
         ProceduralTexture tex;
+        if (size <= 0) return tex;
         std::vector<uint8_t> data(size * size);
 
         for (int y = 0; y < size; y++) {

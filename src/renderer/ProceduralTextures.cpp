@@ -81,6 +81,7 @@ inline void heightToNormal(const std::vector<float>& heights, int size,
 // ════════════════════════════════════════════════════════════════
 
 GLuint createBrickNormal(int size) {
+    if (size <= 0) return 0;
     std::vector<float> heights(size * size);
     float brickW = size / 8.0f, brickH = size / 4.0f;
     float mortarW = size / 128.0f;
@@ -122,6 +123,7 @@ GLuint createBrickNormal(int size) {
 }
 
 GLuint createScratchesNormal(int size) {
+    if (size <= 0) return 0;
     std::vector<float> heights(size * size, 0.5f);
 
     // Random scratches (angled lines)
@@ -162,6 +164,7 @@ GLuint createScratchesNormal(int size) {
 }
 
 GLuint createMarbleNormal(int size) {
+    if (size <= 0) return 0;
     std::vector<float> heights(size * size);
 
     for (int y = 0; y < size; y++) {
@@ -191,6 +194,7 @@ GLuint createMarbleNormal(int size) {
 }
 
 GLuint createNoiseNormal(int size, float scale) {
+    if (size <= 0) return 0;
     std::vector<float> heights(size * size);
 
     for (int y = 0; y < size; y++) {
@@ -222,6 +226,7 @@ GLuint createNoiseNormal(int size, float scale) {
 // ════════════════════════════════════════════════════════════════
 
 GLuint createBrickAlbedo(int size) {
+    if (size <= 0) return 0;
     std::vector<Pixel> pixels(size * size);
     float brickW = size / 8.0f, brickH = size / 4.0f;
     float mortarW = size / 128.0f;
@@ -267,6 +272,7 @@ GLuint createBrickAlbedo(int size) {
 }
 
 GLuint createStoneFloorAlbedo(int size) {
+    if (size <= 0) return 0;
     std::vector<Pixel> pixels(size * size);
     float tileSize = size / 4.0f;
     float gap = size / 256.0f;
@@ -306,6 +312,7 @@ GLuint createStoneFloorAlbedo(int size) {
 }
 
 GLuint createStoneFloorNormal(int size) {
+    if (size <= 0) return 0;
     std::vector<float> heights(size * size);
     float tileSize = size / 4.0f;
     float gap = size / 256.0f;
