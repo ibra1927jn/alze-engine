@@ -107,6 +107,10 @@ add_executable(test_physics_bench tests/test_physics_bench.cpp)
 target_include_directories(test_physics_bench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_physics_bench PRIVATE engine_physics engine_core engine_math)
 
+add_executable(test_skeletal tests/test_skeletal.cpp src/renderer/SkeletalAnimation.cpp)
+target_include_directories(test_skeletal PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_skeletal PRIVATE engine_math)
+
 # ── Demo 3D ─────────────────────────────────────────────────────
 add_executable(demo_3d src/demo_3d.cpp)
 target_compile_definitions(demo_3d PRIVATE SDL_MAIN_HANDLED)
