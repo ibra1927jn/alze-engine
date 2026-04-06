@@ -25,7 +25,7 @@ struct RayHit3D {
 // Base class for all colliders
 struct Collider3D {
     enum class Shape { SPHERE, AABB, OBB, CAPSULE, HEIGHTFIELD, CONVEX_HULL };
-    Shape type;
+    Shape type = Shape::SPHERE;
     virtual ~Collider3D() = default;
 };
 
