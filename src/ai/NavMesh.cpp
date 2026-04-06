@@ -16,9 +16,10 @@ bool NavPolygon::containsPoint(const math::Vector2D& p) const {
     int n = static_cast<int>(vertices.size());
     bool inside = false;
     for (int i = 0, j = n - 1; i < n; j = i++) {
-        if (((vertices[i].y > p.y) != (vertices[j].y > p.y)) &&
+        float dy = vertices[j].y - vertices[i].y;
+        if (dy != 0.0f && ((vertices[i].y > p.y) != (vertices[j].y > p.y)) &&
             (p.x < (vertices[j].x - vertices[i].x) * (p.y - vertices[i].y) /
-             (vertices[j].y - vertices[i].y) + vertices[i].x)) {
+             dy + vertices[i].x)) {
             inside = !inside;
         }
     }
