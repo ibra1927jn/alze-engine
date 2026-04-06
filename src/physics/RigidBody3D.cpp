@@ -125,65 +125,70 @@ void RigidBody3D::clearForces() {
 
 // ── Integration (Velocity-Verlet + Aerodynamics) ────────────────
 
+void RigidBody3D::applyAerodynamicForces() {
+    float velSq = velocity.x*velocity.x + velocity.y*velocity.y + velocity.z*velocity.z;
+    if (velSq <= 0.01f) return;
+
+    float area = material.crossSectionArea;
+    if (area <= 0.0f) {
+        if (shape == Shape::SPHERE)
+            area = PhysicsMath::sphereCrossSection(sphereRadius);
+        else if (shape == Shape::BOX)
+            area = PhysicsMath::boxCrossSection(boxHalfExtents.x * 2.0f,
+                                                boxHalfExtents.y * 2.0f);
+        else
+            area = PhysicsMath::sphereCrossSection(capsuleRadius);
+    }
+    m_forceAccum += PhysicsMath::dragForce(
+        velocity, PhysicsMath::AIR_DENSITY, material.dragCoefficient, area);
+
+    // Magnus Effect (spinning objects curve through air)
+    float angVelSq = angularVelocity.x*angularVelocity.x +
+                     angularVelocity.y*angularVelocity.y +
+                     angularVelocity.z*angularVelocity.z;
+    if (angVelSq > 0.01f) {
+        float magnusCoeff = 0.5f * PhysicsMath::AIR_DENSITY * area * 0.1f;
+        m_forceAccum += PhysicsMath::magnusForce(
+            velocity, angularVelocity, magnusCoeff);
+    }
+}
+
+void RigidBody3D::applyBuoyancyForces() {
+    if (m_waterLevel <= -1e6f) return;
+
+    float depthBelowSurface = m_waterLevel - position.y;
+    float volume = 0.0f;
+    float submerged = 0.0f;
+    if (shape == Shape::SPHERE) {
+        volume = PhysicsMath::sphereVolume(sphereRadius);
+        submerged = PhysicsMath::sphereSubmergedFraction(sphereRadius, depthBelowSurface);
+    } else if (shape == Shape::BOX) {
+        volume = PhysicsMath::boxVolume(boxHalfExtents.x*2, boxHalfExtents.y*2, boxHalfExtents.z*2);
+        float halfH = boxHalfExtents.y;
+        submerged = (depthBelowSurface <= -halfH) ? 0.0f :
+                    (depthBelowSurface >= halfH) ? 1.0f :
+                    (depthBelowSurface + halfH) / (2.0f * halfH);
+    }
+    if (submerged > 0.0f) {
+        math::Vector3D buoyF = PhysicsMath::buoyancyForce(
+            PhysicsMath::WATER_DENSITY, volume, submerged,
+            PhysicsMath::GRAVITY_EARTH);
+        m_forceAccum += buoyF;
+        math::Vector3D waterDrag = PhysicsMath::dragForce(
+            velocity, PhysicsMath::WATER_DENSITY * submerged,
+            material.dragCoefficient * 2.0f,
+            (shape == Shape::SPHERE)
+                ? PhysicsMath::sphereCrossSection(sphereRadius)
+                : PhysicsMath::boxCrossSection(boxHalfExtents.x*2, boxHalfExtents.y*2));
+        m_forceAccum += waterDrag;
+    }
+}
+
 void RigidBody3D::integrate(float dt) {
     if (m_type != Type::DYNAMIC || m_invMass == 0.0f) return;
 
-    // ── Aerodynamic Forces (skip when nearly stationary) ──────
-    float velSq = velocity.x*velocity.x + velocity.y*velocity.y + velocity.z*velocity.z;
-    if (velSq > 0.01f) {
-        float area = material.crossSectionArea;
-        if (area <= 0.0f) {
-            if (shape == Shape::SPHERE)
-                area = PhysicsMath::sphereCrossSection(sphereRadius);
-            else if (shape == Shape::BOX)
-                area = PhysicsMath::boxCrossSection(boxHalfExtents.x * 2.0f,
-                                                    boxHalfExtents.y * 2.0f);
-            else
-                area = PhysicsMath::sphereCrossSection(capsuleRadius);
-        }
-        m_forceAccum += PhysicsMath::dragForce(
-            velocity, PhysicsMath::AIR_DENSITY, material.dragCoefficient, area);
-
-        // Magnus Effect (spinning objects curve through air)
-        float angVelSq = angularVelocity.x*angularVelocity.x +
-                         angularVelocity.y*angularVelocity.y +
-                         angularVelocity.z*angularVelocity.z;
-        if (angVelSq > 0.01f) {
-            float magnusCoeff = 0.5f * PhysicsMath::AIR_DENSITY * area * 0.1f;
-            m_forceAccum += PhysicsMath::magnusForce(
-                velocity, angularVelocity, magnusCoeff);
-        }
-    }
-
-    // ── Buoyancy (Archimedes' Principle) ──────────────────────
-    if (m_waterLevel > -1e6f) {
-        float depthBelowSurface = m_waterLevel - position.y;
-        float volume = 0.0f;
-        float submerged = 0.0f;
-        if (shape == Shape::SPHERE) {
-            volume = PhysicsMath::sphereVolume(sphereRadius);
-            submerged = PhysicsMath::sphereSubmergedFraction(sphereRadius, depthBelowSurface);
-        } else if (shape == Shape::BOX) {
-            volume = PhysicsMath::boxVolume(boxHalfExtents.x*2, boxHalfExtents.y*2, boxHalfExtents.z*2);
-            float halfH = boxHalfExtents.y;
-            submerged = (depthBelowSurface <= -halfH) ? 0.0f :
-                        (depthBelowSurface >= halfH) ? 1.0f :
-                        (depthBelowSurface + halfH) / (2.0f * halfH);
-        }
-        if (submerged > 0.0f) {
-            math::Vector3D buoyF = PhysicsMath::buoyancyForce(
-                PhysicsMath::WATER_DENSITY, volume, submerged,
-                PhysicsMath::GRAVITY_EARTH);
-            m_forceAccum += buoyF;
-            math::Vector3D waterDrag = PhysicsMath::dragForce(
-                velocity, PhysicsMath::WATER_DENSITY * submerged,
-                material.dragCoefficient * 2.0f,
-                (shape == Shape::SPHERE)
-                    ? PhysicsMath::sphereCrossSection(sphereRadius)
-                    : PhysicsMath::boxCrossSection(boxHalfExtents.x*2, boxHalfExtents.y*2));
-            m_forceAccum += waterDrag;
-        }
-    }
+    applyAerodynamicForces();
+    applyBuoyancyForces();
 
     // ── Velocity-Verlet Integration ─────────────────────────
     // Position step first (2nd-order accurate): x' = x + v*dt + 0.5*a*dt²

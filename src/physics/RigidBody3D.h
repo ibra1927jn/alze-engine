@@ -57,6 +57,11 @@ public:
     // Integration
     void integrate(float dt);
 
+private:
+    void applyAerodynamicForces();
+    void applyBuoyancyForces();
+public:
+
     enum class Shape { SPHERE, BOX, CAPSULE, HEIGHTFIELD, CONVEX_HULL };
     Shape shape = Shape::SPHERE;
     float sphereRadius = 0.5f;
