@@ -81,6 +81,7 @@
 - [2026-03-28] | 6 P0 bugs fixed (vibrato, GPU leak, material cmp, subsystem dt, entity sentinel) | Commit 1ba4872
 - [2026-03-28] | 6 P1/P2 bugs fixed (capsule 16pts, island O(N+M), raycast BVH, deferred cache, JobSystem, NavMesh move) | Commit f2b97f1
 - [2026-03-28] | 8 quality fixes (zero-alloc CSR, fix 80→8 iterations, SIMD negation, snprintf FPS, inline chunks, deduplicate quaternion) | Commit 45a9373
+- [2026-04-06] | Heartbeat #33: extract buildIslands/solveIslands/integrateBodies/stepSubsystems from PhysicsWorld3D::step(), clean up stale comments | Commits 108cddb, 1ebaef5
 
 ## Completado — Formula reference (no simulacion)
 - [2026-03-28] | QuantumSystem.h, NuclearPhysics.h, Relativity.h | Formulas correctas, sin loop de simulacion
