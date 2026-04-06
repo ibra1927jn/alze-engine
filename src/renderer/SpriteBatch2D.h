@@ -15,6 +15,7 @@ struct SpriteRect {
     float u0 = 0.0f, v0 = 0.0f, u1 = 1.0f, v1 = 1.0f;
     static SpriteRect full() { return {0, 0, 1, 1}; }
     static SpriteRect fromPixels(int x, int y, int w, int h, int atlasW, int atlasH) {
+        if (atlasW <= 0 || atlasH <= 0) return full();
         float iw = 1.0f / static_cast<float>(atlasW);
         float ih = 1.0f / static_cast<float>(atlasH);
         return { x * iw, y * ih, (x + w) * iw, (y + h) * ih };
