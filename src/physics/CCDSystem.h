@@ -101,6 +101,8 @@ namespace CCDMath {
         const math::Vector3D& posB, const math::Vector3D& velB,
         float combinedRadius, float dt, int maxIterations = 20)
     {
+        if (dt <= 0.0f) return -1.0f;
+
         math::Vector3D relVel = velA - velB;
         float relSpeed = relVel.magnitude();
         if (relSpeed < 1e-6f) return -1.0f;
