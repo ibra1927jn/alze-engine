@@ -255,6 +255,18 @@ private:
     /// Narrowphase: test collision between two bodies
     ContactInfo narrowphaseTest(int a, int b);
 
+    /// Build contact islands and manage sleep state; returns island count
+    int buildIslands(float subDt, int maxBodies);
+
+    /// Solve contacts (parallel or sequential) and constraints
+    void solveIslands(float subDt, int islandCount);
+
+    /// Integrate bodies with optional CCD
+    void integrateBodies(float subDt);
+
+    /// Step connected subsystems (thermal, fluid, EM, etc.)
+    void stepSubsystems(float dt);
+
     /// Allocate a body slot (reuses free slots if available)
     int allocateBody(RigidBody3D&& body) {
         if (!m_freeSlots.empty()) {

@@ -110,252 +110,277 @@ void PhysicsWorld3D::step(float dt) {
         }
 
         // 4. Build Islands & Manage Sleeping
-        for (auto& b : m_bodies) {
-            b.islandId = -1;
-        }
-
-        int currentIslandId = 0;
         int maxBodies = static_cast<int>(m_bodies.size());
-
-        // Construir lista de adyacencia una vez — O(C) en vez de O(N*C) por body
-        // Usar FrameAllocator para evitar heap alloc de vector<vector<int>> cada substep
-        int* adjCounts = core::FrameAllocator::alloc<int>(maxBodies);
-        std::memset(adjCounts, 0, sizeof(int) * maxBodies);
-        for (const auto& contact : m_contacts) {
-            adjCounts[contact.bodyA]++;
-            adjCounts[contact.bodyB]++;
-        }
-        // Prefijos acumulados para indexar un arreglo flat
-        int* adjOffsets = core::FrameAllocator::alloc<int>(maxBodies + 1);
-        adjOffsets[0] = 0;
-        for (int i = 0; i < maxBodies; ++i) {
-            adjOffsets[i + 1] = adjOffsets[i] + adjCounts[i];
-        }
-        int totalAdj = adjOffsets[maxBodies];
-        int* adjData = core::FrameAllocator::alloc<int>(totalAdj > 0 ? totalAdj : 1);
-        // Reusar adjCounts como write cursors
-        std::memset(adjCounts, 0, sizeof(int) * maxBodies);
-        for (const auto& contact : m_contacts) {
-            int a = contact.bodyA, b = contact.bodyB;
-            adjData[adjOffsets[a] + adjCounts[a]++] = b;
-            adjData[adjOffsets[b] + adjCounts[b]++] = a;
-        }
-
-        // We need to keep track of islands for parallel solving
-        struct IslandData {
-            core::FrameArray<int> bodies;
-            IslandData() : bodies(0) {} 
-            IslandData(int maxB) : bodies(maxB) {}
-        };
-        
-        core::FrameArray<IslandData> islands(maxBodies);
-
-        for (int i = 0; i < maxBodies; ++i) {
-            if (!m_bodies[i].isDynamic() || m_bodies[i].islandId != -1 || m_bodies[i].m_removed) continue;
-
-            // Start new island (BFS) using FrameArray to avoid heap allocations
-            islands.push_back(IslandData(maxBodies));
-            IslandData& currentIsland = islands.back();
-
-            core::FrameArray<int> stack_array(maxBodies);
-            
-            stack_array.push_back(i);
-            m_bodies[i].islandId = currentIslandId;
-            
-            bool islandCanSleep = true;
-
-            while (!stack_array.empty()) {
-                int bodyIdx = stack_array.back();
-                stack_array.pop_back();
-                currentIsland.bodies.push_back(bodyIdx);
-                
-                auto& b = m_bodies[bodyIdx];
-                if (b.velocity.sqrMagnitude() > 0.05f || b.angularVelocity.sqrMagnitude() > 0.05f) {
-                    islandCanSleep = false;
-                }
-
-                // Buscar vecinos via lista de adyacencia flat — O(1) por vecino
-                for (int ni = adjOffsets[bodyIdx]; ni < adjOffsets[bodyIdx] + adjCounts[bodyIdx]; ++ni) {
-                    int neighborIdx = adjData[ni];
-                    auto& neighbor = m_bodies[neighborIdx];
-                    if (neighbor.isDynamic() && neighbor.islandId == -1) {
-                        neighbor.islandId = currentIslandId;
-                        stack_array.push_back(neighborIdx);
-                    }
-                }
-            }
-
-            // Update sleep state for the entire island
-            if (islandCanSleep) {
-                for (int idx : currentIsland.bodies) {
-                    m_bodies[idx].addSleepTimer(subDt);
-                    if (m_bodies[idx].getSleepTimer() > 1.0f) { // 1 second to sleep
-                        m_bodies[idx].forceSleep();
-                        m_bodies[idx].velocity = math::Vector3D::Zero;
-                        m_bodies[idx].angularVelocity = math::Vector3D::Zero;
-                    }
-                }
-            } else {
-                for (int idx : currentIsland.bodies) {
-                    m_bodies[idx].wake();
-                }
-            }
-
-            currentIslandId++;
-        }
+        int islandCount = buildIslands(subDt, maxBodies);
 
         // 5. Solve Contacts & Constraints
-        
-        // Split contacts into islands for parallel solving
-        if (m_jobSystem && m_jobSystem->isRunning() && currentIslandId > 1) {
-            // Allocate arrays of contact pointers per island in FrameAllocator
-            core::FrameArray<Contact3D*>* islandContacts = core::FrameAllocator::alloc<core::FrameArray<Contact3D*>>(currentIslandId);
-            for (int i = 0; i < currentIslandId; i++) {
-                // Manually construct the FrameArray in place
-                new(&islandContacts[i]) core::FrameArray<Contact3D*>(static_cast<int>(m_contacts.size()));
-            }
+        solveIslands(subDt, islandCount);
 
-            for (auto& c : m_contacts) {
-                int iId = m_bodies[c.bodyA].islandId;
-                if (iId == -1) iId = m_bodies[c.bodyB].islandId;
-                if (iId != -1) {
-                    islandContacts[iId].push_back(&c); // Store pointer to original contact
-                }
-            }
-
-            // Pre-step for all bodies and constraints (these are global)
-            m_solver.preStep(m_contacts, m_bodies, subDt);
-            m_constraintSolver.preStep(m_bodies, subDt);
-
-            // Parallel dispatch over islands
-            m_jobSystem->parallel_for(0, currentIslandId, 1, [&](int start, int end) {
-                for (int i = start; i < end; i++) {
-                    for (int iter = 0; iter < m_solver.iterations; iter++) {
-                        for (Contact3D* c_ptr : islandContacts[i]) {
-                            solveSingleContact(*c_ptr);
-                        }
-                    }
-                }
-            });
-            // Constraints: una sola pasada, la iteracion interna la maneja ConstraintSolver3D
-            // (antes iteraba m_solver.iterations * m_constraintSolver.iterations = 80x)
-            m_constraintSolver.solve(m_bodies);
-
-        } else {
-            // Sequential fallback (guaranteed to work)
-            m_solver.preStep(m_contacts, m_bodies, subDt);
-            m_constraintSolver.preStep(m_bodies, subDt);
-
-            for (int iter = 0; iter < m_solver.iterations; iter++) {
-                for (auto& c : m_contacts)
-                    solveSingleContact(c);
-            }
-            // Constraints: una sola llamada, iteracion interna en ConstraintSolver3D
-            m_constraintSolver.solve(m_bodies);
-        }
-
-        // 6. Integrate (WITH CCD)
-        for (int i = 0; i < static_cast<int>(m_bodies.size()); ++i) {
-            auto& body = m_bodies[i];
-            if (!body.isDynamic() || body.isSleeping() || body.m_removed) continue;
-            
-            if (body.isBullet && body.velocity.sqrMagnitude() > 0.1f) {
-                float velMag = body.velocity.magnitude();
-                float subVelocity = velMag * subDt;
-                float radius = 0.0f;
-                if (body.shape == RigidBody3D::Shape::SPHERE) radius = body.sphereRadius;
-                else if (body.shape == RigidBody3D::Shape::CAPSULE) radius = body.capsuleRadius;
-                else if (body.shape == RigidBody3D::Shape::BOX) radius = std::min({body.boxHalfExtents.x, body.boxHalfExtents.y, body.boxHalfExtents.z});
-
-                float minToi = 1.0f;
-                int hitIdx = -1;
-                math::Vector3D hitNormal;
-
-                // 1. Analytical TOI against other spheres -> Perfectly exact Sub-stepping
-                if (body.shape == RigidBody3D::Shape::SPHERE) {
-                    for (int j = 0; j < static_cast<int>(m_bodies.size()); ++j) {
-                        if (i == j) continue;
-                        const auto& other = m_bodies[j];
-                        if (other.shape == RigidBody3D::Shape::SPHERE) {
-                            float toi = sphereVsSphereTOI(body.getWorldSphere(), body.position, body.velocity * subDt,
-                                                          other.getWorldSphere(), other.position, other.isDynamic() ? other.velocity * subDt : math::Vector3D::Zero);
-                            if (toi >= 0.0f && toi < minToi) {
-                                minToi = toi;
-                                hitIdx = j;
-                                math::Vector3D pA = body.position + (body.velocity * subDt) * toi;
-                                math::Vector3D pB = other.position + (other.isDynamic() ? other.velocity * subDt : math::Vector3D::Zero) * toi;
-                                hitNormal = (pA - pB).normalized();
-                            }
-                        }
-                    }
-                }
-
-                // 2. Generic Continuous Raycast (Sphere-cast approximation) against walls/terrain
-                if (minToi == 1.0f) {
-                    Ray3D ccdRay(body.position, body.velocity / velMag);
-                    int rayHitIdx = -1;
-                    RayHit3D hit = raycast(ccdRay, rayHitIdx);
-                    if (hit.hit && rayHitIdx != i && hit.distance < subVelocity + radius && subVelocity > 1e-8f) {
-                        float safeDist = std::max(0.0f, hit.distance - radius - 0.005f);
-                        float toi = safeDist / subVelocity;
-                        if (toi < minToi) {
-                            minToi = std::max(0.0f, toi);
-                            hitIdx = rayHitIdx;
-                            hitNormal = hit.normal;
-                        }
-                    }
-                }
-
-                if (hitIdx != -1 && minToi <= 1.0f) {
-                    RigidBody3D& other = m_bodies[hitIdx];
-                    if (!other.isBullet) {
-                        body.integrate(subDt * minToi); // Integrate exactly up to TOI (Time of Impact)
-                        
-                        math::Vector3D relVel = body.velocity - other.velocity;
-                        float vn = relVel.dot(hitNormal);
-                        if (vn < 0.0f) {
-                            float restitution = std::max(body.material.restitution, other.material.restitution);
-                            float j = -(1.0f + restitution) * vn;
-                            float invMassSum = body.getInvMass() + other.getInvMass();
-                            if (invMassSum < 1e-12f) continue;
-                            j /= invMassSum;
-                            math::Vector3D impulse = hitNormal * j;
-                            body.velocity += impulse * body.getInvMass();
-                            if (other.isDynamic()) {
-                                other.velocity -= impulse * other.getInvMass();
-                                other.wake(); // Impact wakes the other body
-                            }
-                        }
-                        continue;
-                    }
-                }
-            }
-            body.integrate(subDt);
-        }
-
-        // 7. Position correction
-        {
-            const float correctionSlop   = 0.005f;
-            const float correctionFactor = 0.4f;
-            for (auto& c : m_contacts) {
-                if (c.penetration <= correctionSlop) continue;
-                RigidBody3D& A = m_bodies[c.bodyA];
-                RigidBody3D& B = m_bodies[c.bodyB];
-                float invMassA = A.getInvMass(), invMassB = B.getInvMass();
-                float totalInvMass = invMassA + invMassB;
-                if (totalInvMass < 1e-8f) continue;
-                float correction = correctionFactor * (c.penetration - correctionSlop) / totalInvMass;
-                math::Vector3D corr = c.normal * correction;
-                if (A.isDynamic()) A.position -= corr * invMassA;
-                if (B.isDynamic()) B.position += corr * invMassB;
-            }
-        }
-
-        for (auto& body : m_bodies)
-            if (body.isDynamic() && !body.m_removed) body.updateSleep(subDt);
+        // 6. Integrate (WITH CCD) + 7. Position correction
+        integrateBodies(subDt);
     }
 
-    // 9. Thermal system (if connected)
+    // 9. Step connected subsystems
+    stepSubsystems(dt);
+
+    // Fire contact callbacks
+    if (onContact) {
+        for (const auto& c : m_contacts) {
+            if (c.normalImpulse > 0.01f)
+                onContact(c.bodyA, c.bodyB, c.contactPoint, c.normalImpulse);
+        }
+    }
+}
+
+int PhysicsWorld3D::buildIslands(float subDt, int maxBodies) {
+    for (auto& b : m_bodies) {
+        b.islandId = -1;
+    }
+
+    int currentIslandId = 0;
+
+    // Construir lista de adyacencia una vez — O(C) en vez de O(N*C) por body
+    // Usar FrameAllocator para evitar heap alloc de vector<vector<int>> cada substep
+    int* adjCounts = core::FrameAllocator::alloc<int>(maxBodies);
+    std::memset(adjCounts, 0, sizeof(int) * maxBodies);
+    for (const auto& contact : m_contacts) {
+        adjCounts[contact.bodyA]++;
+        adjCounts[contact.bodyB]++;
+    }
+    // Prefijos acumulados para indexar un arreglo flat
+    int* adjOffsets = core::FrameAllocator::alloc<int>(maxBodies + 1);
+    adjOffsets[0] = 0;
+    for (int i = 0; i < maxBodies; ++i) {
+        adjOffsets[i + 1] = adjOffsets[i] + adjCounts[i];
+    }
+    int totalAdj = adjOffsets[maxBodies];
+    int* adjData = core::FrameAllocator::alloc<int>(totalAdj > 0 ? totalAdj : 1);
+    // Reusar adjCounts como write cursors
+    std::memset(adjCounts, 0, sizeof(int) * maxBodies);
+    for (const auto& contact : m_contacts) {
+        int a = contact.bodyA, b = contact.bodyB;
+        adjData[adjOffsets[a] + adjCounts[a]++] = b;
+        adjData[adjOffsets[b] + adjCounts[b]++] = a;
+    }
+
+    // We need to keep track of islands for parallel solving
+    struct IslandData {
+        core::FrameArray<int> bodies;
+        IslandData() : bodies(0) {}
+        IslandData(int maxB) : bodies(maxB) {}
+    };
+
+    core::FrameArray<IslandData> islands(maxBodies);
+
+    for (int i = 0; i < maxBodies; ++i) {
+        if (!m_bodies[i].isDynamic() || m_bodies[i].islandId != -1 || m_bodies[i].m_removed) continue;
+
+        // Start new island (BFS) using FrameArray to avoid heap allocations
+        islands.push_back(IslandData(maxBodies));
+        IslandData& currentIsland = islands.back();
+
+        core::FrameArray<int> stack_array(maxBodies);
+
+        stack_array.push_back(i);
+        m_bodies[i].islandId = currentIslandId;
+
+        bool islandCanSleep = true;
+
+        while (!stack_array.empty()) {
+            int bodyIdx = stack_array.back();
+            stack_array.pop_back();
+            currentIsland.bodies.push_back(bodyIdx);
+
+            auto& b = m_bodies[bodyIdx];
+            if (b.velocity.sqrMagnitude() > 0.05f || b.angularVelocity.sqrMagnitude() > 0.05f) {
+                islandCanSleep = false;
+            }
+
+            // Buscar vecinos via lista de adyacencia flat — O(1) por vecino
+            for (int ni = adjOffsets[bodyIdx]; ni < adjOffsets[bodyIdx] + adjCounts[bodyIdx]; ++ni) {
+                int neighborIdx = adjData[ni];
+                auto& neighbor = m_bodies[neighborIdx];
+                if (neighbor.isDynamic() && neighbor.islandId == -1) {
+                    neighbor.islandId = currentIslandId;
+                    stack_array.push_back(neighborIdx);
+                }
+            }
+        }
+
+        // Update sleep state for the entire island
+        if (islandCanSleep) {
+            for (int idx : currentIsland.bodies) {
+                m_bodies[idx].addSleepTimer(subDt);
+                if (m_bodies[idx].getSleepTimer() > 1.0f) { // 1 second to sleep
+                    m_bodies[idx].forceSleep();
+                    m_bodies[idx].velocity = math::Vector3D::Zero;
+                    m_bodies[idx].angularVelocity = math::Vector3D::Zero;
+                }
+            }
+        } else {
+            for (int idx : currentIsland.bodies) {
+                m_bodies[idx].wake();
+            }
+        }
+
+        currentIslandId++;
+    }
+
+    return currentIslandId;
+}
+
+void PhysicsWorld3D::solveIslands(float subDt, int islandCount) {
+    // Split contacts into islands for parallel solving
+    if (m_jobSystem && m_jobSystem->isRunning() && islandCount > 1) {
+        // Allocate arrays of contact pointers per island in FrameAllocator
+        core::FrameArray<Contact3D*>* islandContacts = core::FrameAllocator::alloc<core::FrameArray<Contact3D*>>(islandCount);
+        for (int i = 0; i < islandCount; i++) {
+            // Manually construct the FrameArray in place
+            new(&islandContacts[i]) core::FrameArray<Contact3D*>(static_cast<int>(m_contacts.size()));
+        }
+
+        for (auto& c : m_contacts) {
+            int iId = m_bodies[c.bodyA].islandId;
+            if (iId == -1) iId = m_bodies[c.bodyB].islandId;
+            if (iId != -1) {
+                islandContacts[iId].push_back(&c); // Store pointer to original contact
+            }
+        }
+
+        // Pre-step for all bodies and constraints (these are global)
+        m_solver.preStep(m_contacts, m_bodies, subDt);
+        m_constraintSolver.preStep(m_bodies, subDt);
+
+        // Parallel dispatch over islands
+        m_jobSystem->parallel_for(0, islandCount, 1, [&](int start, int end) {
+            for (int i = start; i < end; i++) {
+                for (int iter = 0; iter < m_solver.iterations; iter++) {
+                    for (Contact3D* c_ptr : islandContacts[i]) {
+                        solveSingleContact(*c_ptr);
+                    }
+                }
+            }
+        });
+        // Constraints: una sola pasada, la iteracion interna la maneja ConstraintSolver3D
+        // (antes iteraba m_solver.iterations * m_constraintSolver.iterations = 80x)
+        m_constraintSolver.solve(m_bodies);
+
+    } else {
+        // Sequential fallback (guaranteed to work)
+        m_solver.preStep(m_contacts, m_bodies, subDt);
+        m_constraintSolver.preStep(m_bodies, subDt);
+
+        for (int iter = 0; iter < m_solver.iterations; iter++) {
+            for (auto& c : m_contacts)
+                solveSingleContact(c);
+        }
+        // Constraints: una sola llamada, iteracion interna en ConstraintSolver3D
+        m_constraintSolver.solve(m_bodies);
+    }
+}
+
+void PhysicsWorld3D::integrateBodies(float subDt) {
+    for (int i = 0; i < static_cast<int>(m_bodies.size()); ++i) {
+        auto& body = m_bodies[i];
+        if (!body.isDynamic() || body.isSleeping() || body.m_removed) continue;
+
+        if (body.isBullet && body.velocity.sqrMagnitude() > 0.1f) {
+            float velMag = body.velocity.magnitude();
+            float subVelocity = velMag * subDt;
+            float radius = 0.0f;
+            if (body.shape == RigidBody3D::Shape::SPHERE) radius = body.sphereRadius;
+            else if (body.shape == RigidBody3D::Shape::CAPSULE) radius = body.capsuleRadius;
+            else if (body.shape == RigidBody3D::Shape::BOX) radius = std::min({body.boxHalfExtents.x, body.boxHalfExtents.y, body.boxHalfExtents.z});
+
+            float minToi = 1.0f;
+            int hitIdx = -1;
+            math::Vector3D hitNormal;
+
+            // 1. Analytical TOI against other spheres -> Perfectly exact Sub-stepping
+            if (body.shape == RigidBody3D::Shape::SPHERE) {
+                for (int j = 0; j < static_cast<int>(m_bodies.size()); ++j) {
+                    if (i == j) continue;
+                    const auto& other = m_bodies[j];
+                    if (other.shape == RigidBody3D::Shape::SPHERE) {
+                        float toi = sphereVsSphereTOI(body.getWorldSphere(), body.position, body.velocity * subDt,
+                                                      other.getWorldSphere(), other.position, other.isDynamic() ? other.velocity * subDt : math::Vector3D::Zero);
+                        if (toi >= 0.0f && toi < minToi) {
+                            minToi = toi;
+                            hitIdx = j;
+                            math::Vector3D pA = body.position + (body.velocity * subDt) * toi;
+                            math::Vector3D pB = other.position + (other.isDynamic() ? other.velocity * subDt : math::Vector3D::Zero) * toi;
+                            hitNormal = (pA - pB).normalized();
+                        }
+                    }
+                }
+            }
+
+            // 2. Generic Continuous Raycast (Sphere-cast approximation) against walls/terrain
+            if (minToi == 1.0f) {
+                Ray3D ccdRay(body.position, body.velocity / velMag);
+                int rayHitIdx = -1;
+                RayHit3D hit = raycast(ccdRay, rayHitIdx);
+                if (hit.hit && rayHitIdx != i && hit.distance < subVelocity + radius && subVelocity > 1e-8f) {
+                    float safeDist = std::max(0.0f, hit.distance - radius - 0.005f);
+                    float toi = safeDist / subVelocity;
+                    if (toi < minToi) {
+                        minToi = std::max(0.0f, toi);
+                        hitIdx = rayHitIdx;
+                        hitNormal = hit.normal;
+                    }
+                }
+            }
+
+            if (hitIdx != -1 && minToi <= 1.0f) {
+                RigidBody3D& other = m_bodies[hitIdx];
+                if (!other.isBullet) {
+                    body.integrate(subDt * minToi); // Integrate exactly up to TOI (Time of Impact)
+
+                    math::Vector3D relVel = body.velocity - other.velocity;
+                    float vn = relVel.dot(hitNormal);
+                    if (vn < 0.0f) {
+                        float restitution = std::max(body.material.restitution, other.material.restitution);
+                        float j = -(1.0f + restitution) * vn;
+                        float invMassSum = body.getInvMass() + other.getInvMass();
+                        if (invMassSum < 1e-12f) continue;
+                        j /= invMassSum;
+                        math::Vector3D impulse = hitNormal * j;
+                        body.velocity += impulse * body.getInvMass();
+                        if (other.isDynamic()) {
+                            other.velocity -= impulse * other.getInvMass();
+                            other.wake(); // Impact wakes the other body
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+        body.integrate(subDt);
+    }
+
+    // Position correction
+    {
+        const float correctionSlop   = 0.005f;
+        const float correctionFactor = 0.4f;
+        for (auto& c : m_contacts) {
+            if (c.penetration <= correctionSlop) continue;
+            RigidBody3D& A = m_bodies[c.bodyA];
+            RigidBody3D& B = m_bodies[c.bodyB];
+            float invMassA = A.getInvMass(), invMassB = B.getInvMass();
+            float totalInvMass = invMassA + invMassB;
+            if (totalInvMass < 1e-8f) continue;
+            float correction = correctionFactor * (c.penetration - correctionSlop) / totalInvMass;
+            math::Vector3D corr = c.normal * correction;
+            if (A.isDynamic()) A.position -= corr * invMassA;
+            if (B.isDynamic()) B.position += corr * invMassB;
+        }
+    }
+
+    for (auto& body : m_bodies)
+        if (body.isDynamic() && !body.m_removed) body.updateSleep(subDt);
+}
+
+void PhysicsWorld3D::stepSubsystems(float dt) {
     if (m_thermalSystem) {
         m_thermalSystem->step(dt, m_bodies);
     }
@@ -373,14 +398,6 @@ void PhysicsWorld3D::step(float dt) {
     }
     if (m_waveSystem) {
         m_waveSystem->step(dt, m_bodies);
-    }
-
-    // Fire contact callbacks
-    if (onContact) {
-        for (const auto& c : m_contacts) {
-            if (c.normalImpulse > 0.01f)
-                onContact(c.bodyA, c.bodyB, c.contactPoint, c.normalImpulse);
-        }
     }
 }
 
