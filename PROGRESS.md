@@ -42,6 +42,7 @@
 - [2026-04-06] | Heartbeat maintenance pass #25 | 100% — guarded div-by-zero in EnvironmentMap prefilter roughness (maxMipLevels==1) and RenderSystem particle rendering (maxLife==0), added default nullptr initializers to SDL_Renderer* members in RenderBackend.h and RenderSystem.h
 - [2026-04-06] | Heartbeat maintenance pass #26 | 100% — guarded div-by-zero in InputManager deadzone remapping (m_deadzone>=1), DecalRenderer fade (lifetime==fadeStart), SkeletalAnimation keyframe interpolation (identical timestamps); added null-pointer guards to ModelLoader glTF buffer access chains (getBufferFloat, getIndex, loadGLTFTexture) and their call sites
 - [2026-04-06] | Heartbeat maintenance pass #27 | 100% — guarded div-by-zero in CompressibleFlow blast (ambientPressure/ambientDensity), OpticsSystem refraction (n2==0, Fresnel denominators), MolecularDynamics velocity-Verlet (mass<=0), WaveSystem wavenumber (mediumSpeed<=0); added default initializers to Timer m_start/m_frequency
+- [2026-04-06] | Heartbeat maintenance pass #28 | 100% — fixed integer overflow in AudioEngine 8-bit WAV conversion, explicit float cast in FrameAllocator::getUsagePercent, null-pointer guard in Editor::handleInput (m_ecs), div-by-zero guards in PhysicsWorld3D CCD (subVelocity, invMassSum), ProceduralAudio synth (duration==0), RigidBody3D inertia (zero dimensions/radius)
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
