@@ -304,9 +304,9 @@ std::vector<std::pair<int, int>> DynamicBVH3D::getPotentialPairs() const {
 
     // Fast Tree-Traversal pair overlap using fixed-size D-Stack
     struct Pair { int a, b; };
-    Pair stack[128];
+    Pair stack[512];
     int top = 0;
-    
+
     // Begin by testing root vs itself
     stack[top++] = {m_root, m_root};
 
@@ -326,11 +326,11 @@ std::vector<std::pair<int, int>> DynamicBVH3D::getPotentialPairs() const {
                 pairs.push_back({std::min(nA.userData, nB.userData), std::max(nA.userData, nB.userData)});
             }
         } else if (nA.isLeaf()) {
-            if (top < 126) { stack[top++] = {a, nB.left}; stack[top++] = {a, nB.right}; }
+            if (top < 510) { stack[top++] = {a, nB.left}; stack[top++] = {a, nB.right}; }
         } else if (nB.isLeaf()) {
-            if (top < 126) { stack[top++] = {nA.left, b}; stack[top++] = {nA.right, b}; }
+            if (top < 510) { stack[top++] = {nA.left, b}; stack[top++] = {nA.right, b}; }
         } else {
-            if (top < 124) {
+            if (top < 508) {
                 stack[top++] = {nA.left, nB.left};
                 stack[top++] = {nA.right, nB.left};
                 stack[top++] = {nA.left, nB.right};
