@@ -98,7 +98,7 @@ public:
     static size_t getPeakUsage()      { std::lock_guard<std::mutex> lock(s_mutex); return s_peakUsage; }
     static int    getAllocCount()      { std::lock_guard<std::mutex> lock(s_mutex); return s_allocCount; }
     static int    getTotalAllocCount() { std::lock_guard<std::mutex> lock(s_mutex); return s_totalAllocCount; }
-    static float  getUsagePercent()   { std::lock_guard<std::mutex> lock(s_mutex); return s_capacity > 0 ? static_cast<float>(s_offset) / s_capacity * 100.0f : 0; }
+    static float  getUsagePercent()   { std::lock_guard<std::mutex> lock(s_mutex); return s_capacity > 0 ? static_cast<float>(s_offset) / static_cast<float>(s_capacity) * 100.0f : 0.0f; }
     static bool   isInitialized()     { std::lock_guard<std::mutex> lock(s_mutex); return s_buffer != nullptr; }
 
 private:
