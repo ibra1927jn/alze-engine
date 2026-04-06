@@ -16,6 +16,10 @@ cmake_install.cmake
 
 # Build logs
 build*.txt
+*.log
+build_err.txt
+temp_del_*.txt
+test_out*.txt
 
 # Sensitive files
 .env
