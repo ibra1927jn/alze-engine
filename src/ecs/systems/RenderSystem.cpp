@@ -140,7 +140,7 @@ void RenderSystem::renderParticles() {
 
     for (const auto& p : m_particlePool->pool()) {
         if (!p.active) continue;
-        float t = p.life / p.maxLife;
+        float t = (p.maxLife > 0.0f) ? p.life / p.maxLife : 0.0f;
         math::Vector2D worldP = math::Vector2D::lerp(p.prevPos, p.pos, m_alpha);
 
         if (m_camera && !m_camera->isVisible(worldP, {p.size * 2, p.size * 2})) continue;
