@@ -168,7 +168,6 @@ public:
     /// Checkbox — toggles *value, returns true if changed
     bool checkbox(renderer::ShapeRenderer2D& shapes, renderer::TextRenderer& text,
                   const std::string& label, float x, float y, bool* value) {
-        uint32_t id = hashId(label, x, y);
         float boxSize = 16.0f;
         bool hover = isInside(x, y, boxSize, boxSize);
         bool changed = false;
