@@ -2183,8 +2183,7 @@ void testAdvancedThermodynamics() {
     sb.temperature = 1293.15f;
     thermal.ambientTemperature = 1293.15f; // Keep it hot
     thermal.step(0.1f, bodies);
-    
-    float expectedScale = 1.0f + (1.2e-5f * 1000.0f);
+
     check(sb.surfaceArea > 4.0f * 3.14159265f, "Thermal Expansion: Steel surface area grew due to Delta T");
 }
 
