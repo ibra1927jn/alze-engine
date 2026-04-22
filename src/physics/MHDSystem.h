@@ -4,7 +4,6 @@
 #include "FluidSystem.h"
 #include "Electromagnetism.h"
 #include <cmath>
-#include <vector>
 
 namespace engine {
 namespace physics {

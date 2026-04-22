@@ -7,7 +7,6 @@
 #include "Skybox.h"
 #include <cmath>
 #include <cstring>
-#include <vector>
 #include "ImageDecoder.h"
 
 namespace engine {

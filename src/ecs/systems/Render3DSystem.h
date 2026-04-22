@@ -3,7 +3,6 @@
 #include "../ECSCoordinator.h"
 #include "../Components3D.h"
 #include "../../renderer/ForwardRenderer.h"
-#include <vector>
 
 namespace engine {
 namespace ecs {

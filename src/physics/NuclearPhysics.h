@@ -1,9 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include <vector>
 #include <string>
-#include <functional>
 
 namespace engine {
 namespace physics {

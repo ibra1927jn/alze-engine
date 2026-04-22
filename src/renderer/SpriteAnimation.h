@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpriteBatch2D.h"
-#include <vector>
 #include <string>
 #include <unordered_map>
 

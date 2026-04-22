@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <glad/gl.h>
-#include <vector>
 #include <cmath>
 #include <cstdint>
 

@@ -5,7 +5,6 @@
 #include "Texture2D.h"
 #include "math/Vector3D.h"
 #include "math/Matrix4x4.h"
-#include <vector>
 #include <cstdint>
 
 namespace engine {

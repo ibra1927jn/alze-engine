@@ -7,8 +7,6 @@
 #include "math/Color.h"
 #include "math/MathUtils.h"
 #include <string>
-#include <functional>
-#include <vector>
 
 namespace engine {
 namespace core {

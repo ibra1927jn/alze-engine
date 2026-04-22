@@ -6,9 +6,7 @@
 #include "Collider3D.h"
 #include "PhysicsMaterial.h"
 #include <cmath>
-#include <vector>
 #include <memory>
-#include <algorithm>
 
 namespace engine {
 namespace physics {

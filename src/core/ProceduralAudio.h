@@ -2,11 +2,8 @@
 
 #include "AudioEngine.h"
 #include <cmath>
-#include <vector>
-#include <algorithm>
 #include <cstdlib>
 #include <functional>
-#include <numeric>
 
 namespace engine {
 namespace core {

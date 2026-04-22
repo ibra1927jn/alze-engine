@@ -1,5 +1,7 @@
 ﻿#include "ProceduralTextures.h"
 
+#include <vector>
+
 namespace engine {
 namespace renderer {
 namespace ProceduralTextures {

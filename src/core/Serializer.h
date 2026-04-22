@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <vector>
 #include <cstdlib>
 #include "Vector2D.h"
 
