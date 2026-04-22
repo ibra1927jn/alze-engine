@@ -416,9 +416,9 @@ void Physics3DSystem::applyBounds() {
             t.dirty = true;
         }
         if (m_hasBounds) {
-            auto bounce = [](float& pos, float& vel, float limit, float r, float rest, bool lower) {
-                if (lower && pos - r < limit) { pos = limit + r; vel = std::abs(vel) * rest; }
-                else if (!lower && pos + r > limit) { pos = limit - r; vel = -std::abs(vel) * rest; }
+            auto bounce = [](float& pos, float& vel, float limit, float rad, float rest, bool lower) {
+                if (lower && pos - rad < limit) { pos = limit + rad; vel = std::abs(vel) * rest; }
+                else if (!lower && pos + rad > limit) { pos = limit - rad; vel = -std::abs(vel) * rest; }
             };
             bounce(t.transform.position.x, p.velocity.x, m_boundsMin.x, r, p.restitution, true);
             bounce(t.transform.position.x, p.velocity.x, m_boundsMax.x, r, p.restitution, false);
