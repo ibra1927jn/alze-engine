@@ -82,7 +82,7 @@ public:
             case Level::INFO:  levelStr = "INFO "; colorCode = "\033[32m"; break;
             case Level::WARN:  levelStr = "WARN "; colorCode = "\033[33m"; break;
             case Level::ERR:   levelStr = "ERROR"; colorCode = "\033[31m"; break;
-            default: break;
+            case Level::SILENT: return; // SILENT solo se usa como min level, nunca como nivel real
         }
 
         // Timestamp
