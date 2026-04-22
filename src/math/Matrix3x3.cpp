@@ -1,4 +1,5 @@
 #include "Matrix3x3.h"
+#include <ostream>
 
 namespace engine {
 namespace math {

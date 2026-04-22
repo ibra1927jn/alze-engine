@@ -1,5 +1,6 @@
 #include "AABB.h"
 #include "MathUtils.h"
+#include <ostream>
 
 namespace engine {
 namespace math {

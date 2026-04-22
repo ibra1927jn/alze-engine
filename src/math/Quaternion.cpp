@@ -1,5 +1,6 @@
 #include "Quaternion.h"
 #include "Matrix4x4.h"
+#include <ostream>
 
 namespace engine {
 namespace math {
