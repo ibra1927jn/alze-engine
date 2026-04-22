@@ -459,8 +459,8 @@ namespace game {
 
                 // Cross-dim message (if recent)
                 if (m_world->msgTimer > 0.0f && !m_world->latestMessage().empty()) {
-                    float alpha = std::min(1.0f, m_world->msgTimer);
-                    renderer::SpriteColor mc(1.0f, 0.9f, 0.2f, alpha);
+                    float msgAlpha = std::min(1.0f, m_world->msgTimer);
+                    renderer::SpriteColor mc(1.0f, 0.9f, 0.2f, msgAlpha);
                     m_textRenderer2D.draw(m_spriteBatch2D, m_world->latestMessage(),
                         sw * 0.5f - 160, sh * 0.5f - 40, 1.2f, mc);
                 }
