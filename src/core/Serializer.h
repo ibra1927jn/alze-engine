@@ -4,7 +4,6 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include <cassert>
 #include <cstdlib>
 #include "Vector2D.h"
 

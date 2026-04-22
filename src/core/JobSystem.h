@@ -6,7 +6,6 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-#include <cassert>
 
 namespace engine {
 namespace core {
