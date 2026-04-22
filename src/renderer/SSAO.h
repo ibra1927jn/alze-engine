@@ -4,7 +4,6 @@
 #include "ShaderProgram.h"
 #include <cstdlib>
 #include <cmath>
-#include <iostream>
 
 namespace engine {
 namespace renderer {

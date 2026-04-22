@@ -8,7 +8,6 @@
 #include "ImageDecoder.h"
 #include <vector>
 #include <string>
-#include <iostream>
 #include <cstring>
 
 namespace engine {
