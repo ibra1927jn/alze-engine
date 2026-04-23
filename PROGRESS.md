@@ -15,6 +15,7 @@
 - [2026-03-28] | Quality/hardening pass | 100% — 8 fixes: adjacency CSR, double iteration, SIMD negation, JobSystem allocs, FPS title, Quaternion dedup, sortByMaterial .get(), ForwardRenderer negation
 - [2026-03-29] | Fix build errors UISystem+Editor API mismatch | 100% — ALZE.exe compila
 - [2026-04-23] | Heartbeat cleanup | 100% — RenderSystem dead member borrado, MathConstants alias a MathUtils, lambda Entity param anonimo en Physics3DSystem::solveConstraints
+- [2026-04-23] | Heartbeat include-cleanup pass 2 | 100% — drop unused <functional> en StateManager/Chemistry/UnifiedSimulation, <algorithm>+<functional> en Electromagnetism, <algorithm> en SoftBody3D, <cstdlib> en PlayState, <cstring> en SharedWorldState y ComponentStorage. 1154/1154 tests OK.
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
