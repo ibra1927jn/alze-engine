@@ -3,12 +3,7 @@
 #include "math/Vector2D.h"
 #include "math/MathUtils.h"
 #include <vector>
-#include <queue>
-#include <unordered_map>
-#include <algorithm>
-#include <cmath>
 #include <cstdint>
-#include <functional>
 
 namespace engine {
 namespace ai {

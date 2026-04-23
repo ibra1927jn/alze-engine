@@ -1,5 +1,10 @@
 ﻿#include "NavMesh.h"
 
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <queue>
+
 namespace engine {
 namespace ai {
 
