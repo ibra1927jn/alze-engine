@@ -7,7 +7,6 @@
 #include <vector>
 #include <string>
 #include <cstdint>
-#include <algorithm>
 
 namespace engine {
 namespace renderer {
