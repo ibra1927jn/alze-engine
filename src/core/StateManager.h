@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <functional>
 
 namespace engine {
 namespace core {

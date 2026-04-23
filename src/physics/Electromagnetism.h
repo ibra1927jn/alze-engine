@@ -4,8 +4,6 @@
 #include "RigidBody3D.h"
 #include <vector>
 #include <cmath>
-#include <algorithm>
-#include <functional>
 
 namespace engine {
 namespace physics {
