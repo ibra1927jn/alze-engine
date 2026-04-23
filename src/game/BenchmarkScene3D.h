@@ -43,7 +43,6 @@
 #include "game/SceneSetup3D.h"
 #include "game/WorldScene3D.h"
 
-#include <cstdlib>
 #include <cmath>
 #include <memory>
 #include <string>

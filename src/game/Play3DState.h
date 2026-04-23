@@ -40,7 +40,6 @@
 #include "renderer/SpriteBatch2D.h"
 #include "renderer/TextRenderer.h"
 #include <cmath>
-#include <cstdlib>
 
 namespace engine {
 namespace game {
