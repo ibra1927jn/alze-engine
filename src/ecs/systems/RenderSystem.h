@@ -46,7 +46,6 @@ public:
 
     void setCamera(core::Camera2D* camera) { m_camera = camera; }
     void setParticlePool(const game::ParticlePool* pool) { m_particlePool = pool; }
-    void setCollisionSystem(System* col) { m_colSystem = col; }
 
     void setHUDState(const HUDState& state) { m_hud = state; }
     void setDebugState(const DebugState& state) { m_debug = state; }
@@ -84,7 +83,6 @@ private:
     core::RenderBackend        m_backend;
     core::Camera2D*            m_camera = nullptr;
     const game::ParticlePool*  m_particlePool = nullptr;
-    System*                    m_colSystem = nullptr;
     float                      m_alpha = 1.0f;
     int                        m_visibleCount = 0;
     HUDState                   m_hud;
