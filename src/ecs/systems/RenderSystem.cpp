@@ -89,11 +89,11 @@ void RenderSystem::renderEntities() {
             // Shadow
             drawRect(rp + math::Vector2D(shOff, shOff), pw, ph, math::Color(0,0,0,50));
 
+            PhysicsComponent* phys = m_ecs.hasComponent<PhysicsComponent>(entry.entity)
+                ? &m_ecs.getComponent<PhysicsComponent>(entry.entity) : nullptr;
+
             // Glow based on speed
-            float speed = 0;
-            if (m_ecs.hasComponent<PhysicsComponent>(entry.entity)) {
-                speed = m_ecs.getComponent<PhysicsComponent>(entry.entity).velocity.magnitude();
-            }
+            float speed = phys ? phys->velocity.magnitude() : 0.0f;
             uint8_t glowA = static_cast<uint8_t>(math::MathUtils::clamp(speed / 10.0f, 15, 60));
             drawRect(rp, pw + 6, ph + 6, entry.color.withAlpha(glowA));
 
@@ -115,14 +115,11 @@ void RenderSystem::renderEntities() {
             }
 
             // Velocity line
-            if (m_ecs.hasComponent<PhysicsComponent>(entry.entity)) {
-                auto& phys = m_ecs.getComponent<PhysicsComponent>(entry.entity);
-                if (phys.velocity.sqrMagnitude() > 25.0f) {
-                    math::Vector2D velEnd = m_camera ?
-                        m_camera->worldToScreen(entry.pos + phys.velocity * 0.08f) :
-                        entry.pos + phys.velocity * 0.08f;
-                    drawLine(rp, velEnd, math::Color(255, 90, 90, 160));
-                }
+            if (phys && phys->velocity.sqrMagnitude() > 25.0f) {
+                math::Vector2D velEnd = m_camera ?
+                    m_camera->worldToScreen(entry.pos + phys->velocity * 0.08f) :
+                    entry.pos + phys->velocity * 0.08f;
+                drawLine(rp, velEnd, math::Color(255, 90, 90, 160));
             }
         }
         else {
