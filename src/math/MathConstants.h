@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include "MathUtils.h"
 
 namespace engine {
 namespace math {
@@ -8,12 +9,13 @@ namespace math {
 /// Central math constants and utilities for the engine
 namespace Constants {
 
-    constexpr float PI       = 3.14159265358979323846f;
-    constexpr float TAU      = PI * 2.0f;              // Full circle
-    constexpr float HALF_PI  = PI * 0.5f;
+    // Aliases to MathUtils to keep a single source of truth for PI/EPSILON.
+    constexpr float PI       = MathUtils::PI;
+    constexpr float TAU      = MathUtils::TWO_PI;
+    constexpr float HALF_PI  = MathUtils::HALF_PI;
+    constexpr float EPSILON  = MathUtils::EPSILON;
     constexpr float DEG2RAD  = PI / 180.0f;
     constexpr float RAD2DEG  = 180.0f / PI;
-    constexpr float EPSILON  = 1e-6f;
     constexpr float INF      = 1e30f;
     constexpr float SQRT2    = 1.41421356237309504880f;
     constexpr float INV_SQRT2 = 0.70710678118654752440f;
