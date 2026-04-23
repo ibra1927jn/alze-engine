@@ -6,7 +6,6 @@
 #include <cmath>
 #include <string>
 #include <algorithm>
-#include <functional>
 
 namespace engine {
 namespace physics {

@@ -11,7 +11,6 @@
 #include "math/Vector3D.h"
 #include <cmath>
 #include <vector>
-#include <functional>
 
 namespace engine {
 namespace physics {
