@@ -57,8 +57,9 @@ public:
 
             // Hysteresis band (5% of range)
             if (i == m_currentLOD) {
-                effectiveMin -= (effectiveMax - effectiveMin) * 0.05f;
-                effectiveMax += (effectiveMax - effectiveMin) * 0.05f;
+                float band = (effectiveMax - effectiveMin) * 0.05f;
+                effectiveMin -= band;
+                effectiveMax += band;
             }
 
             if (dist >= effectiveMin && dist < effectiveMax) {
