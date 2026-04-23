@@ -12,7 +12,6 @@
 #include "math/Vector3D.h"
 #include <vector>
 #include <cmath>
-#include <algorithm>
 
 namespace engine {
 namespace renderer {

@@ -6,7 +6,6 @@
 #include "math/Vector2D.h"
 #include "math/Matrix4x4.h"
 #include <vector>
-#include <algorithm>
 #include <cmath>
 
 namespace engine {
