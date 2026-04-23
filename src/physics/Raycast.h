@@ -3,11 +3,9 @@
 #include "math/Vector2D.h"
 #include "math/AABB.h"
 #include "math/MathUtils.h"
-#include "SpatialHash.h"
 #include "ecs/ECSCoordinator.h"
 #include "ecs/Components.h"
 #include <vector>
-#include <algorithm>
 #include <cmath>
 
 namespace engine {
@@ -23,12 +21,12 @@ struct RayHit {
 
 /// Raycast — Lanzar rayos contra el mundo físico.
 ///
-/// Usa el SpatialHash para filtrar solo entidades relevantes (broad phase).
+/// Itera todos los colliders del ECS (sin broadphase).
 /// Internamente usa el Slab Method para intersección ray-AABB.
 ///
 /// Ejemplo:
 ///   RayHit hit;
-///   if (Raycast::castFirst(ecs, grid, origin, direction, 500.0f, hit)) {
+///   if (Raycast::castFirst(ecs, origin, direction, 500.0f, hit)) {
 ///       // hit.entity, hit.point, hit.normal, hit.distance
 ///   }
 ///
