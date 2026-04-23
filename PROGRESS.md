@@ -17,6 +17,7 @@
 - [2026-04-23] | Heartbeat cleanup | 100% — RenderSystem dead member borrado, MathConstants alias a MathUtils, lambda Entity param anonimo en Physics3DSystem::solveConstraints
 - [2026-04-23] | Heartbeat include-cleanup pass 2 | 100% — drop unused <functional> en StateManager/Chemistry/UnifiedSimulation, <algorithm>+<functional> en Electromagnetism, <algorithm> en SoftBody3D, <cstdlib> en PlayState, <cstring> en SharedWorldState y ComponentStorage. 1154/1154 tests OK.
 - [2026-04-23] | Heartbeat include-cleanup pass 3 | 100% — drop unused <algorithm> en CollisionSolver3D.h y SkeletalAnimation.h, <cstring> en ModelLoader.h. 1146/1146 tests OK.
+- [2026-04-23] | Heartbeat include-cleanup pass 4 | 100% — drop unused <cstdlib> en Serializer.h, <cstdlib>/<cmath>/<cstring> en 7 renderer headers (ScreenEffects, SSAO, TextRenderer, SpriteBatch2D, Skybox, ProceduralTextures, EnvironmentMap), <cmath> en Constraints3D.h/RigidBody3D.h, <cmath>/<cstring>/<algorithm> en AudioEngine.h. 1146/1146 tests OK.
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable
