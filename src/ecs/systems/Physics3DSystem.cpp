@@ -287,7 +287,7 @@ void Physics3DSystem::solveConstraints(float dt) {
     if (dt <= 0.0f) return;
     float invDt = 1.0f / dt;
     m_ecs.forEach<Transform3DComponent, Physics3DComponent, ConstraintComponent>(
-        [this, dt, invDt](Entity e, Transform3DComponent& tA, Physics3DComponent& pA, ConstraintComponent& con) {
+        [this, dt, invDt](Entity, Transform3DComponent& tA, Physics3DComponent& pA, ConstraintComponent& con) {
             if (!con.enabled) return;
             if (!m_ecs.isAlive(con.targetEntity)) return;
             if (!m_ecs.hasComponent<Transform3DComponent>(con.targetEntity)) return;
