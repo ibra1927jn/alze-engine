@@ -18,8 +18,8 @@ namespace ecs {
 ///
 class InputSystem : public System {
 public:
-    InputSystem(ECSCoordinator& ecs, core::InputManager& input)
-        : m_ecs(ecs), m_input(input) {
+    InputSystem(ECSCoordinator&, core::InputManager& input)
+        : m_input(input) {
         priority = -1;  // Se ejecuta antes que la física
     }
 
@@ -42,7 +42,6 @@ public:
     core::InputManager& getInput() { return m_input; }
 
 private:
-    ECSCoordinator&     m_ecs;
     core::InputManager& m_input;
     bool  m_isGrounded = false;
 };
