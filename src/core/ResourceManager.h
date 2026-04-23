@@ -113,14 +113,6 @@ public:
         return count;
     }
 
-    template<typename Func>
-    void forEachAlive(Func&& fn) {
-        for (auto& [id, wp] : m_cache) {
-            auto sp = wp.lock();
-            if (sp) fn(id, sp);
-        }
-    }
-
 private:
     std::shared_ptr<T> getInternal(const std::string& id) {
         auto it = m_cache.find(id);
