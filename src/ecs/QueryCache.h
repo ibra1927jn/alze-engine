@@ -3,7 +3,6 @@
 #include "EntityManager.h"
 #include <vector>
 #include <unordered_map>
-#include <functional>
 
 namespace engine {
 namespace ecs {
