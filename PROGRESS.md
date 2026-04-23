@@ -14,6 +14,7 @@
 - [2026-03-28] | Scene Editor foundation | 100% — hierarchy, inspector, gizmo con flechas
 - [2026-03-28] | Quality/hardening pass | 100% — 8 fixes: adjacency CSR, double iteration, SIMD negation, JobSystem allocs, FPS title, Quaternion dedup, sortByMaterial .get(), ForwardRenderer negation
 - [2026-03-29] | Fix build errors UISystem+Editor API mismatch | 100% — ALZE.exe compila
+- [2026-04-23] | Heartbeat cleanup | 100% — RenderSystem dead member borrado, MathConstants alias a MathUtils, lambda Entity param anonimo en Physics3DSystem::solveConstraints
 
 ## Completado — Funcional y probado
 - [2026-03-28] | Math library (Vec2/3, Mat3x3/4x4, Quaternion, AABB, Transform) con SIMD SSE2 | Estable

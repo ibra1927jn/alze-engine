@@ -52,7 +52,7 @@
 - [2026-03-28] | core/JobSystem.h:79 | std::vector<pair<int,int>> chunks allocado en cada parallel_for | **FIXED** Eliminado vector, chunks calculados inline con aritmetica. body capturada por referencia
 - [2026-03-28] | physics/*.cpp | V * -1.0f en vez de -V (pierde ruta SIMD del operator-) | **FIXED** Reemplazado por negacion unaria en PhysicsWorld3D.cpp y Constraints3D.cpp
 - [2026-03-28] | renderer/ForwardRenderer.cpp:273 | (Zero - dir).normalized() en vez de (-dir).normalized() — temporal innecesario | **FIXED** Usar negacion unaria directa
-- [2026-03-28] | math/MathConstants.h | Duplica PI y EPSILON de MathUtils.h | Unificar en una sola fuente
+- [2026-03-28] | math/MathConstants.h | Duplica PI y EPSILON de MathUtils.h | **FIXED** Constants::PI/TAU/HALF_PI/EPSILON ahora alias de MathUtils::* (unica fuente de verdad)
 - [2026-03-28] | ~20 physics headers (Quantum, Nuclear, Relativity, etc.) | Formula reference sheets sin simulacion real ni integracion a PhysicsWorld3D | Documentar como "reference only" o mover a physics/reference/
 - [2026-03-29] | core/UISystem.h + editor/Editor.cpp | API mismatch: drawRoundedRectFilled, drawRectFilled, drawLine, drawCircleFilled, drawText no existen en ShapeRenderer2D/TextRenderer | **FIXED** Renombrado a roundedRectFill/rectFill/line/circleFill; TextRenderer.draw requiere SpriteBatch2D* almacenado en UISystem::begin(); convertidores toShapeCol/toSpriteCol para math::Color->float; coordenadas centradas via x+w*0.5f,y+h*0.5f; Editor::render ahora acepta SpriteBatch2D& param
 - [2026-03-28] | renderer/ForwardRenderer.cpp:159-165 | sortByMaterial llamaba .get() en raw Texture2D* — no compila | **FIXED** Usar reinterpret_cast directo sobre raw pointers
