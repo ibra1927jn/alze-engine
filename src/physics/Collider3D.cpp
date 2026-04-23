@@ -133,39 +133,36 @@ ContactInfo obbVsOBB(const OBB3D& a, const OBB3D& b) {
     float heB[3] = { b.halfExtents.x, b.halfExtents.y, b.halfExtents.z };
     float minOverlap = 1e30f;
     math::Vector3D bestAxis;
-    int bestAxisType = -1;
-    auto testAxis = [&](const math::Vector3D& axis, float projA, float projB, int axisType) -> bool {
+    auto testAxis = [&](const math::Vector3D& axis, float projA, float projB) -> bool {
         float projD = std::abs(d.dot(axis));
         float overlap = projA + projB - projD;
         if (overlap < 0.0f) return false;
         if (overlap < minOverlap) {
-            minOverlap = overlap; bestAxis = axis; bestAxisType = axisType;
+            minOverlap = overlap; bestAxis = axis;
             if (d.dot(axis) < 0.0f) bestAxis = bestAxis * -1.0f;
         }
         return true;
     };
     for (int i = 0; i < 3; i++) {
         float rB = heB[0]*absR[i][0] + heB[1]*absR[i][1] + heB[2]*absR[i][2];
-        if (!testAxis(a.axes[i], heA[i], rB, i)) return info;
+        if (!testAxis(a.axes[i], heA[i], rB)) return info;
     }
     for (int j = 0; j < 3; j++) {
         float rA = heA[0]*absR[0][j] + heA[1]*absR[1][j] + heA[2]*absR[2][j];
-        if (!testAxis(b.axes[j], rA, heB[j], 3 + j)) return info;
+        if (!testAxis(b.axes[j], rA, heB[j])) return info;
     }
-    int edgeIdx = 6;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             math::Vector3D axis = a.axes[i].cross(b.axes[j]);
             float len = axis.magnitude();
-            if (len < 1e-6f) { edgeIdx++; continue; }
+            if (len < 1e-6f) continue;
             axis = axis * (1.0f / len);
             float rA = 0.0f, rB = 0.0f;
             for (int k = 0; k < 3; k++) {
                 rA += heA[k] * std::abs(a.axes[k].dot(axis));
                 rB += heB[k] * std::abs(b.axes[k].dot(axis));
             }
-            if (!testAxis(axis, rA, rB, edgeIdx)) return info;
-            edgeIdx++;
+            if (!testAxis(axis, rA, rB)) return info;
         }
     }
     info.hasContact = true;
