@@ -139,7 +139,7 @@ ContactInfo obbVsOBB(const OBB3D& a, const OBB3D& b) {
         if (overlap < 0.0f) return false;
         if (overlap < minOverlap) {
             minOverlap = overlap; bestAxis = axis;
-            if (d.dot(axis) < 0.0f) bestAxis = bestAxis * -1.0f;
+            if (d.dot(axis) < 0.0f) bestAxis = -bestAxis;
         }
         return true;
     };

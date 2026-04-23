@@ -529,9 +529,9 @@ ContactInfo PhysicsWorld3D::narrowphaseTest(int a, int b) {
         else if (typeA == 0 && typeB == 1) info = gjkEpaContact(hullA, sphereB);
         else if (typeA == 0 && typeB == 2) info = gjkEpaContact(hullA, obbB);
         else if (typeA == 0 && typeB == 3) info = gjkEpaContact(hullA, capsuleB);
-        else if (typeA == 1 && typeB == 0) { info = gjkEpaContact(hullB, sphereA); if (info.hasContact) info.normal = info.normal * -1.0f; }
-        else if (typeA == 2 && typeB == 0) { info = gjkEpaContact(hullB, obbA); if (info.hasContact) info.normal = info.normal * -1.0f; }
-        else if (typeA == 3 && typeB == 0) { info = gjkEpaContact(hullB, capsuleA); if (info.hasContact) info.normal = info.normal * -1.0f; }
+        else if (typeA == 1 && typeB == 0) { info = gjkEpaContact(hullB, sphereA); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 2 && typeB == 0) { info = gjkEpaContact(hullB, obbA); if (info.hasContact) info.normal = -info.normal; }
+        else if (typeA == 3 && typeB == 0) { info = gjkEpaContact(hullB, capsuleA); if (info.hasContact) info.normal = -info.normal; }
         return info;
     }
 

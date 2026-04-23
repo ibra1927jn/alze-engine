@@ -108,7 +108,7 @@ physics::ContactInfo Physics3DSystem::doNarrowphase(const PhysEntity& a, const P
                                         physics::SphereCollider(posB, b.c->radius));
     if (a.c->shape == S::SPHERE && b.c->shape == S::BOX) {
         auto info = physics::obbVsSphere(buildOBB(*b.t, *b.c), physics::SphereCollider(posA, a.c->radius));
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     if (a.c->shape == S::BOX && b.c->shape == S::SPHERE)
@@ -125,7 +125,7 @@ physics::ContactInfo Physics3DSystem::doNarrowphase(const PhysEntity& a, const P
         return physics::capsuleVsSphere(buildCapsule(*a.t, *a.c), physics::SphereCollider(posB, b.c->radius));
     if (a.c->shape == S::SPHERE && b.c->shape == S::CAPSULE) {
         auto info = physics::capsuleVsSphere(buildCapsule(*b.t, *b.c), physics::SphereCollider(posA, a.c->radius));
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     if (a.c->shape == S::CAPSULE && b.c->shape == S::CAPSULE)
@@ -134,7 +134,7 @@ physics::ContactInfo Physics3DSystem::doNarrowphase(const PhysEntity& a, const P
         return physics::capsuleVsOBB(buildCapsule(*a.t, *a.c), buildOBB(*b.t, *b.c));
     if (a.c->shape == S::BOX && b.c->shape == S::CAPSULE) {
         auto info = physics::capsuleVsOBB(buildCapsule(*b.t, *b.c), buildOBB(*a.t, *a.c));
-        if (info.hasContact) info.normal = info.normal * -1.0f;
+        if (info.hasContact) info.normal = -info.normal;
         return info;
     }
     return physics::ContactInfo{};

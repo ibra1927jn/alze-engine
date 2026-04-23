@@ -62,7 +62,7 @@ void CollisionSolver3D::preStep(std::vector<Contact3D>& contacts,
             math::Vector3D P = c.normal * c.normalImpulse +
                                c.tangent1 * c.tangentImpulse1 +
                                c.tangent2 * c.tangentImpulse2;
-            A.applyImpulseAtPoint(P * -1.0f, c.contactPoint);
+            A.applyImpulseAtPoint(-P, c.contactPoint);
             B.applyImpulseAtPoint(P, c.contactPoint);
         }
     }
@@ -85,7 +85,7 @@ void CollisionSolver3D::solve(std::vector<Contact3D>& contacts,
             lambda = newImpulse - c.normalImpulse;
             c.normalImpulse = newImpulse;
             math::Vector3D impulse = c.normal * lambda;
-            A.applyImpulseAtPoint(impulse * -1.0f, c.contactPoint);
+            A.applyImpulseAtPoint(-impulse, c.contactPoint);
             B.applyImpulseAtPoint(impulse, c.contactPoint);
 
             // ── Tangent impulse (Coulomb cone) ────────────────
@@ -106,7 +106,7 @@ void CollisionSolver3D::solve(std::vector<Contact3D>& contacts,
             c.tangentImpulse1 = newT1;
             c.tangentImpulse2 = newT2;
             math::Vector3D fImpulse = c.tangent1 * lt1 + c.tangent2 * lt2;
-            A.applyImpulseAtPoint(fImpulse * -1.0f, c.contactPoint);
+            A.applyImpulseAtPoint(-fImpulse, c.contactPoint);
             B.applyImpulseAtPoint(fImpulse, c.contactPoint);
 
             // ── Rolling Friction Torque ───────────────────────
