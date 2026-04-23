@@ -17,7 +17,6 @@
 // ───────────────────────────────────────────────────────────────
 #include <string>
 #include <array>
-#include <cstring>
 
 namespace engine {
 namespace game {
