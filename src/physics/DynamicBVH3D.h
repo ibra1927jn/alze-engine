@@ -87,7 +87,7 @@ void DynamicBVH3D::queryOverlap(const AABB3D& aabb, T callback) const {
             if (node.isLeaf()) {
                 if (!callback(node.userData)) return;
             } else {
-                if (top < 254) {
+                if (top <= 254) {
                     stack[top++] = node.left;
                     stack[top++] = node.right;
                 }
@@ -109,12 +109,12 @@ void DynamicBVH3D::raycast(const Ray3D& ray, T callback) const {
 
         const Node& node = m_nodes[nodeId];
         engine::physics::RayHit3D boxHit = engine::physics::rayVsAABB(ray, node.aabb);
-        
+
         if (boxHit.hit) {
             if (node.isLeaf()) {
                 if (!callback(node.userData)) return;
             } else {
-                if (top < 254) {
+                if (top <= 254) {
                     stack[top++] = node.left;
                     stack[top++] = node.right;
                 }
