@@ -5,7 +5,6 @@
 #include "math/Vector2D.h"
 #include <string>
 #include <unordered_map>
-#include <cstring>
 
 namespace engine {
 namespace renderer {

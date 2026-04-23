@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <glad/gl.h>
-#include <cmath>
 #include <cstdint>
 
 namespace engine {

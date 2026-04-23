@@ -1,5 +1,6 @@
 ﻿#include "ProceduralTextures.h"
 
+#include <cmath>
 #include <vector>
 
 namespace engine {

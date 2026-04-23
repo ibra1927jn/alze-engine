@@ -3,7 +3,6 @@
 #include <glad/gl.h>
 #include "ShaderProgram.h"
 #include "math/Matrix4x4.h"
-#include <cmath>
 
 namespace engine {
 namespace renderer {

@@ -5,8 +5,6 @@
 #include "math/Matrix4x4.h"
 #include "math/Vector3D.h"
 #include "Skybox.h"
-#include <cmath>
-#include <cstring>
 #include "ImageDecoder.h"
 
 namespace engine {
